@@ -6,7 +6,7 @@ import Input from 'antd/es/input'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
 
-import service from '../service'
+import {register} from '../service'
 import Logo from '../../common/components/Logo'
 import Link from '../../common/components/Link'
 
@@ -39,7 +39,7 @@ const styles = {
   },
 }
 
-function RegisterForm(props) {
+function Register(props) {
   const {getFieldDecorator} = props.form
   const [loading, setLoading] = useState(false)
 
@@ -49,7 +49,7 @@ function RegisterForm(props) {
 
     try {
       const {email, password} = await props.form.validateFields()
-      await service.register(email, password)
+      await register(email, password)
       props.history.push('/')
     } catch (e) {
       setLoading(false)
@@ -105,4 +105,4 @@ function RegisterForm(props) {
   )
 }
 
-export default Form.create({name: 'register'})(withRouter(RegisterForm))
+export default Form.create()(withRouter(Register))

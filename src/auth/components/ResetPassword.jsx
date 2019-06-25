@@ -6,7 +6,7 @@ import Input from 'antd/es/input'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
 
-import service from '../service'
+import {resetPassword} from '../service'
 import Logo from '../../common/components/Logo'
 
 const styles = {
@@ -35,7 +35,7 @@ const styles = {
   },
 }
 
-function ResetPasswordForm(props) {
+function ResetPassword(props) {
   const {getFieldDecorator} = props.form
   const [loading, setLoading] = useState(false)
 
@@ -45,7 +45,7 @@ function ResetPasswordForm(props) {
     try {
       setLoading(true)
       const {email} = await props.form.validateFields()
-      await service.resetPassword(email)
+      await resetPassword(email)
       props.history.push('/login')
     } catch (e) {
       setLoading(false)
@@ -86,4 +86,4 @@ function ResetPasswordForm(props) {
   )
 }
 
-export default Form.create({name: 'reset-password'})(withRouter(ResetPasswordForm))
+export default Form.create()(withRouter(ResetPassword))

@@ -6,9 +6,10 @@ import Input from 'antd/es/input'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
 
-import service from '../service'
+import {login} from '../service'
 import Logo from '../../common/components/Logo'
 import Link from '../../common/components/Link'
+import useAuthContext from '../context'
 
 const styles = {
   container: {
@@ -39,9 +40,10 @@ const styles = {
   },
 }
 
-function LoginForm(props) {
+function Login(props) {
   const {getFieldDecorator} = props.form
   const [loading, setLoading] = useState(false)
+  const setUser = useAuthContext()[1]
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -49,7 +51,8 @@ function LoginForm(props) {
     try {
       setLoading(true)
       const {email, password} = await props.form.validateFields()
-      await service.login(email, password)
+      const user = await login(email, password)
+      setUser(user)
       props.history.push('/')
     } catch (e) {
       setLoading(false)
@@ -73,7 +76,6 @@ function LoginForm(props) {
             })(
               <Input
                 prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}} />}
-                type="email"
                 placeholder="Email"
                 autoComplete="email"
                 autoFocus
@@ -109,4 +111,4 @@ function LoginForm(props) {
   )
 }
 
-export default Form.create({name: 'login'})(withRouter(LoginForm))
+export default Form.create()(withRouter(Login))

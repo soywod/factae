@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from 'react'
 
 import {AuthContext} from './context'
-import service from './service'
+import {check} from './service'
 
 function AuthProvider(props) {
-  const [user, setUser] = useState(null)
+  const state = useState(null)
+  const [user, setUser] = state
+
   console.debug('auth: ', user)
 
   useEffect(() => {
     try {
-      service.check(setUser)
+      check(setUser)
     } catch (error) {
       setUser(false)
     }
@@ -19,7 +21,7 @@ function AuthProvider(props) {
     return null
   }
 
-  return <AuthContext.Provider value={user}>{props.children}</AuthContext.Provider>
+  return <AuthContext.Provider value={state}>{props.children}</AuthContext.Provider>
 }
 
 export default AuthProvider

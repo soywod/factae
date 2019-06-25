@@ -1,48 +1,64 @@
 import firebase from 'firebase/app'
-import message from 'antd/es/message'
 
-async function register(email, password) {
+import {notify} from '../utils/notification'
+
+export async function register(email, password) {
   try {
-    await firebase.auth().createUserWithEmailAndPassword(email, password)
-    message.success('Compte créé avec succès.')
+    const {user} = await firebase.auth().createUserWithEmailAndPassword(email, password)
+    const profile = {id: user.uid, email: user.email}
+    await firebase
+      .firestore()
+      .collection('users')
+      .doc(user.uid)
+      .set(profile)
+
+    notify.success('Compte créé avec succès.')
   } catch (error) {
-    message.error(error.message)
+    notify.error(error.message)
     throw error
   }
 }
 
-async function login(email, password) {
+export async function login(email, password) {
   try {
-    await firebase.auth().signInWithEmailAndPassword(email, password)
+    return await firebase.auth().signInWithEmailAndPassword(email, password)
   } catch (error) {
-    message.error(error.message)
+    notify.error(error.message)
     throw error
   }
 }
 
-async function resetPassword(email) {
+export async function resetPassword(email) {
   try {
     await firebase.auth().sendPasswordResetEmail(email)
-    message.success('Un email vous a été envoyé avec la procédure à suivre.')
+    notify.success('Un email vous a été envoyé avec la procédure à suivre.')
   } catch (error) {
-    message.error(error.message)
+    notify.error(error.message)
     throw error
   }
 }
 
-async function check(callback) {
+export function check(callback) {
   try {
-    firebase.auth().onAuthStateChanged((user, error) => {
-      if (error) callback(false)
-      else if (user) callback(user)
-      else callback(false)
+    firebase.auth().onAuthStateChanged(async (user, error) => {
+      if (error || !user) {
+        return callback(false)
+      }
+
+      const ref = await firebase
+        .firestore()
+        .collection('users')
+        .doc(user.uid)
+        .get()
+
+      callback(ref.data() || false)
     })
   } catch (error) {
     callback(false)
   }
 }
 
-async function logout() {
+export async function logout() {
   await firebase.auth().signOut()
 }
 

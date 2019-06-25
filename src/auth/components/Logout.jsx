@@ -2,20 +2,17 @@ import {useEffect} from 'react'
 import {withRouter} from 'react-router-dom'
 
 import useAuthContext from '../context'
-import service from '../service'
+import {logout} from '../service'
 
 function Logout(props) {
-  const user = useAuthContext()
+  const setUser = useAuthContext()[1]
 
   useEffect(() => {
-    service.logout()
-  }, [])
-
-  useEffect(() => {
-    if (!user) {
+    logout().then(() => {
+      setUser(false)
       props.history.push('/login')
-    }
-  }, [user])
+    })
+  }, [])
 
   return null
 }
