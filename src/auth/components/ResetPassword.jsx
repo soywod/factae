@@ -8,7 +8,6 @@ import Card from 'antd/es/card'
 
 import service from '../service'
 import Logo from '../../common/components/Logo'
-import Link from '../../common/components/Link'
 
 const styles = {
   container: {
@@ -28,9 +27,6 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
   },
-  forgot: {
-    float: 'right',
-  },
   button: {
     width: '100%',
   },
@@ -39,7 +35,7 @@ const styles = {
   },
 }
 
-function LoginForm(props) {
+function ResetPasswordForm(props) {
   const {getFieldDecorator} = props.form
   const [loading, setLoading] = useState(false)
 
@@ -48,9 +44,9 @@ function LoginForm(props) {
 
     try {
       setLoading(true)
-      const {email, password} = await props.form.validateFields()
-      await service.login(email, password)
-      props.history.push('/')
+      const {email} = await props.form.validateFields()
+      await service.resetPassword(email)
+      props.history.push('/login')
     } catch (e) {
       setLoading(false)
     }
@@ -73,35 +69,16 @@ function LoginForm(props) {
             })(
               <Input
                 prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}} />}
-                type="email"
                 placeholder="Email"
                 autoComplete="email"
                 autoFocus
               />,
             )}
           </Form.Item>
-          <Form.Item>
-            {getFieldDecorator('password', {
-              rules: [{required: true, message: 'Veuillez saisir votre mot de passe'}],
-            })(
-              <Input
-                prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}} />}
-                type="password"
-                placeholder="Mot de passe"
-                autoComplete="current-password"
-              />,
-            )}
-          </Form.Item>
           <div>
-            <Button type="primary" htmlType="submit" loading={loading} style={styles.button}>
-              Se connecter
+            <Button type="danger" htmlType="submit" loading={loading} style={styles.button}>
+              Réinitialiser mon mot de passe
             </Button>
-            <Link to="/register" style={styles.button}>
-              Créer un compte
-            </Link>
-            <Link to="/reset-password" style={styles.button}>
-              Mot de passe oublié
-            </Link>
           </div>
         </Form>
       </Card>
@@ -109,4 +86,4 @@ function LoginForm(props) {
   )
 }
 
-export default Form.create({name: 'login'})(withRouter(LoginForm))
+export default Form.create({name: 'reset-password'})(withRouter(ResetPasswordForm))

@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import {withRouter} from 'react-router-dom'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import Input from 'antd/es/input'
@@ -49,9 +50,10 @@ function RegisterForm(props) {
     try {
       const {email, password} = await props.form.validateFields()
       await service.register(email, password)
-    } catch (e) {}
-
-    setLoading(false)
+      props.history.push('/')
+    } catch (e) {
+      setLoading(false)
+    }
   }
 
   return (
@@ -103,4 +105,4 @@ function RegisterForm(props) {
   )
 }
 
-export default Form.create({name: 'register'})(RegisterForm)
+export default Form.create({name: 'register'})(withRouter(RegisterForm))
