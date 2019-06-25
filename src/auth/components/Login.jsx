@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import {withRouter} from 'react-router-dom'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import Input from 'antd/es/input'
@@ -7,7 +8,7 @@ import Row from 'antd/es/row'
 import Col from 'antd/es/col'
 import Card from 'antd/es/card'
 
-import {login} from '../../utils/firebase'
+import service from '../service'
 import Logo from '../../common/components/Logo'
 import Link from '../../common/components/Link'
 
@@ -50,10 +51,11 @@ function LoginForm(props) {
 
     try {
       const {email, password} = await props.form.validateFields()
-      await login(email, password)
+      await service.login(email, password)
     } catch (e) {}
 
     setLoading(false)
+    props.history.push('/')
   }
 
   return (
@@ -75,6 +77,7 @@ function LoginForm(props) {
                 prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}} />}
                 type="email"
                 placeholder="Email"
+                autoComplete="email"
                 autoFocus
               />,
             )}
@@ -87,6 +90,7 @@ function LoginForm(props) {
                 prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}} />}
                 type="password"
                 placeholder="Mot de passe"
+                autoComplete="current-password"
               />,
             )}
           </Form.Item>
@@ -113,4 +117,4 @@ function LoginForm(props) {
   )
 }
 
-export default Form.create({name: 'login'})(LoginForm)
+export default Form.create({name: 'login'})(withRouter(LoginForm))

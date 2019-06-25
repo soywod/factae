@@ -1,9 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import App from './App'
-import * as serviceWorker from './serviceWorker'
+import App from './common/components/App'
+import serviceWorker from './utils/serviceWorker'
 
+import './utils/firebase'
 import './index.css'
 
 ReactDOM.render(<App />, document.getElementById('root'))

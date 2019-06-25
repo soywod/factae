@@ -5,7 +5,7 @@ import Input from 'antd/es/input'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
 
-import {register} from '../../utils/firebase'
+import service from '../service'
 import Logo from '../../common/components/Logo'
 import Link from '../../common/components/Link'
 
@@ -48,7 +48,7 @@ function RegisterForm(props) {
 
     try {
       const {email, password} = await props.form.validateFields()
-      await register(email, password)
+      await service.register(email, password)
     } catch (e) {}
 
     setLoading(false)
@@ -71,8 +71,8 @@ function RegisterForm(props) {
             })(
               <Input
                 prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}} />}
-                type="email"
                 placeholder="Email"
+                autoComplete="email"
                 autoFocus
               />,
             )}
@@ -85,6 +85,7 @@ function RegisterForm(props) {
                 prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}} />}
                 type="password"
                 placeholder="Mot de passe"
+                autoComplete="current-password"
               />,
             )}
           </Form.Item>
