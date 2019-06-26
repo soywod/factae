@@ -14,7 +14,7 @@ export function useProfile() {
   return profile
 }
 
-export function useProfileChanged() {
+export function useProfileService() {
   const user = useAuth()
 
   useEffect(() => {

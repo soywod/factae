@@ -1,17 +1,18 @@
-import firebase from 'firebase/app'
+import {BehaviorSubject} from 'rxjs'
 
-import {notify} from '../utils/notification'
+import {db} from '../utils/firebase'
+import {user$} from '../auth/service'
 
-export async function readAll() {
-  try {
-    await firebase
-      .firestore()
-      .collection('users/${}/clients')
-      .doc(profile.id)
-      .set(profile)
-  } catch (error) {
-    notify.error(error.message)
-    throw error
-  }
+export const clients$ = new BehaviorSubject(null)
+
+export function onClientsChanged() {
+  return db(`users/${user$.value.uid}/clients`).onSnapshot((query, error) => {
+    const clients = []
+
+    if (!error) {
+      query.forEach(doc => clients.push(doc.data()))
+    }
+
+    clients$.next(clients)
+  })
 }
-

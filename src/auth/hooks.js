@@ -13,7 +13,7 @@ export function useAuth() {
   return user
 }
 
-export function useAuthStateChanged() {
+export function useAuthService() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged()
     return () => unsubscribe()

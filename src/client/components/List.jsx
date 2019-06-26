@@ -1,40 +1,42 @@
 import React from 'react'
+import Table from 'antd/es/table'
 
-const dataSource = [
-  {
-    key: '1',
-    name: 'Mike',
-    age: 32,
-    address: '10 Downing Street',
-  },
-  {
-    key: '2',
-    name: 'John',
-    age: 42,
-    address: '10 Downing Street',
-  },
-]
+import {useClients} from '../hooks'
+import Container from '../../common/components/Container'
 
+const styles = {
+  table: {
+    background: '#ffffff',
+    margin: '4px',
+  },
+}
 const columns = [
   {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
+    title: 'Email',
+    dataIndex: 'email',
+    key: 'email',
   },
   {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
+    title: 'Prénom',
+    dataIndex: 'firstName',
+    key: 'firstName',
   },
 ]
 
 function ClientList(props) {
-  return null
+  const clients = useClients()
+
+  if (!clients) {
+    return null
+  }
+
+  const dataSource = clients.map(c => ({...c, key: c.email}))
+
+  return (
+    <Container>
+      <Table dataSource={dataSource} columns={columns} pagination={false} style={styles.table} />
+    </Container>
+  )
 }
 
 export default ClientList

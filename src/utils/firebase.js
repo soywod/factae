@@ -16,10 +16,10 @@ firebase.initializeApp({
 export const auth = firebase.auth
 
 export function db(collection, doc) {
-  return firebase
-    .firestore()
-    .collection(collection)
-    .doc(doc)
+  const firestore = firebase.firestore()
+  const db = firestore.collection(collection)
+
+  return doc ? db.doc(doc) : db
 }
 
 export default firebase

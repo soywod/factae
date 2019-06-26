@@ -44,5 +44,3 @@ export async function logout() {
 export function onAuthStateChanged() {
   return auth().onAuthStateChanged((user, error) => user$.next(error || !user ? false : user))
 }
-
-export default {register, login, resetPassword, logout, onAuthStateChanged}

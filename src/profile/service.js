@@ -22,5 +22,3 @@ export function onProfileChanged() {
     else profile$.next(doc.data() || {})
   })
 }
-
-export default {update}

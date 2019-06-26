@@ -2,23 +2,23 @@ import React from 'react'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import Layout from 'antd/es/layout'
 
+import {useAuthService} from '../../../auth/hooks'
+import {useProfileService} from '../../../profile/hooks'
+import {useClientService} from '../../../client/hooks'
 import Navbar from '../../../common/components/Navbar'
-
 import PrivateRoute from '../../../auth/components/PrivateRoute'
 import Register from '../../../auth/components/Register'
 import Login from '../../../auth/components/Login'
 import ResetPassword from '../../../auth/components/ResetPassword'
 import Logout from '../../../auth/components/Logout'
-import {useAuthStateChanged} from '../../../auth/hooks'
-
 import Overview from '../../../overview/components/Overview'
 import Profile from '../../../profile/components/Edit'
-import {useProfileChanged} from '../../../profile/hooks'
 import ClientList from '../../../client/components/List'
 
 function App() {
-  useAuthStateChanged()
-  useProfileChanged()
+  useAuthService()
+  useProfileService()
+  useClientService()
 
   return (
     <Layout className="layout">
