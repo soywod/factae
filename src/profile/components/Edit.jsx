@@ -12,7 +12,7 @@ import omitBy from 'lodash/fp/omitBy'
 import isNil from 'lodash/fp/isNil'
 
 import Container from '../../common/components/Container'
-import useAuthContext from '../../auth/context'
+import {useProfile} from '../hooks'
 import {update} from '../service'
 
 const {Title, Paragraph} = Typography
@@ -160,7 +160,7 @@ const fields = [
 function Profile(props) {
   const {getFieldDecorator} = props.form
   const [loading, setLoading] = useState(false)
-  const [user, setUser] = useAuthContext()
+  const profile = useProfile()
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -168,13 +168,16 @@ function Profile(props) {
     try {
       setLoading(true)
       const data = await props.form.validateFields()
-      const profile = {...user, ...omitBy(isNil, data)}
-      await update(profile)
-      setUser(profile)
+      const nextProfile = {...profile, ...omitBy(isNil, data)}
+      await update(nextProfile)
       props.history.push('/')
     } catch (e) {
       setLoading(false)
     }
+  }
+
+  if (!profile) {
+    return null
   }
 
   return (
@@ -187,7 +190,7 @@ function Profile(props) {
                 <Col key={key} xs={24} sm={12} md={8} lg={6}>
                   <Form.Item label={label}>
                     {getFieldDecorator(name, {
-                      initialValue: user[name],
+                      initialValue: profile[name],
                     })(Component)}
                   </Form.Item>
                 </Col>

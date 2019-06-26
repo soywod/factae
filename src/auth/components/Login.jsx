@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {withRouter} from 'react-router-dom'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
@@ -6,10 +6,10 @@ import Input from 'antd/es/input'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
 
-import {login} from '../service'
 import Logo from '../../common/components/Logo'
 import Link from '../../common/components/Link'
-import useAuthContext from '../context'
+import {login} from '../service'
+import {useAuth} from '../hooks'
 
 const styles = {
   container: {
@@ -43,7 +43,7 @@ const styles = {
 function Login(props) {
   const {getFieldDecorator} = props.form
   const [loading, setLoading] = useState(false)
-  const setUser = useAuthContext()[1]
+  const user = useAuth()
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -51,12 +51,20 @@ function Login(props) {
     try {
       setLoading(true)
       const {email, password} = await props.form.validateFields()
-      const user = await login(email, password)
-      setUser(user)
-      props.history.push('/')
+      await login(email, password)
     } catch (e) {
       setLoading(false)
     }
+  }
+
+  useEffect(() => {
+    if (user) {
+      props.history.push('/')
+    }
+  }, [user])
+
+  if (user === null) {
+    return null
   }
 
   return (

@@ -1,16 +1,15 @@
-import firebase from 'firebase/app'
+import {BehaviorSubject} from 'rxjs'
 
+import {auth, db} from '../utils/firebase'
 import {notify} from '../utils/notification'
+
+export const user$ = new BehaviorSubject(null)
 
 export async function register(email, password) {
   try {
-    const {user} = await firebase.auth().createUserWithEmailAndPassword(email, password)
+    const {user} = await auth().createUserWithEmailAndPassword(email, password)
     const profile = {id: user.uid, email: user.email}
-    await firebase
-      .firestore()
-      .collection('users')
-      .doc(user.uid)
-      .set(profile)
+    await db('users', user.id).set(profile)
 
     notify.success('Compte créé avec succès.')
   } catch (error) {
@@ -21,7 +20,7 @@ export async function register(email, password) {
 
 export async function login(email, password) {
   try {
-    return await firebase.auth().signInWithEmailAndPassword(email, password)
+    await auth().signInWithEmailAndPassword(email, password)
   } catch (error) {
     notify.error(error.message)
     throw error
@@ -30,7 +29,7 @@ export async function login(email, password) {
 
 export async function resetPassword(email) {
   try {
-    await firebase.auth().sendPasswordResetEmail(email)
+    await auth().sendPasswordResetEmail(email)
     notify.success('Un email vous a été envoyé avec la procédure à suivre.')
   } catch (error) {
     notify.error(error.message)
@@ -38,28 +37,12 @@ export async function resetPassword(email) {
   }
 }
 
-export function check(callback) {
-  try {
-    firebase.auth().onAuthStateChanged(async (user, error) => {
-      if (error || !user) {
-        return callback(false)
-      }
-
-      const ref = await firebase
-        .firestore()
-        .collection('users')
-        .doc(user.uid)
-        .get()
-
-      callback(ref.data() || false)
-    })
-  } catch (error) {
-    callback(false)
-  }
-}
-
 export async function logout() {
-  await firebase.auth().signOut()
+  await auth().signOut()
 }
 
-export default {register, login, resetPassword, check, logout}
+export function onAuthStateChanged() {
+  return auth().onAuthStateChanged((user, error) => user$.next(error || !user ? false : user))
+}
+
+export default {register, login, resetPassword, logout, onAuthStateChanged}
