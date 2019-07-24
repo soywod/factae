@@ -21,6 +21,7 @@ export function onClientsChanged() {
 export async function create() {
   try {
     const {id} = await db(`users/${user$.value.uid}/clients`).add({})
+    notify.success('Client créé avec succès.')
     return id
   } catch (error) {
     notify.error(error.message)
@@ -37,3 +38,16 @@ export async function update(client) {
     throw error
   }
 }
+
+export {_delete as delete}
+async function _delete(client) {
+  try {
+    await db(`users/${user$.value.uid}/clients`, client.id).delete()
+    notify.success('Client supprimé avec succès.')
+  } catch (error) {
+    notify.error(error.message)
+    throw error
+  }
+}
+
+export default {create, update, delete: _delete}

@@ -9,19 +9,6 @@ import {useClients} from '../hooks'
 import {create} from '../service'
 import Container from '../../common/components/Container'
 
-const styles = {
-  table: {
-    background: '#ffffff',
-    marginBottom: 25,
-  },
-  row: {
-    cursor: 'pointer',
-  },
-  action: {
-    textAlign: 'right',
-  },
-}
-
 const columns = [
   {
     title: 'Nom commercial',
@@ -49,7 +36,7 @@ function ClientList(props) {
   const clients = useClients()
   const [loading, setLoading] = useState(false)
 
-  if (!clients || loading) {
+  if (!clients) {
     return null
   }
 
@@ -62,18 +49,19 @@ function ClientList(props) {
   return (
     <Container>
       <Table
-        dataSource={clients.map(client => ({...client, key: client.email}))}
+        loading={loading}
+        dataSource={clients.map(client => ({...client, key: client.id}))}
         columns={columns}
         pagination={false}
         rowKey={record => record.id}
+        style={{background: '#ffffff', marginBottom: 25}}
         onRow={record => ({
           onClick: () => props.history.push(`/clients/${record.id}`, {...omit('key', record)}),
         })}
-        style={styles.table}
       />
 
-      <div style={styles.action}>
-        <Button type="primary" onClick={handleCreate}>
+      <div style={{textAlign: 'right'}}>
+        <Button type="primary" disabled={loading} onClick={handleCreate}>
           <Icon type="plus" />
           Nouveau
         </Button>

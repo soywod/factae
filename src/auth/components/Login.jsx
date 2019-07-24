@@ -61,7 +61,7 @@ function Login(props) {
     if (user) {
       props.history.push('/')
     }
-  }, [user])
+  }, [user, props.history])
 
   if (user === null) {
     return null

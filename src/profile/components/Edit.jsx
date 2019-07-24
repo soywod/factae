@@ -7,6 +7,7 @@ import Card from 'antd/es/card'
 import Row from 'antd/es/row'
 import Col from 'antd/es/col'
 import Typography from 'antd/es/typography'
+import Icon from 'antd/es/icon'
 import Select from 'antd/es/select'
 import omitBy from 'lodash/fp/omitBy'
 import isNil from 'lodash/fp/isNil'
@@ -201,7 +202,8 @@ function Profile(props) {
         ))}
 
         <div style={styles.action}>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button type="primary" htmlType="submit" disabled={loading}>
+            <Icon type="save" />
             Sauvegarder
           </Button>
         </div>

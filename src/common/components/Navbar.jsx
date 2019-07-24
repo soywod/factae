@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import {withRouter} from 'react-router-dom'
 import Menu from 'antd/es/menu'
 import Icon from 'antd/es/icon'
@@ -33,17 +33,9 @@ const styles = {
 }
 
 function Navbar(props) {
-  const [route, setRoute] = useState(props.history.location.pathname)
+  const {history} = props
+  const route = history.location.pathname
   const user = useAuth()
-
-  function changeRoute(e) {
-    setRoute(e.key)
-    props.history.push(e.key)
-  }
-
-  useEffect(() => {
-    changeRoute({key: props.history.location.pathname})
-  }, [props.history.location.pathname])
 
   if (!user || route === '/logout') {
     return null
@@ -55,7 +47,12 @@ function Navbar(props) {
         <Logo light="#333333" dark="#000000" />
       </div>
       <div style={styles.main}>
-        <Menu onClick={changeRoute} selectedKeys={[route]} mode="horizontal" style={styles.menu}>
+        <Menu
+          onClick={e => history.push(e.key)}
+          selectedKeys={[route]}
+          mode="horizontal"
+          style={styles.menu}
+        >
           <Menu.Item key="/">
             <Icon type="dashboard" />
             Vue d'ensemble
@@ -70,7 +67,12 @@ function Navbar(props) {
           </Menu.Item>
         </Menu>
       </div>
-      <Menu onClick={changeRoute} selectedKeys={[route]} mode="horizontal" style={styles.menu}>
+      <Menu
+        onClick={e => history.push(e.key)}
+        selectedKeys={[route]}
+        mode="horizontal"
+        style={styles.menu}
+      >
         <Menu.Item key="/logout">
           <Icon type="logout" />
           Déconnexion
