@@ -164,6 +164,7 @@ function Profile(props) {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    if (loading) return
 
     try {
       setLoading(true)

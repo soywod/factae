@@ -14,6 +14,7 @@ import Logout from '../../../auth/components/Logout'
 import Overview from '../../../overview/components/Overview'
 import Profile from '../../../profile/components/Edit'
 import ClientList from '../../../client/components/List'
+import ClientEdit from '../../../client/components/Edit'
 
 function App() {
   useAuthService()
@@ -29,6 +30,7 @@ function App() {
           <Route path="/login" component={Login} />
           <Route path="/reset-password" component={ResetPassword} />
           <PrivateRoute path="/logout" component={Logout} />
+          <PrivateRoute path="/clients/:id" component={ClientEdit} />
           <PrivateRoute path="/clients" component={ClientList} />
           <PrivateRoute path="/profile" component={Profile} />
           <PrivateRoute path="/" component={Overview} />
