@@ -57,8 +57,12 @@ function Navbar(props) {
             <Icon type="dashboard" />
             Vue d'ensemble
           </Menu.Item>
+          <Menu.Item key="/documents">
+            <Icon type="copy" />
+            Documents
+          </Menu.Item>
           <Menu.Item key="/clients">
-            <Icon type="usergroup-add" />
+            <Icon type="team" />
             Clients
           </Menu.Item>
           <Menu.Item key="/profile">
