@@ -1,4 +1,6 @@
 import {BehaviorSubject} from 'rxjs'
+import omitBy from 'lodash/fp/omitBy'
+import isNil from 'lodash/fp/isNil'
 
 import {db} from '../utils/firebase'
 import {notify} from '../utils/notification'
@@ -18,11 +20,12 @@ export function onDocumentsChanged() {
   })
 }
 
-export async function create() {
+export async function create(rawDocument) {
   try {
-    const {id} = await db(`users/${user$.value.uid}/documents`).add({})
+    const document = omitBy(isNil, rawDocument)
+    const {id} = await db(`users/${user$.value.uid}/documents`).add(document)
     notify.success('Document créé avec succès.')
-    return id
+    return {id, ...document}
   } catch (error) {
     notify.error(error.message)
     throw error

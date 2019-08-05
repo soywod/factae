@@ -1,7 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import Form from 'antd/es/form'
 import Input from 'antd/es/input'
+import InputNumber from 'antd/es/input-number'
+import DatePicker from 'antd/es/date-picker'
 import Popconfirm from 'antd/es/popconfirm'
+import Select from 'antd/es/select'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
 import Row from 'antd/es/row'
@@ -11,42 +14,39 @@ import Typography from 'antd/es/typography'
 import isNil from 'lodash/fp/isNil'
 import find from 'lodash/fp/find'
 import omitBy from 'lodash/fp/omitBy'
+import moment from 'moment'
 
 import Container from '../../common/components/Container'
 import {useDocuments} from '../hooks'
+import {useClients} from '../../client/hooks'
 import $document from '../service'
 
-const {Title: AntdTitle} = Typography
+const {Title: AntdTitle, Paragraph: AntdParagraph} = Typography
+const {Option} = Select
+const {TextArea} = Input
+
 const Title = ({children}) => (
   <AntdTitle level={2} style={{fontSize: '1.2rem', marginBottom: 0}}>
     {children}
   </AntdTitle>
 )
 
-const CompanyTitle = <Title>Société</Title>
-const companyFields = [
-  ['tradingName', 'Nom commercial', <Input size="large" autoFocus />],
-  ['siret', 'SIRET'],
-]
+const Paragraph = ({children}) => (
+  <AntdParagraph
+    style={{fontSize: '0.9rem', marginBottom: 0, fontStyle: 'italic', color: '#aaaaaa'}}
+  >
+    {children}
+  </AntdParagraph>
+)
 
-const ContactTitle = <Title>Contact</Title>
-const contactFields = [
-  ['firstName', 'Prénom', <Input size="large" />],
-  ['lastName', 'Nom'],
-  ['email', 'Email'],
-  ['phone', 'Téléphone'],
-  ['address', 'Adresse'],
-  ['zip', 'Code postal'],
-  ['city', 'Ville'],
-]
-
-const fields = [[CompanyTitle, companyFields], [ContactTitle, contactFields]]
+const ItemsTitle = <Title>Désignations</Title>
 
 function EditDocument(props) {
   const {match} = props
   const {getFieldDecorator} = props.form
 
   const documents = useDocuments()
+  const clients = useClients()
   const [loading, setLoading] = useState(false)
   const [document, setDocument] = useState(props.location.state)
 
@@ -74,6 +74,11 @@ function EditDocument(props) {
       setLoading(true)
       const data = await props.form.validateFields()
       const nextDocument = {...document, ...omitBy(isNil, data)}
+
+      if (nextDocument.expiresAt) {
+        nextDocument.expiresAt = nextDocument.expiresAt.toISOString()
+      }
+
       await $document.update(nextDocument)
       props.history.push('/documents')
     } catch (e) {
@@ -81,9 +86,52 @@ function EditDocument(props) {
     }
   }
 
-  if (!documents || !document) {
+  if (!clients || !documents || !document) {
     return null
   }
+
+  const MainTitle = <Title>Informations générales</Title>
+  const mainFields = [
+    [
+      'type',
+      'Type de document',
+      <Select size="large" disabled>
+        <Option value="quotation">Devis</Option>
+        <Option value="invoice">Facture</Option>
+        <Option value="credit">Avoir</Option>
+      </Select>,
+    ],
+    [
+      'client',
+      'Client',
+      <Select size="large" autoFocus>
+        {clients.map(client => (
+          <Option key={client.id} value={client.id}>
+            {client.tradingName || client.email}
+          </Option>
+        ))}
+      </Select>,
+    ],
+    ['taxRate', 'TVA (%)', <InputNumber size="large" min={1} step={1} style={{width: '100%'}} />],
+    [
+      'expiresAt',
+      "Date d'expiration de l'offre",
+      <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
+    ],
+  ]
+
+  const ConditionTitle = (
+    <>
+      <Title level={2}>Conditions</Title>
+      <Paragraph>
+        Correspond aux conditions (de paiement, de livraison, d'exécution etc) qui s'afficheront en
+        bas du document.
+      </Paragraph>
+    </>
+  )
+  const conditionFields = [['conditions', 'Conditions', <TextArea rows={4} />]]
+
+  const fields = [[MainTitle, mainFields], [ConditionTitle, conditionFields]]
 
   return (
     <Container>
@@ -95,7 +143,9 @@ function EditDocument(props) {
                 <Col key={key} xs={24} sm={12} md={8} lg={6}>
                   <Form.Item label={label}>
                     {getFieldDecorator(name, {
-                      initialValue: document[name],
+                      initialValue: ['expiresAt'].includes(name)
+                        ? moment(document[name])
+                        : document[name],
                     })(Component)}
                   </Form.Item>
                 </Col>
@@ -103,6 +153,10 @@ function EditDocument(props) {
             </Row>
           </Card>
         ))}
+
+        <Card title={ItemsTitle} style={{marginBottom: 25}}>
+          <Row gutter={25}>TODO</Row>
+        </Card>
 
         <div style={{textAlign: 'right'}}>
           <Popconfirm
