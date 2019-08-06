@@ -8,6 +8,7 @@ import Icon from 'antd/es/icon'
 import omit from 'lodash/fp/omit'
 import find from 'lodash/fp/find'
 
+import {toEuro} from '../../common/currency'
 import {useDocuments} from '../hooks'
 import {useProfile} from '../../profile/hooks'
 import {useClients} from '../../client/hooks'
@@ -23,7 +24,7 @@ function DocumentList(props) {
   async function handleCreate(e) {
     setLoading(true)
 
-    let rawDocument = {type: e.key, taxRate: profile.taxRate}
+    let rawDocument = {type: e.key, taxRate: profile.taxRate, total: 0}
 
     switch (e.key) {
       case 'quotation':
@@ -54,14 +55,18 @@ function DocumentList(props) {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
+      width: '40%',
       render: type => {
         switch (type) {
           case 'quotation':
             return 'Devis'
+
           case 'invoice':
             return 'Facture'
+
           case 'credit':
             return 'Avoir'
+
           default:
             return ''
         }
@@ -71,10 +76,19 @@ function DocumentList(props) {
       title: 'Client',
       dataIndex: 'client',
       key: 'client',
+      width: '40%',
       render: id => {
         const client = find({id}, clients)
         return client.tradingName || client.email
       },
+    },
+    {
+      title: 'Total (HT)',
+      dataIndex: 'total',
+      key: 'total',
+      width: '20%',
+      align: 'right',
+      render: (_, {total}) => toEuro(total),
     },
   ]
 

@@ -16,10 +16,13 @@ import find from 'lodash/fp/find'
 import omitBy from 'lodash/fp/omitBy'
 import moment from 'moment'
 
+import {toEuro} from '../../common/currency'
 import Container from '../../common/components/Container'
-import {useDocuments} from '../hooks'
+import {useProfile} from '../../profile/hooks'
 import {useClients} from '../../client/hooks'
+import {useDocuments} from '../hooks'
 import $document from '../service'
+import EditableTable from '../../common/components/EditableTable'
 
 const {Title: AntdTitle, Paragraph: AntdParagraph} = Typography
 const {Option} = Select
@@ -39,16 +42,16 @@ const Paragraph = ({children}) => (
   </AntdParagraph>
 )
 
-const ItemsTitle = <Title>Désignations</Title>
-
 function EditDocument(props) {
   const {match} = props
   const {getFieldDecorator} = props.form
 
-  const documents = useDocuments()
+  const profile = useProfile()
   const clients = useClients()
+  const documents = useDocuments()
   const [loading, setLoading] = useState(false)
   const [document, setDocument] = useState(props.location.state)
+  const [items, setItems] = useState((document && document.items) || [])
 
   useEffect(() => {
     if (documents && !document) {
@@ -56,7 +59,36 @@ function EditDocument(props) {
     }
   }, [document, documents, match.params.id])
 
-  async function handleRemove() {
+  function addItem() {
+    setItems([
+      ...items,
+      {key: Date.now(), description: '', unitPrice: profile.unitPrice || '', quantity: '1'},
+    ])
+  }
+
+  function removeItem(key) {
+    setItems(items.filter(item => item.key !== key))
+  }
+
+  function saveItems(row) {
+    const newItems = items.map(item => ({
+      ...item,
+      quantity: Number(item.quantity),
+      unitPrice: Number(item.unitPrice),
+    }))
+
+    const index = newItems.findIndex(item => row.key === item.key)
+    const item = newItems[index]
+
+    newItems.splice(index, 1, {
+      ...item,
+      ...row,
+    })
+
+    setItems(newItems)
+  }
+
+  async function removeDocument() {
     try {
       setLoading(true)
       await $document.delete(document)
@@ -66,14 +98,29 @@ function EditDocument(props) {
     }
   }
 
-  async function handleSubmit(e) {
+  async function saveDocument(e) {
     e.preventDefault()
     if (loading) return
 
     try {
       setLoading(true)
       const data = await props.form.validateFields()
-      const nextDocument = {...document, ...omitBy(isNil, data)}
+      const nextDocument = {
+        ...document,
+        ...omitBy(isNil, data),
+        items: items
+          .filter(item => item.description && item.unitPrice)
+          .map(item => ({
+            ...item,
+            quantity: Number(item.quantity || 0),
+            unitPrice: Number(item.unitPrice || 0),
+          })),
+      }
+
+      nextDocument.total = nextDocument.items.reduce(
+        (total, {quantity, unitPrice}) => total + quantity * unitPrice,
+        0,
+      )
 
       if (nextDocument.expiresAt) {
         nextDocument.expiresAt = nextDocument.expiresAt.toISOString()
@@ -89,6 +136,58 @@ function EditDocument(props) {
   if (!clients || !documents || !document) {
     return null
   }
+
+  const columns = [
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+      editable: true,
+      width: '45%',
+    },
+    {
+      title: 'Quantité',
+      dataIndex: 'quantity',
+      key: 'quantity',
+      editable: true,
+      width: '20%',
+    },
+    {
+      title: 'Prix unitaire',
+      dataIndex: 'unitPrice',
+      key: 'unitPrice',
+      editable: true,
+      width: '30%',
+      render: (_, {unitPrice}) => toEuro(unitPrice),
+    },
+    {
+      title: '',
+      dataIndex: 'action',
+      key: 'action',
+      width: '5%',
+      render: (_, {key}) => (
+        <Popconfirm
+          title="Êtes-vous sûr de vouloir supprimer cette désignation ?"
+          onConfirm={() => removeItem(key)}
+          okText="Oui"
+          cancelText="Non"
+        >
+          <Button type="danger" shape="circle">
+            <Icon type="delete" />
+          </Button>
+        </Popconfirm>
+      ),
+    },
+  ]
+
+  const ItemsTitle = (
+    <Title>
+      Désignations
+      <Button type="primary" shape="circle" onClick={addItem} style={{marginLeft: 12}}>
+        <Icon type="plus" />
+      </Button>
+    </Title>
+  )
 
   const MainTitle = <Title>Informations générales</Title>
   const mainFields = [
@@ -135,7 +234,7 @@ function EditDocument(props) {
 
   return (
     <Container>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={saveDocument}>
         {fields.map(([title, fields], key) => (
           <Card key={key} title={title} style={{marginBottom: 25}}>
             <Row gutter={25}>
@@ -154,14 +253,25 @@ function EditDocument(props) {
           </Card>
         ))}
 
-        <Card title={ItemsTitle} style={{marginBottom: 25}}>
-          <Row gutter={25}>TODO</Row>
+        <Card
+          title={ItemsTitle}
+          bodyStyle={{padding: '1px 12.5px 0 12.5px', marginBottom: -1}}
+          style={{marginBottom: 25}}
+        >
+          <Row gutter={25}>
+            <EditableTable
+              pagination={false}
+              dataSource={items}
+              columns={columns}
+              onSave={saveItems}
+            />
+          </Row>
         </Card>
 
         <div style={{textAlign: 'right'}}>
           <Popconfirm
             title="Êtes-vous sûr de vouloir supprimer ce document ?"
-            onConfirm={handleRemove}
+            onConfirm={removeDocument}
             okText="Oui"
             cancelText="Non"
           >
