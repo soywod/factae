@@ -7,7 +7,7 @@ export const user$ = new BehaviorSubject(null)
 
 export async function register(email, password) {
   try {
-    const {user} = await auth().createUserWithEmailAndPassword(email, password)
+    const {user} = await auth.createUserWithEmailAndPassword(email, password)
     const profile = {id: user.uid, email: user.email}
     await db('users', user.id).set(profile)
 
@@ -20,7 +20,7 @@ export async function register(email, password) {
 
 export async function login(email, password) {
   try {
-    await auth().signInWithEmailAndPassword(email, password)
+    await auth.signInWithEmailAndPassword(email, password)
   } catch (error) {
     notify.error(error.message)
     throw error
@@ -29,7 +29,7 @@ export async function login(email, password) {
 
 export async function resetPassword(email) {
   try {
-    await auth().sendPasswordResetEmail(email)
+    await auth.sendPasswordResetEmail(email)
     notify.success('Un email vous a été envoyé avec la procédure à suivre.')
   } catch (error) {
     notify.error(error.message)
@@ -38,9 +38,9 @@ export async function resetPassword(email) {
 }
 
 export async function logout() {
-  await auth().signOut()
+  await auth.signOut()
 }
 
 export function onAuthStateChanged() {
-  return auth().onAuthStateChanged((user, error) => user$.next(error || !user ? false : user))
+  return auth.onAuthStateChanged((user, error) => user$.next(error || !user ? false : user))
 }

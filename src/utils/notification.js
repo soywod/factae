@@ -1,7 +1,7 @@
 import notification from 'antd/es/notification'
 
 const types = ['info', 'success', 'warning', 'error']
-const placement = 'bottomRight'
+const placement = 'bottomLeft'
 
 export const notify = types.reduce(
   (types, type) => ({

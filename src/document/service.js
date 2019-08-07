@@ -2,7 +2,7 @@ import {BehaviorSubject} from 'rxjs'
 import omitBy from 'lodash/fp/omitBy'
 import isNil from 'lodash/fp/isNil'
 
-import {db} from '../utils/firebase'
+import {db, functions} from '../utils/firebase'
 import {notify} from '../utils/notification'
 import {user$} from '../auth/service'
 
@@ -53,4 +53,14 @@ async function _delete(document) {
   }
 }
 
-export default {create, update, delete: _delete}
+export async function generatePdf(document) {
+  try {
+    const generatePdf = functions.httpsCallable('generatePdf')
+    const {data} = await generatePdf(document)
+    return 'data:application/pdf;base64,' + data
+  } catch (error) {
+    notify.error(error.message)
+  }
+}
+
+export default {create, update, delete: _delete, generatePdf}

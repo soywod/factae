@@ -11,6 +11,8 @@ import Row from 'antd/es/row'
 import Col from 'antd/es/col'
 import Icon from 'antd/es/icon'
 import Typography from 'antd/es/typography'
+import Empty from 'antd/es/empty'
+import Tooltip from 'antd/es/tooltip'
 import isNil from 'lodash/fp/isNil'
 import find from 'lodash/fp/find'
 import omitBy from 'lodash/fp/omitBy'
@@ -58,6 +60,16 @@ function EditDocument(props) {
       setDocument(find({id: match.params.id}, documents))
     }
   }, [document, documents, match.params.id])
+
+  function generatePdf(document) {
+    return async event => {
+      event.stopPropagation()
+
+      setLoading(true)
+      setDocument({...document, pdf: await $document.generatePdf(document)})
+      setLoading(false)
+    }
+  }
 
   function addItem() {
     setItems([
@@ -126,6 +138,14 @@ function EditDocument(props) {
         nextDocument.expiresAt = nextDocument.expiresAt.toISOString()
       }
 
+      if (nextDocument.startsAt) {
+        nextDocument.startsAt = nextDocument.startsAt.toISOString()
+      }
+
+      if (nextDocument.endsAt) {
+        nextDocument.endsAt = nextDocument.endsAt.toISOString()
+      }
+
       await $document.update(nextDocument)
       props.history.push('/documents')
     } catch (e) {
@@ -189,6 +209,23 @@ function EditDocument(props) {
     </Title>
   )
 
+  const PdfTitle = (
+    <Title>
+      PDF
+      <Tooltip title="Générer le PDF">
+        <Button
+          type="primary"
+          shape="circle"
+          onClick={generatePdf(document)}
+          disabled={loading}
+          style={{marginLeft: 12}}
+        >
+          <Icon type={loading ? 'loading' : 'sync'} />
+        </Button>
+      </Tooltip>
+    </Title>
+  )
+
   const MainTitle = <Title>Informations générales</Title>
   const mainFields = [
     [
@@ -201,9 +238,20 @@ function EditDocument(props) {
       </Select>,
     ],
     [
+      'status',
+      'Statut',
+      <Select size="large" autoFocus>
+        <Option value="draft">Brouillon</Option>
+        <Option value="pending">En cours</Option>
+        {document.type === 'quotation' && <Option value="signed">Signé</Option>}
+        {document.type === 'invoice' && <Option value="paid">Payé</Option>}
+        {document.type === 'credit' && <Option value="refunded">Remboursé</Option>}
+      </Select>,
+    ],
+    [
       'client',
       'Client',
-      <Select size="large" autoFocus>
+      <Select size="large">
         {clients.map(client => (
           <Option key={client.id} value={client.id}>
             {client.tradingName || client.email}
@@ -211,12 +259,41 @@ function EditDocument(props) {
         ))}
       </Select>,
     ],
-    ['taxRate', 'TVA (%)', <InputNumber size="large" min={1} step={1} style={{width: '100%'}} />],
+  ]
+
+  if (document.type === 'quotation') {
+    mainFields.push(
+      ['taxRate', 'TVA (%)', <InputNumber size="large" min={1} step={1} style={{width: '100%'}} />],
+      [
+        'rate',
+        'Tarification (€)',
+        <InputNumber size="large" min={1} step={1} style={{width: '100%'}} />,
+      ],
+      [
+        'rateUnit',
+        'Unité',
+        <Select size="large">
+          <Option value="hour">Par heure</Option>
+          <Option value="day">Par jour</Option>
+          <Option value="service">Par prestation</Option>
+        </Select>,
+      ],
+    )
+  }
+
+  if (document.type === 'credit') {
+    mainFields.push(['invoiceNumber', 'N° de facture de référence'])
+  }
+
+  const DateTitle = <Title>Dates</Title>
+  const dateFields = [
     [
       'expiresAt',
-      "Date d'expiration de l'offre",
+      "Expiration de l'offre",
       <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
     ],
+    ['startsAt', 'Début', <DatePicker size="large" placeholder="" style={{width: '100%'}} />],
+    ['endsAt', 'Fin', <DatePicker size="large" placeholder="" style={{width: '100%'}} />],
   ]
 
   const ConditionTitle = (
@@ -230,8 +307,13 @@ function EditDocument(props) {
   )
   const conditionFields = [['conditions', 'Conditions', <TextArea rows={4} />]]
 
-  const fields = [[MainTitle, mainFields], [ConditionTitle, conditionFields]]
+  const fields = [[MainTitle, mainFields]]
 
+  if (document.type === 'quotation') {
+    fields.push([DateTitle, dateFields])
+  }
+
+  console.log(document)
   return (
     <Container>
       <Form onSubmit={saveDocument}>
@@ -239,10 +321,10 @@ function EditDocument(props) {
           <Card key={key} title={title} style={{marginBottom: 25}}>
             <Row gutter={25}>
               {fields.map(([name, label, Component = <Input size="large" />], key) => (
-                <Col key={key} xs={24} sm={12} md={8} lg={6}>
+                <Col key={key} xs={6} sm={12} md={8} lg={6}>
                   <Form.Item label={label}>
                     {getFieldDecorator(name, {
-                      initialValue: ['expiresAt'].includes(name)
+                      initialValue: ['expiresAt', 'startsAt', 'endsAt'].includes(name)
                         ? moment(document[name])
                         : document[name],
                     })(Component)}
@@ -252,6 +334,20 @@ function EditDocument(props) {
             </Row>
           </Card>
         ))}
+
+        <Card title={ConditionTitle} style={{marginBottom: 25}}>
+          <Row gutter={25}>
+            {conditionFields.map(([name, label, Component], key) => (
+              <Col key={key} xs={24}>
+                <Form.Item label={label}>
+                  {getFieldDecorator(name, {
+                    initialValue: document[name],
+                  })(Component)}
+                </Form.Item>
+              </Col>
+            ))}
+          </Row>
+        </Card>
 
         <Card
           title={ItemsTitle}
@@ -265,6 +361,27 @@ function EditDocument(props) {
               columns={columns}
               onSave={saveItems}
             />
+          </Row>
+        </Card>
+
+        <Card
+          title={PdfTitle}
+          bodyStyle={{padding: 25, textAlign: 'center'}}
+          style={{marginBottom: 25}}
+        >
+          <Row gutter={25}>
+            {document.pdf ? (
+              <iframe
+                title="document"
+                src={document.pdf}
+                width="100%"
+                height={450}
+                scrolling="no"
+                style={{maxWidth: 512}}
+              ></iframe>
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </Row>
         </Card>
 

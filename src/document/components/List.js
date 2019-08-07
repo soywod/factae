@@ -17,17 +17,19 @@ import Container from '../../common/components/Container'
 
 function DocumentList(props) {
   const profile = useProfile()
-  const documents = useDocuments()
   const clients = useClients()
+  const documents = useDocuments()
   const [loading, setLoading] = useState(false)
 
-  async function handleCreate(e) {
+  async function createDocument(e) {
     setLoading(true)
 
-    let rawDocument = {type: e.key, taxRate: profile.taxRate, total: 0}
+    let rawDocument = {type: e.key, status: 'draft', taxRate: profile.taxRate, total: 0}
 
     switch (e.key) {
       case 'quotation':
+        rawDocument.rate = profile.rate
+        rawDocument.rateUnit = profile.rateUnit
         rawDocument.conditions = profile.quotationConditions
         break
 
@@ -36,6 +38,7 @@ function DocumentList(props) {
         break
 
       case 'credit':
+        rawDocument.invoiceNumber = ''
         rawDocument.conditions = profile.invoiceConditions
         break
 
@@ -46,7 +49,7 @@ function DocumentList(props) {
     props.history.push(`/documents/${document.id}`, document)
   }
 
-  if (!clients || !documents) {
+  if (!profile || !clients || !documents) {
     return null
   }
 
@@ -76,10 +79,10 @@ function DocumentList(props) {
       title: 'Client',
       dataIndex: 'client',
       key: 'client',
-      width: '40%',
+      width: '25%',
       render: id => {
         const client = find({id}, clients)
-        return client.tradingName || client.email
+        return client ? client.tradingName || client.email : ''
       },
     },
     {
@@ -109,7 +112,7 @@ function DocumentList(props) {
       <div style={{textAlign: 'right'}}>
         <Dropdown
           overlay={
-            <Menu onClick={handleCreate}>
+            <Menu onClick={createDocument}>
               <Menu.Item key="quotation">Devis</Menu.Item>
               <Menu.Item key="invoice">Facture</Menu.Item>
               <Menu.Item key="credit">Avoir</Menu.Item>

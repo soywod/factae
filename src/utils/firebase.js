@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 
 import 'firebase/auth'
 import 'firebase/firestore'
+import 'firebase/functions'
 import 'firebase/storage'
 
 firebase.initializeApp({
@@ -14,7 +15,7 @@ firebase.initializeApp({
   appId: '1:81874227248:web:a3d61ab135d51532',
 })
 
-export const auth = firebase.auth
+export const auth = firebase.auth()
 
 export function db(collection, doc) {
   const firestore = firebase.firestore()
@@ -22,5 +23,7 @@ export function db(collection, doc) {
 
   return doc ? db.doc(doc) : db
 }
+
+export const functions = firebase.functions()
 
 export default firebase
