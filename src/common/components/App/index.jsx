@@ -1,5 +1,5 @@
 import React from 'react'
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Redirect, Switch} from 'react-router-dom'
 import Layout from 'antd/es/layout'
 
 import {useAuthService} from '../../../auth/hooks'
@@ -12,7 +12,6 @@ import Register from '../../../auth/components/Register'
 import Login from '../../../auth/components/Login'
 import ResetPassword from '../../../auth/components/ResetPassword'
 import Logout from '../../../auth/components/Logout'
-import Overview from '../../../overview/components/Overview'
 import Profile from '../../../profile/components/Edit'
 import ClientList from '../../../client/components/List'
 import ClientEdit from '../../../client/components/Edit'
@@ -41,7 +40,7 @@ function App() {
           <PrivateRoute path="/clients/:id" component={ClientEdit} />
           <PrivateRoute path="/clients" component={ClientList} />
           <PrivateRoute path="/profile" component={Profile} />
-          <PrivateRoute path="/" component={Overview} />
+          <Redirect to="/documents" />
         </Switch>
       </Router>
     </Layout>

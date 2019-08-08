@@ -41,6 +41,14 @@ function Navbar(props) {
     return null
   }
 
+  const selectedKeys = (() => {
+    if (route.startsWith('/documents')) {
+      return ['/documents']
+    } else if (route.startsWith('/clients')) {
+      return ['/clients']
+    } else return [route]
+  })()
+
   return (
     <Header style={styles.header}>
       <div style={styles.logo}>
@@ -49,14 +57,10 @@ function Navbar(props) {
       <div style={styles.main}>
         <Menu
           onClick={e => history.push(e.key)}
-          selectedKeys={[route]}
+          selectedKeys={selectedKeys}
           mode="horizontal"
           style={styles.menu}
         >
-          <Menu.Item key="/">
-            <Icon type="dashboard" />
-            Vue d'ensemble
-          </Menu.Item>
           <Menu.Item key="/documents">
             <Icon type="copy" />
             Documents
@@ -71,12 +75,7 @@ function Navbar(props) {
           </Menu.Item>
         </Menu>
       </div>
-      <Menu
-        onClick={e => history.push(e.key)}
-        selectedKeys={[route]}
-        mode="horizontal"
-        style={styles.menu}
-      >
+      <Menu onClick={e => history.push(e.key)} mode="horizontal" style={styles.menu}>
         <Menu.Item key="/logout">
           <Icon type="logout" />
           Déconnexion

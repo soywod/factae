@@ -66,11 +66,13 @@ function EditDocument(props) {
   function generatePdf(document) {
     return async event => {
       event.stopPropagation()
-      if (!document.client) return notify.error('Vous devez sélectionner un client.')
+      if (!document.client) {
+        return notify.error('Vous devez sélectionner un client et sauvegarder.')
+      }
 
       setLoading(true)
-      let nextDocument = {...document, createdAt: moment().toISOString(), items}
-      if (nextDocument.type !== 'quotation') {
+      let nextDocument = {...document, createdAt: moment().toISOString(), status: 'sent', items}
+      if (nextDocument.type !== 'quotation' && !nextDocument.number) {
         const now = moment()
         const count = documents
           .map(({type, createdAt}) => [type, moment(createdAt)])
@@ -79,9 +81,9 @@ function EditDocument(props) {
             const matchYear = createdAt.year() === now.year()
             const matchDocType = type === document.type
             return count + Number(matchMonth && matchYear && matchDocType)
-          }, 1)
+          }, 0)
 
-        nextDocument.number = `${now.format('YY')}${now.month()}#${count}`
+        nextDocument.number = `${now.format('YYMM')}#${count}`
       }
 
       setDocument(await $document.generatePdf(profile, client, nextDocument))
@@ -161,11 +163,13 @@ function EditDocument(props) {
         nextDocument.endsAt = nextDocument.endsAt.toISOString()
       }
 
+      setDocument(nextDocument)
       await $document.update(nextDocument)
-      props.history.push('/documents')
     } catch (e) {
-      setLoading(false)
+      console.error(e)
     }
+
+    setLoading(false)
   }
 
   if (!clients || !documents || !document) {
@@ -263,7 +267,7 @@ function EditDocument(props) {
       'Statut',
       <Select size="large" autoFocus>
         <Option value="draft">Brouillon</Option>
-        <Option value="pending">En cours</Option>
+        <Option value="sent">Envoyé</Option>
         {document.type === 'quotation' && <Option value="signed">Signé</Option>}
         {document.type === 'invoice' && <Option value="paid">Payé</Option>}
         {document.type === 'credit' && <Option value="refunded">Remboursé</Option>}
@@ -385,28 +389,26 @@ function EditDocument(props) {
           </Row>
         </Card>
 
-        {document.status !== 'draft' && (
-          <Card
-            title={PdfTitle}
-            bodyStyle={{padding: 25, textAlign: 'center'}}
-            style={{marginBottom: 25}}
-          >
-            <Row gutter={25}>
-              {document.pdf ? (
-                <iframe
-                  title="document"
-                  src={document.pdf}
-                  width="100%"
-                  height={450}
-                  scrolling="no"
-                  style={{maxWidth: 512}}
-                ></iframe>
-              ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-              )}
-            </Row>
-          </Card>
-        )}
+        <Card
+          title={PdfTitle}
+          bodyStyle={{padding: 25, textAlign: 'center'}}
+          style={{marginBottom: 25}}
+        >
+          <Row gutter={25}>
+            {document.pdf ? (
+              <iframe
+                title="document"
+                src={document.pdf}
+                width="100%"
+                height={450}
+                scrolling="no"
+                style={{maxWidth: 512}}
+              ></iframe>
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
+          </Row>
+        </Card>
 
         <div style={{textAlign: 'right'}}>
           <Popconfirm
