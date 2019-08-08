@@ -25,6 +25,7 @@ import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
 import $document from '../service'
 import EditableTable from '../../common/components/EditableTable'
+import {notify} from '../../utils/notification'
 
 const {Title: AntdTitle, Paragraph: AntdParagraph} = Typography
 const {Option} = Select
@@ -65,13 +66,25 @@ function EditDocument(props) {
   function generatePdf(document) {
     return async event => {
       event.stopPropagation()
-      const fullDocument = {...document, items}
+      if (!document.client) return notify.error('Vous devez sélectionner un client.')
 
       setLoading(true)
-      setDocument({
-        ...document,
-        pdf: await $document.generatePdf(profile, client, fullDocument),
-      })
+      let nextDocument = {...document, createdAt: moment().toISOString(), items}
+      if (nextDocument.type !== 'quotation') {
+        const now = moment()
+        const count = documents
+          .map(({type, createdAt}) => [type, moment(createdAt)])
+          .reduce((count, [type, createdAt]) => {
+            const matchMonth = createdAt.month() === now.month()
+            const matchYear = createdAt.year() === now.year()
+            const matchDocType = type === document.type
+            return count + Number(matchMonth && matchYear && matchDocType)
+          }, 1)
+
+        nextDocument.number = `${now.format('YY')}${now.month()}#${count}`
+      }
+
+      setDocument(await $document.generatePdf(profile, client, nextDocument))
       setLoading(false)
     }
   }
@@ -121,14 +134,15 @@ function EditDocument(props) {
     try {
       setLoading(true)
       const data = await props.form.validateFields()
+
       const nextItems = items.filter(item => item.designation && item.unitPrice)
       const totalHT = nextItems.reduce((sum, {amount}) => sum + amount, 0)
       const totalTVA = Math.round(totalHT * document.taxRate) / 100
       const totalTTC = totalHT + totalTVA
-      const nextDocument = {
+
+      let nextDocument = {
         ...document,
         ...omitBy(isNil, data),
-        createdAt: moment().toISOString(),
         items: nextItems,
         totalHT,
         totalTVA,
@@ -157,6 +171,12 @@ function EditDocument(props) {
   if (!clients || !documents || !document) {
     return null
   }
+
+  const Footer = () => (
+    <div style={{textAlign: 'right', fontStyle: 'italic'}}>
+      Total HT : <strong>{toEuro(items.reduce((total, {amount = 0}) => total + amount, 0))}</strong>
+    </div>
+  )
 
   const columns = [
     {
@@ -194,16 +214,9 @@ function EditDocument(props) {
       key: 'action',
       width: '5%',
       render: (_, {key}) => (
-        <Popconfirm
-          title="Êtes-vous sûr de vouloir supprimer cette désignation ?"
-          onConfirm={() => removeItem(key)}
-          okText="Oui"
-          cancelText="Non"
-        >
-          <Button type="danger" shape="circle">
-            <Icon type="delete" />
-          </Button>
-        </Popconfirm>
+        <Button type="danger" shape="circle" onClick={() => removeItem(key)}>
+          <Icon type="delete" />
+        </Button>
       ),
     },
   ]
@@ -366,31 +379,34 @@ function EditDocument(props) {
               pagination={false}
               dataSource={items}
               columns={columns}
+              footer={Footer}
               onSave={saveItems}
             />
           </Row>
         </Card>
 
-        <Card
-          title={PdfTitle}
-          bodyStyle={{padding: 25, textAlign: 'center'}}
-          style={{marginBottom: 25}}
-        >
-          <Row gutter={25}>
-            {document.pdf ? (
-              <iframe
-                title="document"
-                src={document.pdf}
-                width="100%"
-                height={450}
-                scrolling="no"
-                style={{maxWidth: 512}}
-              ></iframe>
-            ) : (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-            )}
-          </Row>
-        </Card>
+        {document.status !== 'draft' && (
+          <Card
+            title={PdfTitle}
+            bodyStyle={{padding: 25, textAlign: 'center'}}
+            style={{marginBottom: 25}}
+          >
+            <Row gutter={25}>
+              {document.pdf ? (
+                <iframe
+                  title="document"
+                  src={document.pdf}
+                  width="100%"
+                  height={450}
+                  scrolling="no"
+                  style={{maxWidth: 512}}
+                ></iframe>
+              ) : (
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )}
+            </Row>
+          </Card>
+        )}
 
         <div style={{textAlign: 'right'}}>
           <Popconfirm

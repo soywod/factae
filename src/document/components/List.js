@@ -7,6 +7,7 @@ import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import omit from 'lodash/fp/omit'
 import find from 'lodash/fp/find'
+import moment from 'moment'
 
 import {toEuro} from '../../common/currency'
 import {useDocuments} from '../hooks'
@@ -24,7 +25,13 @@ function DocumentList(props) {
   async function createDocument(e) {
     setLoading(true)
 
-    let rawDocument = {type: e.key, status: 'draft', taxRate: profile.taxRate, total: 0}
+    let rawDocument = {
+      type: e.key,
+      createdAt: moment().toISOString(),
+      status: 'draft',
+      taxRate: profile.taxRate,
+      total: 0,
+    }
 
     switch (e.key) {
       case 'quotation':

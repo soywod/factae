@@ -57,9 +57,12 @@ export async function generatePdf(profile, client, document) {
   try {
     const generatePdf = functions.httpsCallable('generatePdf')
     const {data} = await generatePdf({profile, client, document})
-    return 'data:application/pdf;base64,' + data
+    const nextDocument = {...document, pdf: 'data:application/pdf;base64,' + data}
+    await db(`users/${user$.value.uid}/documents`, document.id).set(nextDocument)
+    return nextDocument
   } catch (error) {
     notify.error(error.message)
+    return document
   }
 }
 

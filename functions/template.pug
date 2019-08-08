@@ -10,14 +10,13 @@ mixin profileName()
 style(type="text/css") !{compiledStyle}
 
 .container
-  if document.number
-    if document.type === 'quotation'
-      h1 Devis
-    else if document.type === 'invoice'
-      h1 Facture n°#{document.number}
-    else if document.type === 'credit'
-      h1 Avoir n°#{document.number}
-      em Facture de référence n°#{document.invoiceNumber}
+  if document.type === 'quotation'
+    h1 Devis
+  else if document.type === 'invoice'
+    h1 Facture n°#{document.number}
+  else if document.type === 'credit'
+    h1 Avoir n°#{document.number}
+    em Facture de référence n°#{document.invoiceNumber}
 
   section.header
     .profile
@@ -49,9 +48,10 @@ style(type="text/css") !{compiledStyle}
             |
             +toEuro(document.rate)
 
-        .conditions
-          each condition in document.conditions.split('\n')
-            div #{condition}
+        if document.conditions
+          .conditions
+            each condition in document.conditions.split('\n')
+              div #{condition}
 
     .client
       div
@@ -151,3 +151,4 @@ style(type="text/css") !{compiledStyle}
           | Code APE : #{profile.apeCode}
         div
           | N° TVA Intracommunautaire : #{profile.taxId}
+        div Généré automatiquement par factae.fr

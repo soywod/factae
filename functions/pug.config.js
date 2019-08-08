@@ -25,7 +25,7 @@ module.exports = {
       country: 'France',
     },
     document: {
-      type: 'invoice',
+      type: 'quotation',
       createdAt: '2019-08-07T01:38:43.877Z',
       expiresAt: '2019-08-07T01:38:43.877Z',
       items: [
