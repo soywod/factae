@@ -4,6 +4,7 @@ import Button from 'antd/es/button'
 import Menu from 'antd/es/menu'
 import Dropdown from 'antd/es/dropdown'
 import Form from 'antd/es/form'
+import Tag from 'antd/es/tag'
 import Icon from 'antd/es/icon'
 import omit from 'lodash/fp/omit'
 import find from 'lodash/fp/find'
@@ -65,7 +66,7 @@ function DocumentList(props) {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      width: '40%',
+      width: '25%',
       render: type => {
         switch (type) {
           case 'quotation':
@@ -86,17 +87,33 @@ function DocumentList(props) {
       title: 'Client',
       dataIndex: 'client',
       key: 'client',
-      width: '25%',
+      width: '30%',
       render: id => {
         const client = find({id}, clients)
         return client ? client.tradingName || client.email : ''
       },
     },
     {
+      title: 'Statut',
+      dataIndex: 'status',
+      key: 'status',
+      align: 'center',
+      width: '15%',
+      render: status => (
+        <>
+          {status === 'draft' && <Tag>brouillon</Tag>}
+          {status === 'sent' && <Tag color="blue">envoyé</Tag>}
+          {status === 'signed' && <Tag color="green">signé</Tag>}
+          {status === 'paid' && <Tag color="green">payé</Tag>}
+          {status === 'refunded' && <Tag color="green">remboursé</Tag>}
+        </>
+      ),
+    },
+    {
       title: 'Total (HT)',
       dataIndex: 'total',
       key: 'total',
-      width: '20%',
+      width: '30%',
       align: 'right',
       render: (_, {totalHT}) => toEuro(totalHT),
     },
