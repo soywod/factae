@@ -1,7 +1,115 @@
-doctype html
-html
-  head
-    link(rel="stylesheet" href="./styles.scss")
+mixin toEuro(amount)
+  span= Number(amount / 100).toFixed(2) + ' €'
 
-  body
-    include ./template-quotation.pug
+mixin profileName(profile)
+  if profile.tradingName
+    span #{profile.tradingName} (#{profile.firstName} #{profile.lastName})
+  else
+    span #{profile.firstName} #{profile.lastName}
+
+style(type="text/css") !{compiledStyle}
+
+.container
+  section.header
+    .profile
+      h1
+        +profileName(profile)
+      div #{profile.address}
+      div #{profile.zip} #{profile.city}, France
+
+    .client
+      div
+        h2 Devis à l'attention de :
+
+        if client.tradingName
+          div #{client.tradingName}
+        else
+          div #{client.firstName} #{client.lastName}
+        div #{client.address}
+        div #{client.zip} #{client.city}, #{client.country}
+
+  section.infos
+    div Créé le #{document.createdAt}
+    each condition in document.conditions.split('\n')
+      div #{condition}
+
+  table.items
+    thead.items-head
+      tr
+        th Désignation
+        th Quantité
+        th Prix unitaire
+        th Montant
+
+    tbody.items-body
+      each item in document.items
+        tr
+          td.label #{item.designation}
+          td #{item.quantity}
+          td
+            +toEuro(item.unitPrice)
+          td
+            +toEuro(item.amount)
+
+    tfoot.items-foot
+      tr
+        td.label Total HT
+        td(colspan=3)
+          +toEuro(document.totalHT)
+
+      tr
+        td.label Total TVA (#{document.taxRate}%)
+        td(colspan=3)
+          +toEuro(document.totalTVA)
+
+      tr
+        td.label Total TTC
+        td(colspan=3)
+          +toEuro(document.totalTTC)
+
+  section.bank
+    table
+      tbody
+        if profile.rib || profile.iban || profile.bic
+          tr
+            td(colspan=2) 
+              strong Coordonnées bancaires
+          
+        if profile.rib
+          tr
+            td
+              strong RIB N°
+            td #{profile.rib}
+
+        if profile.iban
+          tr
+            td
+              strong IBAN N°
+            td #{profile.iban}
+
+        if profile.bic
+          tr
+            td
+              strong Code BIC
+            td #{profile.bic}
+
+  footer.footer
+    div
+      | Micro-entreprise
+      | —
+      |
+      +profileName(profile)
+    div
+      | Siège social #{profile.address},
+      | #{profile.zip} #{profile.city},
+      | France
+    div
+      | Téléphone #{profile.phone}
+      | —
+      | Email #{profile.email}
+      | —
+      | SIRET #{profile.siren}
+    div
+      | N° TVA Intracommunautaire #{profile.taxId}
+      | —
+      | Code APE #{profile.apeCode}

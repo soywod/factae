@@ -1,9 +1,17 @@
 $black: #333333;
+$grey99: #999999;
+$greyDD: #dddddd;
 
 @font-face {
   font-family: HelveticaNeue;
   src: url(./HelveticaNeue.ttf);
   font-weight: 400;
+}
+
+@mixin title {
+  margin: 0 0 .5em 0;
+  font-size: 1.1em;
+  text-decoration: underline;
 }
 
 body {
@@ -17,31 +25,45 @@ body {
   margin: 0 auto;
 }
 
+.header {
+  display: flex;
+  width: 100%;
+  margin: 1em 0;
+}
+
 .profile {
-  margin-bottom: 1em;
+  flex: 1;
+
+  h1 {
+    @include title()
+  }
 }
 
 .client {
+  padding-top: 2em;
   display: flex;
   align-items: flex-end;
   flex-direction: column;
-  margin-bottom: 1em;
+
+  h2 {
+    @include title()
+  }
 }
 
-.info {
-  margin-bottom: 1em;
+.infos {
+  margin: 1em 0;
 }
 
 .items {
   border-collapse: collapse;
-  margin: 2em 0;
+  margin: 3em 0 4em 0;
   width: 100%;
 }
 
 .items-head th {
   text-align: right;
   border-bottom: 1px solid $black;
-  padding: .75em;
+  padding: .25em .75em;
 
   &:first-of-type {
     text-align: left;
@@ -50,9 +72,13 @@ body {
 }
 
 .items-body {
+  tr:not(:last-of-type) td {
+    border-bottom: 1px solid $greyDD;
+  }
+
   td {
     text-align: right;
-    padding: .75em;
+    padding: .25em .75em;
 
     &:first-of-type {
       text-align: left;
@@ -62,20 +88,20 @@ body {
 
 .items-foot {
   tr:nth-of-type(1) td {
-    border-top: 1px solid $black;
-    padding-top: .75em;
+    border-top: 4px double $greyDD;
+    padding-top: .25em;
   }
 
   tr:nth-of-type(2) td {
-    padding-bottom: .75em;
+    padding-bottom: .5em;
   }
 
   tr:nth-of-type(3) td {
     font-weight: bold;
+    font-style: italic;
   }
 
   td {
-    font-style: italic;
     padding: 0 .75em;
     text-align: right;
 
@@ -83,4 +109,31 @@ body {
       text-align: left;
     }
   }
+}
+
+.bank {
+  margin: 2em 0;
+  font-size: .8em;
+  display: flex;
+  justify-content: center;
+
+  table {
+    border-collapse: collapse;
+  }
+
+  tr:first-of-type td {
+    text-align: center;
+  }
+
+  td {
+    border: 1px solid $black;
+    padding: .25em .5em;
+  }
+}
+
+.footer {
+  margin: 1em 0;
+  text-align: center;
+  font-size: .8em;
+  color: $grey99;
 }

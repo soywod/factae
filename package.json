@@ -31,9 +31,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:pdf": "parcel --port 3001 --no-cache serve ./functions/index.pug",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "start:pdf": "parcel --port 3001 --no-cache serve ./functions/template.pug"
+    "eject": "react-scripts eject"
   }
 }

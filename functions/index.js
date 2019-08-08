@@ -4,7 +4,7 @@ const path = require('path')
 
 exports.generatePdf = functions.https.onCall(async htmlTemplateOptions => {
   console.log(htmlTemplateOptions)
-  const htmlTemplatePath = path.resolve(__dirname, 'template-pdf.pug')
+  const htmlTemplatePath = path.resolve(__dirname, 'template.pug')
 
   const pdfOptions = {
     format: 'A4',
