@@ -62,7 +62,15 @@ const CompanyTitle = (
 )
 
 const companyFields = [
+  ['tradingName', 'Nom commercial'],
   ['siret', 'SIRET'],
+  ['apeCode', 'Code APE'],
+  ['taxId', 'N° TVA Intracommunautaire'],
+  [
+    'taxRate',
+    'Taux de TVA (%)',
+    <InputNumber size="large" min={1} step={1} style={{width: '100%'}} />,
+  ],
   [
     'activity',
     "Type d'activité",
@@ -71,7 +79,6 @@ const companyFields = [
       <Option value="service">Prestation de service</Option>
     </Select>,
   ],
-  ['tradingName', 'Nom commercial'],
 ]
 
 const RateTitle = (
@@ -99,43 +106,6 @@ const rateFields = [
   ],
 ]
 
-const ConditionTitle = (
-  <Fragment>
-    <Title level={2} style={styles.title}>
-      Conditions
-    </Title>
-    <Paragraph style={styles.subtitle}>
-      Correspond aux conditions (de paiement, de livraison, d'exécution etc) qui s'afficheront par
-      défaut sur vos documents. Champs libres.
-    </Paragraph>
-  </Fragment>
-)
-
-const conditionFields = [
-  ['quotationConditions', 'Devis', <TextArea rows={4} />],
-  ['invoiceConditions', 'Factures', <TextArea rows={4} />],
-]
-
-const TaxTitle = (
-  <Fragment>
-    <Title level={2} style={styles.title}>
-      N° de TVA Intracommunautaire
-    </Title>
-    <Paragraph style={styles.subtitle}>
-      Renseignez uniquement si vous êtes assujetti à la TVA.
-    </Paragraph>
-  </Fragment>
-)
-
-const taxFields = [
-  ['taxId', 'Numéro de TVA'],
-  [
-    'taxRate',
-    'Taux de TVA (%)',
-    <InputNumber size="large" min={1} step={1} style={{width: '100%'}} />,
-  ],
-]
-
 const BankTitle = (
   <Fragment>
     <Title level={2} style={styles.title}>
@@ -149,12 +119,27 @@ const BankTitle = (
 
 const bankFields = [['rib', 'RIB'], ['iban', 'IBAN'], ['bic', 'BIC']]
 
+const ConditionTitle = (
+  <Fragment>
+    <Title level={2} style={styles.title}>
+      Conditions
+    </Title>
+    <Paragraph style={styles.subtitle}>
+      Correspond aux conditions (de paiement, de livraison, d'exécution etc) qui s'afficheront par
+      défaut sur vos documents.
+    </Paragraph>
+  </Fragment>
+)
+
+const conditionFields = [
+  ['quotationConditions', 'Devis', <TextArea rows={4} />],
+  ['invoiceConditions', 'Factures', <TextArea rows={4} />],
+]
+
 const fields = [
   [ContactTitle, contactFields],
   [CompanyTitle, companyFields],
   [RateTitle, rateFields],
-  [ConditionTitle, conditionFields],
-  [TaxTitle, taxFields],
   [BankTitle, bankFields],
 ]
 
@@ -200,6 +185,20 @@ function Profile(props) {
             </Row>
           </Card>
         ))}
+
+        <Card title={ConditionTitle} style={styles.card}>
+          <Row gutter={25}>
+            {conditionFields.map(([name, label, Component], key) => (
+              <Col key={key} xs={24}>
+                <Form.Item label={label}>
+                  {getFieldDecorator(name, {
+                    initialValue: profile[name],
+                  })(Component)}
+                </Form.Item>
+              </Col>
+            ))}
+          </Row>
+        </Card>
 
         <div style={styles.action}>
           <Button type="primary" htmlType="submit" disabled={loading}>

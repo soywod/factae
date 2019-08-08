@@ -7,7 +7,7 @@ module.exports = {
       address: '3 rue du roseau',
       zip: '12345',
       city: 'Corneville',
-      siren: 'XXX XXX XXX',
+      siret: 'XXX XXX XXX',
       apeCode: 'XXXX YY',
       taxId: 'XXYYZZAABB',
       phone: '+33 X XX XX XX XX',
