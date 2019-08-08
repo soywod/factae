@@ -25,7 +25,9 @@ module.exports = {
       country: 'France',
     },
     document: {
-      type: 'quotation',
+      type: 'invoice',
+      createdAt: '2019-08-07T01:38:43.877Z',
+      expiresAt: '2019-08-07T01:38:43.877Z',
       items: [
         {designation: 'item a', quantity: 1, unitPrice: 200, amount: 200},
         {designation: 'item b', quantity: 2, unitPrice: 150.4, amount: 300.8},
@@ -37,6 +39,10 @@ module.exports = {
           amount: 300.8,
         },
       ],
+      number: 50,
+      invoiceNumber: 40,
+      rate: 200,
+      rateUnit: 'hour',
       taxRate: 20,
       conditions: 'Condition A\nCondition B',
       totalHT: 100,

@@ -20,6 +20,16 @@ body {
   font-size: 1.1em;
 }
 
+h1 {
+  font-size: 2em;
+  margin: 0;
+  text-transform: uppercase;
+
+  & + em {
+    font-size: .8em;
+  }
+}
+
 .container {
   margin: 0 auto;
   padding: 6em 4em;
@@ -28,13 +38,13 @@ body {
 .header {
   display: flex;
   width: 100%;
-  margin: 0 0 1em 0;
+  margin: 2em 0 1em 0;
 }
 
 .profile {
   flex: 1;
 
-  h1 {
+  h2 {
     @include title()
   }
 }
@@ -45,12 +55,17 @@ body {
   align-items: flex-end;
   flex-direction: column;
 
-  h2 {
+  h3 {
     @include title()
   }
 }
 
 .infos {
+  font-size: .8em;
+  margin: 1em 0;
+}
+
+.conditions {
   margin: 1em 0;
 }
 
@@ -110,11 +125,18 @@ body {
   }
 }
 
-.bank {
-  margin: 2em 0;
-  font-size: .8em;
+.footer {
   display: flex;
-  justify-content: center;
+  margin: 1em 0 0 0;
+
+  > *:nth-of-type(2) {
+    flex: 1;
+  }
+}
+
+.bank {
+  display: flex;
+  font-size: .8em;
 
   table {
     border-collapse: collapse;
@@ -130,9 +152,16 @@ body {
   }
 }
 
-.footer {
-  margin: 1em 0 0 0;
-  text-align: center;
-  font-size: .8em;
+.contact-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.contact {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
   color: $grey99;
+  font-size: .7em;
 }

@@ -211,7 +211,7 @@ function EditDocument(props) {
   const ItemsTitle = (
     <Title>
       Désignations
-      <Button type="primary" shape="circle" onClick={addItem} style={{marginLeft: 12}}>
+      <Button type="dashed" shape="circle" onClick={addItem} style={{marginLeft: 12}}>
         <Icon type="plus" />
       </Button>
     </Title>
@@ -220,9 +220,9 @@ function EditDocument(props) {
   const PdfTitle = (
     <Title>
       PDF
-      <Tooltip title="Générer le PDF">
+      <Tooltip title="Générer le document">
         <Button
-          type="primary"
+          type="dashed"
           shape="circle"
           onClick={generatePdf(document)}
           disabled={loading}
