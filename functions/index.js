@@ -3,8 +3,11 @@ const TeaSchool = require('tea-school')
 const path = require('path')
 
 exports.generatePdf = functions.https.onCall(async htmlTemplateOptions => {
-  console.log(htmlTemplateOptions)
   const htmlTemplatePath = path.resolve(__dirname, 'template.pug')
+
+  const styleOptions = {
+    file: path.resolve(__dirname, 'styles.scss'),
+  }
 
   const pdfOptions = {
     format: 'A4',
@@ -18,6 +21,7 @@ exports.generatePdf = functions.https.onCall(async htmlTemplateOptions => {
   const teaSchoolOptions = {
     htmlTemplatePath,
     htmlTemplateOptions,
+    styleOptions,
     pdfOptions,
     puppeteerOptions,
   }

@@ -91,7 +91,7 @@ function DocumentList(props) {
       key: 'total',
       width: '20%',
       align: 'right',
-      render: (_, {total}) => toEuro(total),
+      render: (_, {totalHT}) => toEuro(totalHT),
     },
   ]
 

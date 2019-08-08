@@ -27,21 +27,21 @@ module.exports = {
     document: {
       type: 'quotation',
       items: [
-        {designation: 'item a', quantity: 1, unitPrice: 20000, amount: 20000},
-        {designation: 'item b', quantity: 2, unitPrice: 15040, amount: 30080},
+        {designation: 'item a', quantity: 1, unitPrice: 200, amount: 200},
+        {designation: 'item b', quantity: 2, unitPrice: 150.4, amount: 300.8},
         {
           designation:
             'item very very very very very very very very very very very very very very very very very very very very very very long',
           quantity: 2,
-          unitPrice: 15040,
-          amount: 30080,
+          unitPrice: 150.4,
+          amount: 300.8,
         },
       ],
       taxRate: 20,
       conditions: 'Condition A\nCondition B',
-      totalHT: 10000,
-      totalTVA: 2000,
-      totalTTC: 12000,
+      totalHT: 100,
+      totalTVA: 20,
+      totalTTC: 120,
     },
   },
 }

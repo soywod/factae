@@ -1,5 +1,5 @@
 mixin toEuro(amount)
-  span= Number(amount / 100).toFixed(2) + ' €'
+  span= Number(amount).toFixed(2) + ' €'
 
 mixin profileName(profile)
   if profile.tradingName
@@ -44,26 +44,26 @@ style(type="text/css") !{compiledStyle}
     tbody.items-body
       each item in document.items
         tr
-          td.label #{item.designation}
-          td #{item.quantity}
-          td
+          td(width='40%') #{item.designation}
+          td(width='10%') #{item.quantity}
+          td(width='25%')
             +toEuro(item.unitPrice)
-          td
+          td(width='25%')
             +toEuro(item.amount)
 
     tfoot.items-foot
       tr
-        td.label Total HT
+        td(width='40%') Total HT
         td(colspan=3)
           +toEuro(document.totalHT)
 
       tr
-        td.label Total TVA (#{document.taxRate}%)
+        td(width='40%') Total TVA (#{document.taxRate}%)
         td(colspan=3)
           +toEuro(document.totalTVA)
 
       tr
-        td.label Total TTC
+        td(width='40%') Total TTC
         td(colspan=3)
           +toEuro(document.totalTTC)
 
@@ -95,21 +95,20 @@ style(type="text/css") !{compiledStyle}
 
   footer.footer
     div
-      | Micro-entreprise
-      | —
+      | Micro-entreprise :
       |
       +profileName(profile)
     div
-      | Siège social #{profile.address},
+      | Siège social : #{profile.address},
       | #{profile.zip} #{profile.city},
       | France
     div
-      | Téléphone #{profile.phone}
+      | Téléphone : #{profile.phone}
       | —
-      | Email #{profile.email}
+      | Email : #{profile.email}
       | —
-      | SIRET #{profile.siren}
-    div
-      | N° TVA Intracommunautaire #{profile.taxId}
+      | SIRET : #{profile.siren}
       | —
-      | Code APE #{profile.apeCode}
+      | N° TVA Intracommunautaire : #{profile.taxId}
+      | —
+      | Code APE : #{profile.apeCode}

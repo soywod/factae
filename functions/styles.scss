@@ -21,14 +21,14 @@ body {
 }
 
 .container {
-  max-width: 700px;
   margin: 0 auto;
+  padding: 6em 4em;
 }
 
 .header {
   display: flex;
   width: 100%;
-  margin: 1em 0;
+  margin: 0 0 1em 0;
 }
 
 .profile {
@@ -62,12 +62,11 @@ body {
 
 .items-head th {
   text-align: right;
-  border-bottom: 1px solid $black;
+  border-bottom: 1px solid $grey99;
   padding: .25em .75em;
 
   &:first-of-type {
     text-align: left;
-    width: 50%;
   }
 }
 
@@ -126,13 +125,13 @@ body {
   }
 
   td {
-    border: 1px solid $black;
+    border: 1px solid $grey99;
     padding: .25em .5em;
   }
 }
 
 .footer {
-  margin: 1em 0;
+  margin: 1em 0 0 0;
   text-align: center;
   font-size: .8em;
   color: $grey99;

@@ -13,7 +13,7 @@ export function onDocumentsChanged() {
     const documents = []
 
     if (!error) {
-      query.forEach(doc => documents.push({id: doc.id, ...doc.data()}))
+      query.forEach(ref => documents.push({id: ref.id, ...ref.data()}))
     }
 
     documents$.next(documents)
@@ -53,10 +53,10 @@ async function _delete(document) {
   }
 }
 
-export async function generatePdf(document) {
+export async function generatePdf(profile, client, document) {
   try {
     const generatePdf = functions.httpsCallable('generatePdf')
-    const {data} = await generatePdf(document)
+    const {data} = await generatePdf({profile, client, document})
     return 'data:application/pdf;base64,' + data
   } catch (error) {
     notify.error(error.message)

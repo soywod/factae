@@ -54,6 +54,7 @@ function EditDocument(props) {
   const [loading, setLoading] = useState(false)
   const [document, setDocument] = useState(props.location.state)
   const [items, setItems] = useState((document && document.items) || [])
+  const client = find({id: document.client}, clients)
 
   useEffect(() => {
     if (documents && !document) {
@@ -64,9 +65,13 @@ function EditDocument(props) {
   function generatePdf(document) {
     return async event => {
       event.stopPropagation()
+      const fullDocument = {...document, items}
 
       setLoading(true)
-      setDocument({...document, pdf: await $document.generatePdf(document)})
+      setDocument({
+        ...document,
+        pdf: await $document.generatePdf(profile, client, fullDocument),
+      })
       setLoading(false)
     }
   }
@@ -74,7 +79,7 @@ function EditDocument(props) {
   function addItem() {
     setItems([
       ...items,
-      {key: Date.now(), description: '', unitPrice: profile.unitPrice || '', quantity: '1'},
+      {key: Date.now(), designation: '', unitPrice: profile.unitPrice || '', quantity: '1'},
     ])
   }
 
@@ -83,21 +88,20 @@ function EditDocument(props) {
   }
 
   function saveItems(row) {
-    const newItems = items.map(item => ({
-      ...item,
-      quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice),
-    }))
+    const prevItemIndex = items.findIndex(item => row.key === item.key)
+    const prevItem = items[prevItemIndex]
 
-    const index = newItems.findIndex(item => row.key === item.key)
-    const item = newItems[index]
+    const quantity = Number(row.quantity)
+    const unitPrice = Math.round(row.unitPrice * 100) / 100
+    const amount = Math.round(quantity * unitPrice * 100) / 100
+    const nextItem = {...row, quantity, unitPrice, amount}
 
-    newItems.splice(index, 1, {
-      ...item,
-      ...row,
+    items.splice(prevItemIndex, 1, {
+      ...prevItem,
+      ...nextItem,
     })
 
-    setItems(newItems)
+    setItems([...items])
   }
 
   async function removeDocument() {
@@ -117,22 +121,19 @@ function EditDocument(props) {
     try {
       setLoading(true)
       const data = await props.form.validateFields()
+      const nextItems = items.filter(item => item.designation && item.unitPrice)
+      const totalHT = nextItems.reduce((sum, {amount}) => sum + amount, 0)
+      const totalTVA = Math.round(totalHT * document.taxRate) / 100
+      const totalTTC = totalHT + totalTVA
       const nextDocument = {
         ...document,
         ...omitBy(isNil, data),
-        items: items
-          .filter(item => item.description && item.unitPrice)
-          .map(item => ({
-            ...item,
-            quantity: Number(item.quantity || 0),
-            unitPrice: Number(item.unitPrice || 0),
-          })),
+        createdAt: moment().toISOString(),
+        items: nextItems,
+        totalHT,
+        totalTVA,
+        totalTTC,
       }
-
-      nextDocument.total = nextDocument.items.reduce(
-        (total, {quantity, unitPrice}) => total + quantity * unitPrice,
-        0,
-      )
 
       if (nextDocument.expiresAt) {
         nextDocument.expiresAt = nextDocument.expiresAt.toISOString()
@@ -159,9 +160,9 @@ function EditDocument(props) {
 
   const columns = [
     {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
+      title: 'Designation',
+      dataIndex: 'designation',
+      key: 'designation',
       editable: true,
       width: '45%',
     },
@@ -170,15 +171,22 @@ function EditDocument(props) {
       dataIndex: 'quantity',
       key: 'quantity',
       editable: true,
-      width: '20%',
+      width: '10%',
     },
     {
       title: 'Prix unitaire',
       dataIndex: 'unitPrice',
       key: 'unitPrice',
       editable: true,
-      width: '30%',
+      width: '20%',
       render: (_, {unitPrice}) => toEuro(unitPrice),
+    },
+    {
+      title: 'Montant',
+      dataIndex: 'amount',
+      key: 'amount',
+      width: '20%',
+      render: (_, {amount}) => toEuro(amount),
     },
     {
       title: '',
@@ -313,7 +321,6 @@ function EditDocument(props) {
     fields.push([DateTitle, dateFields])
   }
 
-  console.log(document)
   return (
     <Container>
       <Form onSubmit={saveDocument}>
