@@ -29,6 +29,7 @@ function App() {
         <Navbar />
         <Switch>
           <Route path="/auth" component={Auth} />
+          <Route path="/demo" component={Auth.Demo} />
           <PrivateRoute path="/logout" component={Auth.Logout} />
           <PrivateRoute path="/documents/:id" component={DocumentEdit} />
           <PrivateRoute path="/documents" component={DocumentList} />

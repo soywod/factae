@@ -1,6 +1,7 @@
 {
   "name": "factae-app",
   "version": "1.0.0",
+  "description": "factAE web application.",
   "private": true,
   "browserslist": {
     "production": [

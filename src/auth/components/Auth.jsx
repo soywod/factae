@@ -143,6 +143,28 @@ function Logout() {
   return null
 }
 
+function Demo(props) {
+  async function login() {
+    try {
+      await $auth.login('demo@factae.fr', 'factae')
+      props.history.push('/')
+    } catch (error) {
+      notify.error(error.message)
+    }
+  }
+
+  useEffect(() => {
+    login()
+  }, [])
+
+  return (
+    <div style={styles.container}>
+      <Spin size="large" spinning />
+    </div>
+  )
+}
+
 Auth.Logout = Logout
+Auth.Demo = Demo
 
 export default Form.create()(withRouter(Auth))
