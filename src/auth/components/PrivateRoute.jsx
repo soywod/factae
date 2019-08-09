@@ -11,7 +11,7 @@ function PrivateRoute(props) {
   }
 
   if (user === false) {
-    return <Redirect to="/login" />
+    return <Redirect to="/auth" />
   }
 
   return <Route {...props} />

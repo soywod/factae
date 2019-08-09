@@ -8,9 +8,7 @@ import {useClientService} from '../../../client/hooks'
 import {useDocumentService} from '../../../document/hooks'
 import Navbar from '../../../common/components/Navbar'
 import PrivateRoute from '../../../auth/components/PrivateRoute'
-import Register from '../../../auth/components/Register'
-import Login from '../../../auth/components/Login'
-import ResetPassword from '../../../auth/components/ResetPassword'
+import Auth from '../../../auth/components/Auth'
 import Logout from '../../../auth/components/Logout'
 import Profile from '../../../profile/components/Edit'
 import ClientList from '../../../client/components/List'
@@ -31,9 +29,7 @@ function App() {
       <Router>
         <Navbar />
         <Switch>
-          <Route path="/register" component={Register} />
-          <Route path="/login" component={Login} />
-          <Route path="/reset-password" component={ResetPassword} />
+          <Route path="/auth" component={Auth} />
           <PrivateRoute path="/logout" component={Logout} />
           <PrivateRoute path="/documents/:id" component={DocumentEdit} />
           <PrivateRoute path="/documents" component={DocumentList} />

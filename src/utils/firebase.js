@@ -3,7 +3,6 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
-import 'firebase/storage'
 
 firebase.initializeApp({
   apiKey: 'AIzaSyBJD1hGI6mhYJwOhb6Fk0kGvuJiqYO-Lr8',
@@ -17,11 +16,11 @@ firebase.initializeApp({
 
 export const auth = firebase.auth()
 
-export function db(collection, doc) {
+export function db(collection, document) {
   const firestore = firebase.firestore()
   const db = firestore.collection(collection)
 
-  return doc ? db.doc(doc) : db
+  return document ? db.doc(document) : db
 }
 
 export const functions = firebase.functions()
