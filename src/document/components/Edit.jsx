@@ -288,11 +288,11 @@ function EditDocument(props) {
 
   if (document.type === 'quotation') {
     mainFields.push(
-      ['taxRate', 'TVA (%)', <InputNumber size="large" min={1} step={1} style={{width: '100%'}} />],
+      ['taxRate', 'TVA (%)', <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />],
       [
         'rate',
         'Tarification (€)',
-        <InputNumber size="large" min={1} step={1} style={{width: '100%'}} />,
+        <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
       ],
       [
         'rateUnit',

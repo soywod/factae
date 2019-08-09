@@ -69,7 +69,7 @@ const companyFields = [
   [
     'taxRate',
     'Taux de TVA (%)',
-    <InputNumber size="large" min={1} step={1} style={{width: '100%'}} />,
+    <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
   ],
   [
     'activity',
@@ -94,7 +94,7 @@ const RateTitle = (
 )
 
 const rateFields = [
-  ['rate', 'Montant (€)', <InputNumber size="large" min={1} step={1} style={{width: '100%'}} />],
+  ['rate', 'Montant (€)', <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />],
   [
     'rateUnit',
     'Unité',
