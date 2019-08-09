@@ -5,13 +5,13 @@ import 'firebase/firestore'
 import 'firebase/functions'
 
 firebase.initializeApp({
-  apiKey: 'AIzaSyBJD1hGI6mhYJwOhb6Fk0kGvuJiqYO-Lr8',
-  authDomain: 'factae-53dad.firebaseapp.com',
-  databaseURL: 'https://factae-53dad.firebaseio.com',
-  projectId: 'factae-53dad',
-  storageBucket: 'factae-53dad.appspot.com',
-  messagingSenderId: '81874227248',
-  appId: '1:81874227248:web:a3d61ab135d51532',
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_DATABASE_URL,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDERID,
+  appId: process.env.REACT_APP_APP_ID,
 })
 
 export const auth = firebase.auth()
