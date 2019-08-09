@@ -9,7 +9,6 @@ import {useDocumentService} from '../../../document/hooks'
 import Navbar from '../../../common/components/Navbar'
 import PrivateRoute from '../../../auth/components/PrivateRoute'
 import Auth from '../../../auth/components/Auth'
-import Logout from '../../../auth/components/Logout'
 import Profile from '../../../profile/components/Edit'
 import ClientList from '../../../client/components/List'
 import ClientEdit from '../../../client/components/Edit'
@@ -30,7 +29,7 @@ function App() {
         <Navbar />
         <Switch>
           <Route path="/auth" component={Auth} />
-          <PrivateRoute path="/logout" component={Logout} />
+          <PrivateRoute path="/logout" component={Auth.Logout} />
           <PrivateRoute path="/documents/:id" component={DocumentEdit} />
           <PrivateRoute path="/documents" component={DocumentList} />
           <PrivateRoute path="/clients/:id" component={ClientEdit} />

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {withRouter} from 'react-router-dom'
+import isNull from 'lodash/fp/isNull'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
 import Form from 'antd/es/form'
@@ -74,13 +75,9 @@ function Auth(props) {
     }
   }, [user, props.history])
 
-  if (user === null) {
-    return null
-  }
-
   return (
     <div style={styles.container}>
-      <Spin size="large" spinning={loading}>
+      <Spin size="large" spinning={loading || isNull(user)}>
         <Card
           title={
             <div style={styles.title}>
@@ -137,5 +134,15 @@ function Auth(props) {
     </div>
   )
 }
+
+function Logout() {
+  useEffect(() => {
+    $auth.logout()
+  }, [])
+
+  return null
+}
+
+Auth.Logout = Logout
 
 export default Form.create()(withRouter(Auth))
