@@ -19,12 +19,11 @@ const styles = {
     marginRight: '20px',
   },
   header: {
-    background: '#ffffff',
-    borderBottom: '1px solid #e8e8e8',
+    background: '#001529',
     display: 'flex',
   },
   menu: {
-    lineHeight: '61px',
+    lineHeight: '64px',
     height: '64px',
   },
   main: {
@@ -52,10 +51,11 @@ function Navbar(props) {
   return (
     <Header style={styles.header}>
       <div style={styles.logo}>
-        <Logo light="#333333" dark="#000000" />
+        <Logo light="#ffffff" dark="hsla(0, 0%, 100%, .65)" />
       </div>
       <div style={styles.main}>
         <Menu
+          theme="dark"
           onClick={e => history.push(e.key)}
           selectedKeys={selectedKeys}
           mode="horizontal"
@@ -75,7 +75,7 @@ function Navbar(props) {
           </Menu.Item>
         </Menu>
       </div>
-      <Menu onClick={e => history.push(e.key)} mode="horizontal" style={styles.menu}>
+      <Menu theme="dark" onClick={e => history.push(e.key)} mode="horizontal" style={styles.menu}>
         <Menu.Item key="/logout">
           <Icon type="logout" />
           Déconnexion

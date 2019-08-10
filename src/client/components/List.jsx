@@ -1,32 +1,33 @@
 import React, {useState} from 'react'
-import Table from 'antd/es/table'
 import Button from 'antd/es/button'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
+import Table from 'antd/es/table'
 import omit from 'lodash/fp/omit'
 
-import {useClients} from '../hooks'
-import {create} from '../service'
+import {notify} from '../../utils/notification'
 import Container from '../../common/components/Container'
+import {useClients} from '../hooks'
+import $client from '../service'
 
 const columns = [
   {
-    title: 'Nom commercial',
+    title: <strong>Nom commercial</strong>,
     dataIndex: 'tradingName',
     key: 'tradingName',
   },
   {
-    title: 'Prénom',
+    title: <strong>Prénom</strong>,
     dataIndex: 'firstName',
     key: 'firstName',
   },
   {
-    title: 'Nom',
+    title: <strong>Nom</strong>,
     dataIndex: 'lastName',
     key: 'lastName',
   },
   {
-    title: 'Email',
+    title: <strong>Email</strong>,
     dataIndex: 'email',
     key: 'email',
   },
@@ -40,29 +41,37 @@ function ClientList(props) {
     return null
   }
 
-  async function handleCreate() {
+  async function createClient() {
     setLoading(true)
-    const id = await create()
-    props.history.push(`/clients/${id}`, {id})
+
+    try {
+      const id = await $client.create()
+      notify.success('Client créé avec succès.')
+      props.history.push(`/clients/${id}`, {id})
+    } catch (error) {
+      notify.error(error.message)
+    }
   }
 
   return (
     <Container>
       <Table
+        bordered
         loading={loading}
         dataSource={clients.map(client => ({...client, key: client.id}))}
         columns={columns}
         pagination={false}
         rowKey={record => record.id}
-        style={{background: '#ffffff', marginBottom: 25}}
         onRow={record => ({
           onClick: () => props.history.push(`/clients/${record.id}`, {...omit('key', record)}),
         })}
+        style={{background: '#ffffff', marginBottom: 25}}
+        bodyStyle={{cursor: 'pointer'}}
       />
 
       <div style={{textAlign: 'right'}}>
-        <Button type="primary" disabled={loading} onClick={handleCreate}>
-          <Icon type="plus" />
+        <Button type="primary" disabled={loading} onClick={createClient}>
+          <Icon type={loading ? 'loading' : 'plus'} />
           Nouveau
         </Button>
       </div>

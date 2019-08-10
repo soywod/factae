@@ -1,12 +1,6 @@
 mixin toEuro(amount)
   =Number(amount).toFixed(2) + ' €'
 
-mixin profileName()
-  if profile.tradingName
-    span #{profile.tradingName} (#{profile.firstName} #{profile.lastName})
-  else
-    span #{profile.firstName} #{profile.lastName}
-
 style(type="text/css") !{compiledStyle}
 
 .container
@@ -20,8 +14,11 @@ style(type="text/css") !{compiledStyle}
 
   section.header
     .profile
-      h2
-        +profileName()
+      if profile.tradingName
+        h2 #{profile.tradingName}
+        div #{profile.firstName} #{profile.lastName}
+      else
+        h2 #{profile.firstName} #{profile.lastName}
       div #{profile.address}
       div #{profile.zip} #{profile.city}, France
 
@@ -136,7 +133,10 @@ style(type="text/css") !{compiledStyle}
         div
           | Micro-entreprise :
           |
-          +profileName()
+          if profile.tradingName
+            span #{profile.tradingName} (#{profile.firstName} #{profile.lastName})
+          else
+            span #{profile.firstName} #{profile.lastName}
         div
           | #{profile.address},
           | #{profile.zip} #{profile.city},

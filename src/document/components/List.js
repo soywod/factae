@@ -1,21 +1,32 @@
 import React, {useState} from 'react'
-import Table from 'antd/es/table'
+import AntdTag from 'antd/es/tag'
 import Button from 'antd/es/button'
-import Menu from 'antd/es/menu'
 import Dropdown from 'antd/es/dropdown'
 import Form from 'antd/es/form'
-import Tag from 'antd/es/tag'
 import Icon from 'antd/es/icon'
-import omit from 'lodash/fp/omit'
+import Menu from 'antd/es/menu'
+import Table from 'antd/es/table'
+import Tooltip from 'antd/es/tooltip'
 import find from 'lodash/fp/find'
-import moment from 'moment'
+import map from 'lodash/fp/map'
+import omit from 'lodash/fp/omit'
+import orderBy from 'lodash/fp/orderBy'
+import pipe from 'lodash/fp/pipe'
+import {DateTime} from 'luxon'
 
+import {notify} from '../../utils/notification'
+import Container from '../../common/components/Container'
 import {toEuro} from '../../common/currency'
-import {useDocuments} from '../hooks'
 import {useProfile} from '../../profile/hooks'
 import {useClients} from '../../client/hooks'
-import {create} from '../service'
-import Container from '../../common/components/Container'
+import {useDocuments} from '../hooks'
+import $document from '../service'
+
+const Tag = ({children, ...props}) => (
+  <AntdTag {...props} style={{float: 'right'}}>
+    {children}
+  </AntdTag>
+)
 
 function DocumentList(props) {
   const profile = useProfile()
@@ -23,38 +34,43 @@ function DocumentList(props) {
   const documents = useDocuments()
   const [loading, setLoading] = useState(false)
 
-  async function createDocument(e) {
+  async function createDocument(event) {
     setLoading(true)
 
-    let rawDocument = {
-      type: e.key,
-      createdAt: moment().toISOString(),
-      status: 'draft',
-      taxRate: profile.taxRate,
-      total: 0,
+    try {
+      let document = {
+        type: event.key,
+        createdAt: DateTime.local().toISO(),
+        status: 'draft',
+        taxRate: profile.taxRate,
+        total: 0,
+      }
+
+      switch (event.key) {
+        case 'quotation':
+          document.rate = profile.rate
+          document.rateUnit = profile.rateUnit
+          document.conditions = profile.quotationConditions
+          break
+
+        case 'invoice':
+          document.conditions = profile.invoiceConditions
+          break
+
+        case 'credit':
+          document.invoiceNumber = ''
+          document.conditions = profile.invoiceConditions
+          break
+
+        default:
+      }
+
+      const id = await $document.create(document)
+      notify.success('Document créé avec succès.')
+      props.history.push(`/documents/${id}`, {...document, id})
+    } catch (error) {
+      notify.error(error.message)
     }
-
-    switch (e.key) {
-      case 'quotation':
-        rawDocument.rate = profile.rate
-        rawDocument.rateUnit = profile.rateUnit
-        rawDocument.conditions = profile.quotationConditions
-        break
-
-      case 'invoice':
-        rawDocument.conditions = profile.invoiceConditions
-        break
-
-      case 'credit':
-        rawDocument.invoiceNumber = ''
-        rawDocument.conditions = profile.invoiceConditions
-        break
-
-      default:
-    }
-
-    const document = await create(rawDocument)
-    props.history.push(`/documents/${document.id}`, document)
   }
 
   if (!profile || !clients || !documents) {
@@ -63,44 +79,15 @@ function DocumentList(props) {
 
   const columns = [
     {
-      title: 'Type',
+      title: <strong>Titre</strong>,
       dataIndex: 'type',
       key: 'type',
       width: '25%',
-      render: type => {
-        switch (type) {
-          case 'quotation':
-            return 'Devis'
-
-          case 'invoice':
-            return 'Facture'
-
-          case 'credit':
-            return 'Avoir'
-
-          default:
-            return ''
-        }
-      },
-    },
-    {
-      title: 'Client',
-      dataIndex: 'client',
-      key: 'client',
-      width: '30%',
-      render: id => {
-        const client = find({id}, clients)
-        return client ? client.tradingName || client.email : ''
-      },
-    },
-    {
-      title: 'Statut',
-      dataIndex: 'status',
-      key: 'status',
-      align: 'center',
-      width: '15%',
-      render: status => (
+      render: (_, {type, status}) => (
         <>
+          {type === 'quotation' && 'Devis'}
+          {type === 'invoice' && 'Facture'}
+          {type === 'credit' && 'Avoir'}
           {status === 'draft' && <Tag>brouillon</Tag>}
           {status === 'sent' && <Tag color="blue">envoyé</Tag>}
           {status === 'signed' && <Tag color="green">signé</Tag>}
@@ -110,31 +97,64 @@ function DocumentList(props) {
       ),
     },
     {
-      title: 'Total (HT)',
+      title: <strong>Client</strong>,
+      dataIndex: 'client',
+      key: 'client',
+      width: '35%',
+      render: id => {
+        const client = find({id}, clients)
+        return client ? client.tradingName || client.email : ''
+      },
+    },
+    {
+      title: <strong>Date</strong>,
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: '20%',
+      render: dateISO => {
+        const createdAt = DateTime.fromISO(dateISO, {locale: 'fr'})
+
+        return (
+          <Tooltip title={createdAt.toFormat("'Le' d LLL yyyy 'à' HH'h'mm")}>
+            {createdAt.toRelative({locale: 'fr'})}
+          </Tooltip>
+        )
+      },
+    },
+    {
+      title: <strong>Total HT</strong>,
       dataIndex: 'total',
       key: 'total',
-      width: '30%',
+      width: '20%',
       align: 'right',
       render: (_, {totalHT}) => toEuro(totalHT),
     },
   ]
 
+  const dataSource = pipe([
+    orderBy('createdAt', 'desc'),
+    map(document => ({...document, key: document.id})),
+  ])
+
   return (
     <Container>
       <Table
+        bordered
         loading={loading}
-        dataSource={documents.map(document => ({...document, key: document.id}))}
+        dataSource={dataSource(documents)}
         columns={columns}
         pagination={false}
         rowKey={record => record.id}
-        style={{background: '#ffffff', marginBottom: 25}}
         onRow={record => ({
           onClick: () => props.history.push(`/documents/${record.id}`, {...omit('key', record)}),
         })}
+        style={{background: '#ffffff', marginBottom: 25}}
+        bodyStyle={{cursor: 'pointer'}}
       />
 
       <div style={{textAlign: 'right'}}>
         <Dropdown
+          disabled={loading || !profile}
           overlay={
             <Menu onClick={createDocument}>
               <Menu.Item key="quotation">Devis</Menu.Item>
@@ -143,8 +163,8 @@ function DocumentList(props) {
             </Menu>
           }
         >
-          <Button type="primary" disabled={loading || !profile}>
-            <Icon type="plus" />
+          <Button type="primary">
+            <Icon type={loading ? 'loading' : 'plus'} />
             Nouveau
           </Button>
         </Dropdown>

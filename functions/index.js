@@ -4,7 +4,7 @@ const TeaSchool = require('tea-school')
 const path = require('path')
 
 function formatDate(iso) {
-  return DateTime.fromISO(iso).toFormat('d LLL yyyy', {locale: 'fr'})
+  return DateTime.fromISO(iso, {locale: 'fr'}).toFormat('d LLL yyyy')
 }
 
 exports.generatePdf = functions.https.onCall(async data => {

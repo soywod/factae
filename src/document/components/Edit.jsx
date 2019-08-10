@@ -12,20 +12,21 @@ import Col from 'antd/es/col'
 import Icon from 'antd/es/icon'
 import Typography from 'antd/es/typography'
 import Empty from 'antd/es/empty'
-import Tooltip from 'antd/es/tooltip'
 import isNil from 'lodash/fp/isNil'
 import find from 'lodash/fp/find'
 import omitBy from 'lodash/fp/omitBy'
 import moment from 'moment'
+import {DateTime} from 'luxon'
 
+import {notify} from '../../utils/notification'
 import {toEuro} from '../../common/currency'
+import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
+import EditableTable from '../../common/components/EditableTable'
 import {useProfile} from '../../profile/hooks'
 import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
 import $document from '../service'
-import EditableTable from '../../common/components/EditableTable'
-import {notify} from '../../utils/notification'
 
 const {Title: AntdTitle, Paragraph: AntdParagraph} = Typography
 const {Option} = Select
@@ -55,7 +56,6 @@ function EditDocument(props) {
   const [loading, setLoading] = useState(false)
   const [document, setDocument] = useState(props.location.state)
   const [items, setItems] = useState((document && document.items) || [])
-  const client = find({id: document.client}, clients)
 
   useEffect(() => {
     if (documents && !document) {
@@ -63,19 +63,54 @@ function EditDocument(props) {
     }
   }, [document, documents, match.params.id])
 
-  function generatePdf(document) {
-    return async event => {
-      event.stopPropagation()
-      if (!document.client) {
-        return notify.error('Vous devez sélectionner un client et sauvegarder.')
+  async function buildNextDocument() {
+    const data = await props.form.validateFields()
+    const nextItems = items.filter(item => item.designation && item.unitPrice)
+    const totalHT = nextItems.reduce((sum, {amount}) => sum + amount, 0)
+    const totalTVA = Math.round(totalHT * document.taxRate) / 100
+    const totalTTC = totalHT + totalTVA
+
+    let nextDocument = {
+      ...document,
+      ...omitBy(isNil, data),
+      items: nextItems,
+      totalHT,
+      totalTVA,
+      totalTTC,
+    }
+
+    if (nextDocument.expiresAt) {
+      nextDocument.expiresAt = nextDocument.expiresAt.toISOString()
+    }
+
+    if (nextDocument.startsAt) {
+      nextDocument.startsAt = nextDocument.startsAt.toISOString()
+    }
+
+    if (nextDocument.endsAt) {
+      nextDocument.endsAt = nextDocument.endsAt.toISOString()
+    }
+
+    return nextDocument
+  }
+
+  async function generatePdf(event) {
+    event.stopPropagation()
+    setLoading(true)
+
+    try {
+      let nextDocument = await buildNextDocument()
+
+      if (!nextDocument.client) {
+        throw new Error('Vous devez sélectionner un client.')
       }
 
-      setLoading(true)
-      let nextDocument = {...document, createdAt: moment().toISOString(), status: 'sent', items}
+      const now = DateTime.local()
+      nextDocument.createdAt = now.toISO()
+
       if (nextDocument.type !== 'quotation' && !nextDocument.number) {
-        const now = moment()
         const count = documents
-          .map(({type, createdAt}) => [type, moment(createdAt)])
+          .map(({type, createdAt}) => [type, DateTime.fromISO(createdAt)])
           .reduce((count, [type, createdAt]) => {
             const matchMonth = createdAt.month() === now.month()
             const matchYear = createdAt.year() === now.year()
@@ -86,15 +121,22 @@ function EditDocument(props) {
         nextDocument.number = `${now.format('YYMM')}#${count}`
       }
 
-      setDocument(await $document.generatePdf(profile, client, nextDocument))
-      setLoading(false)
+      const nextClient = find({id: nextDocument.client}, clients)
+      setDocument(await $document.generatePdf(profile, nextClient, nextDocument))
+      notify.success('Document PDF généré avec succès.')
+    } catch (error) {
+      if (error.message) {
+        notify.error(error.message)
+      }
     }
+
+    setLoading(false)
   }
 
   function addItem() {
     setItems([
       ...items,
-      {key: Date.now(), designation: '', unitPrice: profile.unitPrice || '', quantity: '1'},
+      {key: Date.now(), designation: '', unitPrice: profile.rate || '', quantity: '1'},
     ])
   }
 
@@ -119,54 +161,32 @@ function EditDocument(props) {
     setItems([...items])
   }
 
-  async function removeDocument() {
+  async function deleteDocument() {
+    setLoading(true)
+
     try {
-      setLoading(true)
       await $document.delete(document)
+      notify.success('Document supprimé avec succès.')
       props.history.push('/documents')
-    } catch (e) {
-      setLoading(false)
+    } catch (error) {
+      notify.error(error.message)
     }
   }
 
-  async function saveDocument(e) {
-    e.preventDefault()
+  async function saveDocument(event) {
+    event.preventDefault()
     if (loading) return
+    setLoading(true)
 
     try {
-      setLoading(true)
-      const data = await props.form.validateFields()
-
-      const nextItems = items.filter(item => item.designation && item.unitPrice)
-      const totalHT = nextItems.reduce((sum, {amount}) => sum + amount, 0)
-      const totalTVA = Math.round(totalHT * document.taxRate) / 100
-      const totalTTC = totalHT + totalTVA
-
-      let nextDocument = {
-        ...document,
-        ...omitBy(isNil, data),
-        items: nextItems,
-        totalHT,
-        totalTVA,
-        totalTTC,
-      }
-
-      if (nextDocument.expiresAt) {
-        nextDocument.expiresAt = nextDocument.expiresAt.toISOString()
-      }
-
-      if (nextDocument.startsAt) {
-        nextDocument.startsAt = nextDocument.startsAt.toISOString()
-      }
-
-      if (nextDocument.endsAt) {
-        nextDocument.endsAt = nextDocument.endsAt.toISOString()
-      }
-
+      const nextDocument = await buildNextDocument()
       setDocument(nextDocument)
       await $document.update(nextDocument)
-    } catch (e) {
-      console.error(e)
+      notify.success('Document mis à jour avec succès.')
+    } catch (error) {
+      if (error.message) {
+        notify.error(error.message)
+      }
     }
 
     setLoading(false)
@@ -184,21 +204,21 @@ function EditDocument(props) {
 
   const columns = [
     {
-      title: 'Designation',
+      title: <strong>Designation</strong>,
       dataIndex: 'designation',
       key: 'designation',
       editable: true,
       width: '45%',
     },
     {
-      title: 'Quantité',
+      title: <strong>Quantité</strong>,
       dataIndex: 'quantity',
       key: 'quantity',
       editable: true,
       width: '10%',
     },
     {
-      title: 'Prix unitaire',
+      title: <strong>Prix unitaire</strong>,
       dataIndex: 'unitPrice',
       key: 'unitPrice',
       editable: true,
@@ -206,7 +226,7 @@ function EditDocument(props) {
       render: (_, {unitPrice}) => toEuro(unitPrice),
     },
     {
-      title: 'Montant',
+      title: <strong>Montant</strong>,
       dataIndex: 'amount',
       key: 'amount',
       width: '20%',
@@ -231,23 +251,6 @@ function EditDocument(props) {
       <Button type="dashed" shape="circle" onClick={addItem} style={{marginLeft: 12}}>
         <Icon type="plus" />
       </Button>
-    </Title>
-  )
-
-  const PdfTitle = (
-    <Title>
-      PDF
-      <Tooltip title="Générer le document">
-        <Button
-          type="dashed"
-          shape="circle"
-          onClick={generatePdf(document)}
-          disabled={loading}
-          style={{marginLeft: 12}}
-        >
-          <Icon type={loading ? 'loading' : 'sync'} />
-        </Button>
-      </Tooltip>
     </Title>
   )
 
@@ -345,7 +348,7 @@ function EditDocument(props) {
           <Card key={key} title={title} style={{marginBottom: 25}}>
             <Row gutter={25}>
               {fields.map(([name, label, Component = <Input size="large" />], key) => (
-                <Col key={key} xs={6} sm={12} md={8} lg={6}>
+                <Col key={key} xs={24} sm={12} md={8} lg={6}>
                   <Form.Item label={label}>
                     {getFieldDecorator(name, {
                       initialValue: ['expiresAt', 'startsAt', 'endsAt'].includes(name)
@@ -389,31 +392,33 @@ function EditDocument(props) {
           </Row>
         </Card>
 
-        <Card
-          title={PdfTitle}
-          bodyStyle={{padding: 25, textAlign: 'center'}}
-          style={{marginBottom: 25}}
-        >
-          <Row gutter={25}>
-            {document.pdf ? (
-              <iframe
-                title="document"
-                src={document.pdf}
-                width="100%"
-                height={450}
-                scrolling="no"
-                style={{maxWidth: 512}}
-              ></iframe>
-            ) : (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-            )}
-          </Row>
-        </Card>
+        {document.pdf && (
+          <Card
+            title={<Title>PDF</Title>}
+            bodyStyle={{padding: 25, textAlign: 'center'}}
+            style={{marginBottom: 25}}
+          >
+            <Row gutter={25}>
+              {document.pdf ? (
+                <iframe
+                  title="document"
+                  src={document.pdf}
+                  width="100%"
+                  height={450}
+                  scrolling="no"
+                  style={{maxWidth: 512}}
+                ></iframe>
+              ) : (
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )}
+            </Row>
+          </Card>
+        )}
 
-        <div style={{textAlign: 'right'}}>
+        <ActionBar>
           <Popconfirm
             title="Êtes-vous sûr de vouloir supprimer ce document ?"
-            onConfirm={removeDocument}
+            onConfirm={deleteDocument}
             okText="Oui"
             cancelText="Non"
           >
@@ -422,11 +427,15 @@ function EditDocument(props) {
               Supprimer
             </Button>
           </Popconfirm>
+          <Button type="dashed" onClick={generatePdf} disabled={loading} style={{marginRight: 8}}>
+            <Icon type="file-pdf" />
+            Générer PDF
+          </Button>
           <Button type="primary" htmlType="submit" disabled={loading}>
-            <Icon type="save" />
+            <Icon type={loading ? 'loading' : 'save'} />
             Sauvegarder
           </Button>
-        </div>
+        </ActionBar>
       </Form>
     </Container>
   )

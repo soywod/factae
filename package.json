@@ -25,6 +25,7 @@
     "antd": "^3.19.8",
     "firebase": "^6.2.2",
     "lodash": "^4.17.11",
+    "luxon": "^1.17.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",

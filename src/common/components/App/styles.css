@@ -5,11 +5,25 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #fafafa;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.ant-notification-success {
+  background: #52c41a;
+}
+
+.ant-notification-error {
+  background: #ff4d4f;
+}
+
+.ant-notification-notice-message,
+.ant-notification-notice-close,
+.ant-notification-notice-close:hover,
+.anticon.ant-notification-notice-icon {
+  color: #ffffff;
 }
 
 .editable-cell {

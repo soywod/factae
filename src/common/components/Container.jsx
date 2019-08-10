@@ -2,7 +2,7 @@ import React from 'react'
 
 const styles = {
   container: {
-    padding: '25px',
+    padding: '25px 25px 56px 25px',
     minHeight: 'calc(100vh - 64px)',
   },
 }

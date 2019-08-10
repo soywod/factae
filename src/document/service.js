@@ -1,9 +1,6 @@
 import {BehaviorSubject} from 'rxjs'
-import omitBy from 'lodash/fp/omitBy'
-import isNil from 'lodash/fp/isNil'
 
 import {db, functions} from '../utils/firebase'
-import {notify} from '../utils/notification'
 import {user$} from '../auth/service'
 
 export const documents$ = new BehaviorSubject(null)
@@ -20,37 +17,18 @@ export function onDocumentsChanged() {
   })
 }
 
-export async function create(rawDocument) {
-  try {
-    const document = omitBy(isNil, rawDocument)
-    const {id} = await db(`users/${user$.value.uid}/documents`).add(document)
-    notify.success('Document créé avec succès.')
-    return {id, ...document}
-  } catch (error) {
-    notify.error(error.message)
-    throw error
-  }
+export async function create(document) {
+  const {id} = await db(`users/${user$.value.uid}/documents`).add(document)
+  return id
 }
 
 export async function update(document) {
-  try {
-    await db(`users/${user$.value.uid}/documents`, document.id).set(document)
-    notify.success('Document mis à jour avec succès.')
-  } catch (error) {
-    notify.error(error.message)
-    throw error
-  }
+  await db(`users/${user$.value.uid}/documents`, document.id).set(document)
 }
 
 export {_delete as delete}
 async function _delete(document) {
-  try {
-    await db(`users/${user$.value.uid}/documents`, document.id).delete()
-    notify.success('Document supprimé avec succès.')
-  } catch (error) {
-    notify.error(error.message)
-    throw error
-  }
+  await db(`users/${user$.value.uid}/documents`, document.id).delete()
 }
 
 export async function generatePdf(profile, client, document) {
@@ -61,7 +39,6 @@ export async function generatePdf(profile, client, document) {
     await db(`users/${user$.value.uid}/documents`, document.id).set(nextDocument)
     return nextDocument
   } catch (error) {
-    notify.error(error.message)
     return document
   }
 }

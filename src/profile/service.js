@@ -1,19 +1,12 @@
 import {BehaviorSubject} from 'rxjs'
 
 import {db} from '../utils/firebase'
-import {notify} from '../utils/notification'
 import {user$} from '../auth/service'
 
 export const profile$ = new BehaviorSubject(null)
 
 export async function update(profile) {
-  try {
-    await db('users', user$.value.uid).set(profile)
-    notify.success('Profil mis à jour avec succès.')
-  } catch (error) {
-    notify.error(error.message)
-    throw error
-  }
+  await db('users', user$.value.uid).set(profile)
 }
 
 export function onProfileChanged() {
@@ -22,3 +15,5 @@ export function onProfileChanged() {
     else profile$.next(doc.data() || {})
   })
 }
+
+export default {update}

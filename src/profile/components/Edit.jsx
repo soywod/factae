@@ -1,20 +1,23 @@
 import React, {Fragment, useState} from 'react'
-import Form from 'antd/es/form'
-import Input from 'antd/es/input'
-import InputNumber from 'antd/es/input-number'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
-import Row from 'antd/es/row'
 import Col from 'antd/es/col'
-import Typography from 'antd/es/typography'
+import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
+import Input from 'antd/es/input'
+import InputNumber from 'antd/es/input-number'
+import Row from 'antd/es/row'
 import Select from 'antd/es/select'
+import Typography from 'antd/es/typography'
 import omitBy from 'lodash/fp/omitBy'
 import isNil from 'lodash/fp/isNil'
+import getOr from 'lodash/fp/getOr'
 
+import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
+import {notify} from '../../utils/notification'
 import {useProfile} from '../hooks'
-import {update} from '../service'
+import $profile from '../service'
 
 const {Title, Paragraph} = Typography
 const {Option} = Select
@@ -33,9 +36,6 @@ const styles = {
   },
   card: {
     marginBottom: '25px',
-  },
-  action: {
-    textAlign: 'right',
   },
 }
 
@@ -148,19 +148,23 @@ function Profile(props) {
   const [loading, setLoading] = useState(false)
   const profile = useProfile()
 
-  async function handleSubmit(e) {
-    e.preventDefault()
+  async function saveProfile(event) {
+    event.preventDefault()
     if (loading) return
+    setLoading(true)
 
     try {
-      setLoading(true)
       const data = await props.form.validateFields()
       const nextProfile = {...profile, ...omitBy(isNil, data)}
-      await update(nextProfile)
-      props.history.push('/')
-    } catch (e) {
-      setLoading(false)
+      await $profile.update(nextProfile)
+      notify.success('Profil mis à jour avec succès.')
+    } catch (error) {
+      if (error.message) {
+        notify.error(error.message)
+      }
     }
+
+    setLoading(false)
   }
 
   if (!profile) {
@@ -169,7 +173,7 @@ function Profile(props) {
 
   return (
     <Container>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={saveProfile}>
         {fields.map(([title, fields], key) => (
           <Card key={key} title={title} style={styles.card}>
             <Row gutter={25}>
@@ -177,7 +181,7 @@ function Profile(props) {
                 <Col key={key} xs={24} sm={12} md={8} lg={6}>
                   <Form.Item label={label}>
                     {getFieldDecorator(name, {
-                      initialValue: profile[name],
+                      initialValue: getOr('', name, profile),
                     })(Component)}
                   </Form.Item>
                 </Col>
@@ -192,7 +196,7 @@ function Profile(props) {
               <Col key={key} xs={24}>
                 <Form.Item label={label}>
                   {getFieldDecorator(name, {
-                    initialValue: profile[name],
+                    initialValue: getOr('', name, profile),
                   })(Component)}
                 </Form.Item>
               </Col>
@@ -200,12 +204,12 @@ function Profile(props) {
           </Row>
         </Card>
 
-        <div style={styles.action}>
+        <ActionBar>
           <Button type="primary" htmlType="submit" disabled={loading}>
-            <Icon type="save" />
+            <Icon type={loading ? 'loading' : 'save'} />
             Sauvegarder
           </Button>
-        </div>
+        </ActionBar>
       </Form>
     </Container>
   )

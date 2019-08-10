@@ -1,17 +1,20 @@
 import React, {useEffect, useState} from 'react'
-import Form from 'antd/es/form'
-import Input from 'antd/es/input'
-import Popconfirm from 'antd/es/popconfirm'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
-import Row from 'antd/es/row'
 import Col from 'antd/es/col'
+import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
+import Input from 'antd/es/input'
+import Popconfirm from 'antd/es/popconfirm'
+import Row from 'antd/es/row'
 import Typography from 'antd/es/typography'
-import isNil from 'lodash/fp/isNil'
 import find from 'lodash/fp/find'
+import getOr from 'lodash/fp/getOr'
+import isNil from 'lodash/fp/isNil'
 import omitBy from 'lodash/fp/omitBy'
 
+import {notify} from '../../utils/notification'
+import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import {useClients} from '../hooks'
 import $client from '../service'
@@ -56,29 +59,36 @@ function EditClient(props) {
     }
   }, [client, clients, match.params.id])
 
-  async function handleRemove() {
+  async function deleteClient() {
+    setLoading(true)
+
     try {
-      setLoading(true)
       await $client.delete(client)
+      notify.success('Client supprimé avec succès.')
       props.history.push('/clients')
-    } catch (e) {
+    } catch (error) {
+      if (error.message) notify.error(error.message)
       setLoading(false)
     }
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault()
+  async function saveClient(event) {
+    event.preventDefault()
     if (loading) return
+    setLoading(true)
 
     try {
-      setLoading(true)
       const data = await props.form.validateFields()
       const nextClient = {...client, ...omitBy(isNil, data)}
       await $client.update(nextClient)
-      props.history.push('/clients')
-    } catch (e) {
-      setLoading(false)
+      notify.success('Client mis à jour avec succès.')
+    } catch (error) {
+      if (error.message) {
+        notify.error(error.message)
+      }
     }
+
+    setLoading(false)
   }
 
   if (!clients || !client) {
@@ -87,7 +97,7 @@ function EditClient(props) {
 
   return (
     <Container>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={saveClient}>
         {fields.map(([title, fields], key) => (
           <Card key={key} title={title} style={{marginBottom: 25}}>
             <Row gutter={25}>
@@ -95,7 +105,7 @@ function EditClient(props) {
                 <Col key={key} xs={24} sm={12} md={8} lg={6}>
                   <Form.Item label={label}>
                     {getFieldDecorator(name, {
-                      initialValue: client[name],
+                      initialValue: getOr('', name, client),
                     })(Component)}
                   </Form.Item>
                 </Col>
@@ -103,25 +113,25 @@ function EditClient(props) {
             </Row>
           </Card>
         ))}
-
-        <div style={{textAlign: 'right'}}>
-          <Popconfirm
-            title="Êtes-vous sûr de vouloir supprimer ce client ?"
-            onConfirm={handleRemove}
-            okText="Oui"
-            cancelText="Non"
-          >
-            <Button type="danger" disabled={loading} style={{marginRight: 8}}>
-              <Icon type="delete" />
-              Supprimer
-            </Button>
-          </Popconfirm>
-          <Button type="primary" htmlType="submit" disabled={loading}>
-            <Icon type="save" />
-            Sauvegarder
-          </Button>
-        </div>
       </Form>
+
+      <ActionBar>
+        <Popconfirm
+          title="Êtes-vous sûr de vouloir supprimer ce client ?"
+          onConfirm={deleteClient}
+          okText="Oui"
+          cancelText="Non"
+        >
+          <Button type="danger" disabled={loading} style={{marginRight: 8}}>
+            <Icon type="delete" />
+            Supprimer
+          </Button>
+        </Popconfirm>
+        <Button type="primary" htmlType="submit" disabled={loading}>
+          <Icon type={loading ? 'loading' : 'save'} />
+          Sauvegarder
+        </Button>
+      </ActionBar>
     </Container>
   )
 }
