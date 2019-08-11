@@ -1,4 +1,7 @@
 import notification from 'antd/es/notification'
+import noop from 'lodash/fp/noop'
+
+import {useProfile} from '../profile/hooks'
 
 const types = ['success', 'error']
 const placement = 'topRight'
@@ -21,4 +24,33 @@ export const notify = types.reduce(
   {},
 )
 
-export default {notify}
+export function useNotification() {
+  const profile = useProfile()
+
+  if (!profile) {
+    return noop
+  }
+
+  function getErrorMessage(error) {
+    switch (error.code) {
+      case 'permission-denied':
+        return profile.email === 'demo@factae.fr'
+          ? 'Les données sont verrouillées en mode démo.'
+          : 'Votre abonnement a expiré.'
+      default:
+        return error.message
+    }
+  }
+
+  return async (resolve, reject) => {
+    try {
+      notify.success(await resolve())
+    } catch (error) {
+      const message = getErrorMessage(error)
+      if (message) notify.error(message)
+      if (reject) await reject(error)
+    }
+  }
+}
+
+export default {notify, useNotification}

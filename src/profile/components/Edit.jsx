@@ -15,7 +15,7 @@ import getOr from 'lodash/fp/getOr'
 
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
-import {notify} from '../../utils/notification'
+import {useNotification} from '../../utils/notification'
 import {useProfile} from '../hooks'
 import $profile from '../service'
 
@@ -147,22 +147,19 @@ function Profile(props) {
   const {getFieldDecorator} = props.form
   const [loading, setLoading] = useState(false)
   const profile = useProfile()
+  const tryAndNotify = useNotification()
 
   async function saveProfile(event) {
     event.preventDefault()
     if (loading) return
     setLoading(true)
 
-    try {
+    await tryAndNotify(async () => {
       const data = await props.form.validateFields()
       const nextProfile = {...profile, ...omitBy(isNil, data)}
       await $profile.update(nextProfile)
-      notify.success('Profil mis à jour avec succès.')
-    } catch (error) {
-      if (error.message) {
-        notify.error(error.message)
-      }
-    }
+      return 'Profil mis à jour avec succès.'
+    })
 
     setLoading(false)
   }

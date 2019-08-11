@@ -67,7 +67,7 @@ const Auth = withHOCs(props => {
   async function register() {
     const {email, password} = await props.form.validateFields()
     await $auth.register(email, password)
-    notify.success('Compte créé avec succès.')
+    notify.success("Compte créé avec succès. Vous bénéficiez de 30 jours d'essai gratuits.")
   }
 
   async function resetPassword() {

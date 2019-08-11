@@ -1,3 +1,4 @@
+import {DateTime} from 'luxon'
 import {BehaviorSubject} from 'rxjs'
 
 import {auth, db} from '../utils/firebase'
@@ -10,8 +11,13 @@ export async function login(email, password) {
 
 export async function register(email, password) {
   const {user} = await auth.createUserWithEmailAndPassword(email, password)
-  const profile = {id: user.uid, email: user.email}
-  await db('users', profile.id).set(profile)
+  await db('users', user.uid).set({
+    id: user.uid,
+    email: user.email,
+    expiresAt: DateTime.local()
+      .plus({days: 30})
+      .toJSDate(),
+  })
 }
 
 export async function resetPassword(email) {

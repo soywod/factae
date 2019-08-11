@@ -5,7 +5,7 @@ import Icon from 'antd/es/icon'
 import Table from 'antd/es/table'
 import omit from 'lodash/fp/omit'
 
-import {notify} from '../../utils/notification'
+import {useNotification} from '../../utils/notification'
 import Container from '../../common/components/Container'
 import {useClients} from '../hooks'
 import $client from '../service'
@@ -36,22 +36,22 @@ const columns = [
 function ClientList(props) {
   const clients = useClients()
   const [loading, setLoading] = useState(false)
+  const tryAndNotify = useNotification()
 
   if (!clients) {
     return null
   }
 
   async function createClient() {
-    setLoading(true)
-
-    try {
-      const id = await $client.create()
-      notify.success('Client créé avec succès.')
-      props.history.push(`/clients/${id}`, {id})
-    } catch (error) {
-      notify.error(error.message)
-      setLoading(false)
-    }
+    await tryAndNotify(
+      async () => {
+        setLoading(true)
+        const id = await $client.create()
+        props.history.push(`/clients/${id}`, {id})
+        return 'Client créé avec succès.'
+      },
+      () => setLoading(false),
+    )
   }
 
   return (

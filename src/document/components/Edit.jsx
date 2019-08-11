@@ -18,7 +18,7 @@ import omitBy from 'lodash/fp/omitBy'
 import moment from 'moment'
 import {DateTime} from 'luxon'
 
-import {notify} from '../../utils/notification'
+import {useNotification} from '../../utils/notification'
 import {toEuro} from '../../common/currency'
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
@@ -56,6 +56,7 @@ function EditDocument(props) {
   const [loading, setLoading] = useState(false)
   const [document, setDocument] = useState(props.location.state)
   const [items, setItems] = useState((document && document.items) || [])
+  const tryAndNotify = useNotification()
 
   useEffect(() => {
     if (documents && !document) {
@@ -98,7 +99,7 @@ function EditDocument(props) {
     event.stopPropagation()
     setLoading(true)
 
-    try {
+    await tryAndNotify(async () => {
       let nextDocument = await buildNextDocument()
 
       if (!nextDocument.client) {
@@ -123,12 +124,8 @@ function EditDocument(props) {
 
       const nextClient = find({id: nextDocument.client}, clients)
       setDocument(await $document.generatePdf(profile, nextClient, nextDocument))
-      notify.success('Document PDF généré avec succès.')
-    } catch (error) {
-      if (error.message) {
-        notify.error(error.message)
-      }
-    }
+      return 'Document PDF généré avec succès.'
+    })
 
     setLoading(false)
   }
@@ -162,16 +159,15 @@ function EditDocument(props) {
   }
 
   async function deleteDocument() {
-    setLoading(true)
-
-    try {
-      await $document.delete(document)
-      notify.success('Document supprimé avec succès.')
-      props.history.push('/documents')
-    } catch (error) {
-      notify.error(error.message)
-      setLoading(false)
-    }
+    await tryAndNotify(
+      async () => {
+        setLoading(true)
+        await $document.delete(document)
+        props.history.push('/documents')
+        return 'Document supprimé avec succès.'
+      },
+      () => setLoading(false),
+    )
   }
 
   async function saveDocument(event) {
@@ -179,16 +175,12 @@ function EditDocument(props) {
     if (loading) return
     setLoading(true)
 
-    try {
+    await tryAndNotify(async () => {
       const nextDocument = await buildNextDocument()
       setDocument(nextDocument)
       await $document.update(nextDocument)
-      notify.success('Document mis à jour avec succès.')
-    } catch (error) {
-      if (error.message) {
-        notify.error(error.message)
-      }
-    }
+      return 'Document mis à jour avec succès.'
+    })
 
     setLoading(false)
   }

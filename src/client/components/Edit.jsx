@@ -13,7 +13,7 @@ import getOr from 'lodash/fp/getOr'
 import isNil from 'lodash/fp/isNil'
 import omitBy from 'lodash/fp/omitBy'
 
-import {notify} from '../../utils/notification'
+import {useNotification} from '../../utils/notification'
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import {useClients} from '../hooks'
@@ -52,6 +52,7 @@ function EditClient(props) {
   const clients = useClients()
   const [loading, setLoading] = useState(false)
   const [client, setClient] = useState(props.location.state)
+  const tryAndNotify = useNotification()
 
   useEffect(() => {
     if (clients && !client) {
@@ -60,16 +61,15 @@ function EditClient(props) {
   }, [client, clients, match.params.id])
 
   async function deleteClient() {
-    setLoading(true)
-
-    try {
-      await $client.delete(client)
-      notify.success('Client supprimé avec succès.')
-      props.history.push('/clients')
-    } catch (error) {
-      if (error.message) notify.error(error.message)
-      setLoading(false)
-    }
+    await tryAndNotify(
+      async () => {
+        setLoading(true)
+        await $client.delete(client)
+        props.history.push('/clients')
+        return 'Client supprimé avec succès.'
+      },
+      () => setLoading(false),
+    )
   }
 
   async function saveClient(event) {
@@ -77,16 +77,12 @@ function EditClient(props) {
     if (loading) return
     setLoading(true)
 
-    try {
+    await tryAndNotify(async () => {
       const data = await props.form.validateFields()
       const nextClient = {...client, ...omitBy(isNil, data)}
       await $client.update(nextClient)
-      notify.success('Client mis à jour avec succès.')
-    } catch (error) {
-      if (error.message) {
-        notify.error(error.message)
-      }
-    }
+      return 'Client mis à jour avec succès.'
+    })
 
     setLoading(false)
   }

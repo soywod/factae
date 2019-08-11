@@ -14,7 +14,7 @@ import orderBy from 'lodash/fp/orderBy'
 import pipe from 'lodash/fp/pipe'
 import {DateTime} from 'luxon'
 
-import {notify} from '../../utils/notification'
+import {useNotification} from '../../utils/notification'
 import Container from '../../common/components/Container'
 import {toEuro} from '../../common/currency'
 import {useProfile} from '../../profile/hooks'
@@ -33,45 +33,45 @@ function DocumentList(props) {
   const clients = useClients()
   const documents = useDocuments()
   const [loading, setLoading] = useState(false)
+  const tryAndNotify = useNotification()
 
   async function createDocument(event) {
-    setLoading(true)
+    await tryAndNotify(
+      async () => {
+        setLoading(true)
+        let document = {
+          type: event.key,
+          createdAt: DateTime.local().toISO(),
+          status: 'draft',
+          taxRate: profile.taxRate,
+          total: 0,
+        }
 
-    try {
-      let document = {
-        type: event.key,
-        createdAt: DateTime.local().toISO(),
-        status: 'draft',
-        taxRate: profile.taxRate,
-        total: 0,
-      }
+        switch (event.key) {
+          case 'quotation':
+            document.rate = profile.rate
+            document.rateUnit = profile.rateUnit
+            document.conditions = profile.quotationConditions
+            break
 
-      switch (event.key) {
-        case 'quotation':
-          document.rate = profile.rate
-          document.rateUnit = profile.rateUnit
-          document.conditions = profile.quotationConditions
-          break
+          case 'invoice':
+            document.conditions = profile.invoiceConditions
+            break
 
-        case 'invoice':
-          document.conditions = profile.invoiceConditions
-          break
+          case 'credit':
+            document.invoiceNumber = ''
+            document.conditions = profile.invoiceConditions
+            break
 
-        case 'credit':
-          document.invoiceNumber = ''
-          document.conditions = profile.invoiceConditions
-          break
+          default:
+        }
 
-        default:
-      }
-
-      const id = await $document.create(document)
-      notify.success('Document créé avec succès.')
-      props.history.push(`/documents/${id}`, {...document, id})
-    } catch (error) {
-      notify.error(error.message)
-      setLoading(false)
-    }
+        const id = await $document.create(document)
+        props.history.push(`/documents/${id}`, {...document, id})
+        return 'Document créé avec succès.'
+      },
+      () => setLoading(false),
+    )
   }
 
   if (!profile || !clients || !documents) {
