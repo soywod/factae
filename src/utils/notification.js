@@ -3,7 +3,7 @@ import noop from 'lodash/fp/noop'
 
 import {useProfile} from '../profile/hooks'
 
-const types = ['success', 'error']
+const types = ['info', 'success', 'error']
 const placement = 'topRight'
 const duration = 3
 const bottom = 0

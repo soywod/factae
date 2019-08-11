@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {withRouter} from 'react-router-dom'
+import {DateTime} from 'luxon'
 import isNull from 'lodash/fp/isNull'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
@@ -10,6 +11,7 @@ import Spin from 'antd/es/spin'
 
 import Logo from '../../common/components/Logo'
 import {notify} from '../../utils/notification'
+import {useProfile} from '../../profile/hooks'
 import $auth from '../service'
 import {useAuth} from '../hooks'
 
@@ -46,6 +48,7 @@ const Auth = withHOCs(props => {
   const {getFieldDecorator} = props.form
   const [loading, setLoading] = useState(false)
   const user = useAuth()
+  const profile = useProfile()
 
   const doAsyncTask = action => async event => {
     event.preventDefault()
@@ -79,14 +82,17 @@ const Auth = withHOCs(props => {
   }
 
   useEffect(() => {
-    if (user) {
+    if (user && profile) {
+      const expiresAt = DateTime.fromMillis(profile.expiresAt.seconds)
+      const diff = DateTime.local().toRelative({locale: 'fr', base: expiresAt})
+      notify.info(`Bonjour ${profile.firstName.trim()}. Votre abonnement expire ${diff}.`)
       props.history.push('/')
     }
-  }, [user, props.history])
+  }, [user, profile, props.history])
 
   return (
     <div style={styles.container}>
-      <Spin size="large" spinning={loading || isNull(user)}>
+      <Spin size="large" spinning={loading || isNull(user) || isNull(profile)}>
         <Card
           title={
             <div style={styles.title}>

@@ -46,6 +46,10 @@ h2 {
   }
 }
 
+.ant-notification-info {
+  background: #1890ff;
+}
+
 .ant-notification-success {
   background: #52c41a;
 }
