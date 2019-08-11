@@ -33,7 +33,9 @@ const styles = {
   },
 }
 
-function Auth(props) {
+const withHOCs = Auth => Form.create()(withRouter(Auth))
+const Auth = withHOCs(props => {
+  const {email = '', password = ''} = props
   const {getFieldDecorator} = props.form
   const [loading, setLoading] = useState(false)
   const user = useAuth()
@@ -89,6 +91,7 @@ function Auth(props) {
           <Form onSubmit={doAsyncTask(login)}>
             <Form.Item>
               {getFieldDecorator('email', {
+                initialValue: email,
                 rules: [
                   {type: 'email', message: 'Adresse email invalide.'},
                   {required: true, message: 'Adresse email requise.'},
@@ -104,6 +107,7 @@ function Auth(props) {
             </Form.Item>
             <Form.Item>
               {getFieldDecorator('password', {
+                initialValue: password,
                 rules: [
                   {min: 6, message: 'Mot de passe trop court.'},
                   {required: true, message: 'Mot de passe requis.'},
@@ -133,7 +137,7 @@ function Auth(props) {
       </Spin>
     </div>
   )
-}
+})
 
 function Logout() {
   useEffect(() => {
@@ -144,27 +148,10 @@ function Logout() {
 }
 
 function Demo(props) {
-  async function login() {
-    try {
-      await $auth.login('demo@factae.fr', 'factae')
-      props.history.push('/')
-    } catch (error) {
-      notify.error(error.message)
-    }
-  }
-
-  useEffect(() => {
-    login()
-  }, [])
-
-  return (
-    <div style={styles.container}>
-      <Spin size="large" spinning />
-    </div>
-  )
+  return <Auth email="demo@factae.fr" password="factae" {...props} />
 }
 
 Auth.Logout = Logout
 Auth.Demo = Demo
 
-export default Form.create()(withRouter(Auth))
+export default Auth
