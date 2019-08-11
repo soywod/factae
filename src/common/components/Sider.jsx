@@ -49,6 +49,10 @@ function Sider(props) {
         selectedKeys={selectedKeys}
         mode="inline"
       >
+        <Menu.Item key="/">
+          <Icon type="dashboard" />
+          <span>Vue d'ensemble</span>
+        </Menu.Item>
         <Menu.Item key="/documents">
           <Icon type="copy" />
           <span>Documents</span>

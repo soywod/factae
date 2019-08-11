@@ -155,7 +155,24 @@ function Logout() {
 }
 
 function Demo(props) {
-  return <Auth email="demo@factae.fr" password="factae" {...props} />
+  async function login() {
+    try {
+      await $auth.login('demo@factae.fr', 'factae')
+      props.history.push('/')
+    } catch (error) {
+      notify.error(error.message)
+    }
+  }
+
+  useEffect(() => {
+    login()
+  }, [])
+
+  return (
+    <div style={styles.container}>
+      <Spin size="large" spinning />
+    </div>
+  )
 }
 
 Auth.Logout = Logout

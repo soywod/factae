@@ -33,7 +33,7 @@ const {Option} = Select
 const {TextArea} = Input
 
 const Title = ({children}) => (
-  <AntdTitle level={2} style={{fontSize: '1.2rem', marginBottom: 0}}>
+  <AntdTitle level={3} style={{fontSize: '1.2rem', marginBottom: 0}}>
     {children}
   </AntdTitle>
 )
@@ -112,13 +112,13 @@ function EditDocument(props) {
         const count = documents
           .map(({type, createdAt}) => [type, DateTime.fromISO(createdAt)])
           .reduce((count, [type, createdAt]) => {
-            const matchMonth = createdAt.month() === now.month()
-            const matchYear = createdAt.year() === now.year()
+            const matchMonth = createdAt.month === now.month
+            const matchYear = createdAt.year === now.year
             const matchDocType = type === document.type
             return count + Number(matchMonth && matchYear && matchDocType)
           }, 0)
 
-        nextDocument.number = `${now.format('YYMM')}#${count}`
+        nextDocument.number = `${now.toFormat('YYMM')}#${count}`
       }
 
       const nextClient = find({id: nextDocument.client}, clients)
@@ -170,6 +170,7 @@ function EditDocument(props) {
       props.history.push('/documents')
     } catch (error) {
       notify.error(error.message)
+      setLoading(false)
     }
   }
 
@@ -326,7 +327,7 @@ function EditDocument(props) {
 
   const ConditionTitle = (
     <>
-      <Title level={2}>Conditions</Title>
+      <Title level={3}>Conditions</Title>
       <Paragraph>
         Correspond aux conditions (de paiement, de livraison, d'exécution etc) qui s'afficheront en
         bas du document.
@@ -343,6 +344,7 @@ function EditDocument(props) {
 
   return (
     <Container>
+      <h1>Document</h1>
       <Form onSubmit={saveDocument}>
         {fields.map(([title, fields], key) => (
           <Card key={key} title={title} style={{marginBottom: 15}}>

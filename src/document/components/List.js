@@ -70,6 +70,7 @@ function DocumentList(props) {
       props.history.push(`/documents/${id}`, {...document, id})
     } catch (error) {
       notify.error(error.message)
+      setLoading(false)
     }
   }
 
@@ -138,6 +139,7 @@ function DocumentList(props) {
 
   return (
     <Container>
+      <h1>Documents</h1>
       <Table
         bordered
         loading={loading}

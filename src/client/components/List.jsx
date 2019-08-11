@@ -50,11 +50,13 @@ function ClientList(props) {
       props.history.push(`/clients/${id}`, {id})
     } catch (error) {
       notify.error(error.message)
+      setLoading(false)
     }
   }
 
   return (
     <Container>
+      <h1>Clients</h1>
       <Table
         bordered
         loading={loading}

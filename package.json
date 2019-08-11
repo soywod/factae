@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "antd": "^3.19.8",
+    "chart.js": "^2.8.0",
     "firebase": "^6.2.2",
     "lodash": "^4.17.11",
     "luxon": "^1.17.2",

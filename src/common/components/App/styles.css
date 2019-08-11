@@ -11,14 +11,25 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+h1 {
+  font-weight: bold;
+  font-size: 2em;
+  margin: 0 0 24px 0;
+}
+
+h2 {
+  font-size: 2em;
+  margin: 36.5px 0 12.5px 0;
+}
+
 #container {
-  padding: 25px;
+  padding: 24px;
   min-height: 100vh;
 }
 
 @media only screen and (max-width: 768px) {
   #container {
-    padding: 15px;
+    padding: 1em;
   }
 }
 

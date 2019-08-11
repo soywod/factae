@@ -21,7 +21,7 @@ import $client from '../service'
 
 const {Title: AntdTitle} = Typography
 const Title = ({children}) => (
-  <AntdTitle level={2} style={{fontSize: '1.2rem', marginBottom: 0}}>
+  <AntdTitle level={3} style={{fontSize: '1.2rem', marginBottom: 0}}>
     {children}
   </AntdTitle>
 )
@@ -97,6 +97,7 @@ function EditClient(props) {
 
   return (
     <Container>
+      <h1>Client</h1>
       <Form onSubmit={saveClient}>
         {fields.map(([title, fields], key) => (
           <Card key={key} title={title} style={{marginBottom: 15}}>
@@ -113,25 +114,24 @@ function EditClient(props) {
             </Row>
           </Card>
         ))}
-      </Form>
-
-      <ActionBar>
-        <Popconfirm
-          title="Êtes-vous sûr de vouloir supprimer ce client ?"
-          onConfirm={deleteClient}
-          okText="Oui"
-          cancelText="Non"
-        >
-          <Button type="danger" disabled={loading} style={{marginRight: 8}}>
-            <Icon type="delete" />
-            Supprimer
+        <ActionBar>
+          <Popconfirm
+            title="Êtes-vous sûr de vouloir supprimer ce client ?"
+            onConfirm={deleteClient}
+            okText="Oui"
+            cancelText="Non"
+          >
+            <Button type="danger" disabled={loading} style={{marginRight: 8}}>
+              <Icon type="delete" />
+              Supprimer
+            </Button>
+          </Popconfirm>
+          <Button type="primary" htmlType="submit" disabled={loading}>
+            <Icon type={loading ? 'loading' : 'save'} />
+            Sauvegarder
           </Button>
-        </Popconfirm>
-        <Button type="primary" htmlType="submit" disabled={loading}>
-          <Icon type={loading ? 'loading' : 'save'} />
-          Sauvegarder
-        </Button>
-      </ActionBar>
+        </ActionBar>
+      </Form>
     </Container>
   )
 }

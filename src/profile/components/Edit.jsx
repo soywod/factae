@@ -40,7 +40,7 @@ const styles = {
 }
 
 const ContactTitle = (
-  <Title level={2} style={styles.title}>
+  <Title level={3} style={styles.title}>
     Informations personnelles
   </Title>
 )
@@ -56,7 +56,7 @@ const contactFields = [
 ]
 
 const CompanyTitle = (
-  <Title level={2} style={styles.title}>
+  <Title level={3} style={styles.title}>
     Micro-entreprise
   </Title>
 )
@@ -83,7 +83,7 @@ const companyFields = [
 
 const RateTitle = (
   <Fragment>
-    <Title level={2} style={styles.title}>
+    <Title level={3} style={styles.title}>
       Tarification par défaut
     </Title>
     <Paragraph style={styles.subtitle}>
@@ -108,7 +108,7 @@ const rateFields = [
 
 const BankTitle = (
   <Fragment>
-    <Title level={2} style={styles.title}>
+    <Title level={3} style={styles.title}>
       Informations bancaires
     </Title>
     <Paragraph style={styles.subtitle}>
@@ -121,7 +121,7 @@ const bankFields = [['rib', 'RIB'], ['iban', 'IBAN'], ['bic', 'BIC']]
 
 const ConditionTitle = (
   <Fragment>
-    <Title level={2} style={styles.title}>
+    <Title level={3} style={styles.title}>
       Conditions
     </Title>
     <Paragraph style={styles.subtitle}>
@@ -173,6 +173,7 @@ function Profile(props) {
 
   return (
     <Container>
+      <h1>Profil</h1>
       <Form onSubmit={saveProfile}>
         {fields.map(([title, fields], key) => (
           <Card key={key} title={title} style={styles.card}>

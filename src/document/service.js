@@ -32,15 +32,12 @@ async function _delete(document) {
 }
 
 export async function generatePdf(profile, client, document) {
-  try {
-    const generatePdf = functions.httpsCallable('generatePdf')
-    const {data} = await generatePdf({profile, client, document})
-    const nextDocument = {...document, pdf: 'data:application/pdf;base64,' + data}
-    await db(`users/${user$.value.uid}/documents`, document.id).set(nextDocument)
-    return nextDocument
-  } catch (error) {
-    return document
-  }
+  const generatePdf = functions.httpsCallable('generatePdf')
+  const {data} = await generatePdf({profile, client, document})
+  const nextDocument = {...document, pdf: 'data:application/pdf;base64,' + data}
+  await db(`users/${user$.value.uid}/documents`, document.id).set(nextDocument)
+
+  return nextDocument
 }
 
 export default {create, update, delete: _delete, generatePdf}

@@ -14,6 +14,7 @@ import ClientList from '../../../client/components/List'
 import ClientEdit from '../../../client/components/Edit'
 import DocumentList from '../../../document/components/List'
 import DocumentEdit from '../../../document/components/Edit'
+import Dashboard from '../../../dashboard/components'
 
 import './styles.css'
 
@@ -41,7 +42,8 @@ function App() {
             <PrivateRoute path="/clients/:id" component={ClientEdit} />
             <PrivateRoute path="/clients" component={ClientList} />
             <PrivateRoute path="/profile" component={Profile} />
-            <Redirect to="/documents" />
+            <PrivateRoute expact path="/" component={Dashboard} />
+            <Redirect to="/" />
           </Switch>
         </Layout>
       </Router>
