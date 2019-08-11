@@ -1,14 +1,7 @@
 import React from 'react'
 
-const styles = {
-  container: {
-    padding: '25px 25px 56px 25px',
-    minHeight: 'calc(100vh - 64px)',
-  },
-}
-
 function Container({children}) {
-  return <div style={styles.container}>{children}</div>
+  return <div id="container">{children}</div>
 }
 
 export default Container

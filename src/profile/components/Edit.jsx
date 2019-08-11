@@ -25,17 +25,17 @@ const {TextArea} = Input
 
 const styles = {
   title: {
-    fontSize: '1.2rem',
+    fontSize: '1.2em',
     marginBottom: 0,
   },
   subtitle: {
-    fontSize: '0.9rem',
+    fontSize: '0.9em',
     fontStyle: 'italic',
     marginBottom: 0,
     color: '#aaaaaa',
   },
   card: {
-    marginBottom: '25px',
+    marginBottom: 15,
   },
 }
 
@@ -176,7 +176,7 @@ function Profile(props) {
       <Form onSubmit={saveProfile}>
         {fields.map(([title, fields], key) => (
           <Card key={key} title={title} style={styles.card}>
-            <Row gutter={25}>
+            <Row gutter={15}>
               {fields.map(([name, label, Component = <Input size="large" />], key) => (
                 <Col key={key} xs={24} sm={12} md={8} lg={6}>
                   <Form.Item label={label}>
@@ -191,7 +191,7 @@ function Profile(props) {
         ))}
 
         <Card title={ConditionTitle} style={styles.card}>
-          <Row gutter={25}>
+          <Row gutter={15}>
             {conditionFields.map(([name, label, Component], key) => (
               <Col key={key} xs={24}>
                 <Form.Item label={label}>

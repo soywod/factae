@@ -11,6 +11,30 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+#container {
+  padding: 25px;
+  min-height: 100vh;
+}
+
+@media only screen and (max-width: 768px) {
+  #container {
+    padding: 15px;
+  }
+}
+
+.ant-layout-sider {
+  width: 200px !important;
+  min-width: inherit !important;
+  max-width: inherit !important;
+
+}
+
+@media only screen and (max-width: 768px) {
+  .ant-layout-sider {
+    width: 80px !important;
+  }
+}
+
 .ant-notification-success {
   background: #52c41a;
 }

@@ -99,8 +99,8 @@ function EditClient(props) {
     <Container>
       <Form onSubmit={saveClient}>
         {fields.map(([title, fields], key) => (
-          <Card key={key} title={title} style={{marginBottom: 25}}>
-            <Row gutter={25}>
+          <Card key={key} title={title} style={{marginBottom: 15}}>
+            <Row gutter={15}>
               {fields.map(([name, label, Component = <Input size="large" />], key) => (
                 <Col key={key} xs={24} sm={12} md={8} lg={6}>
                   <Form.Item label={label}>

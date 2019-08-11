@@ -148,7 +148,7 @@ function DocumentList(props) {
         onRow={record => ({
           onClick: () => props.history.push(`/documents/${record.id}`, {...omit('key', record)}),
         })}
-        style={{background: '#ffffff', marginBottom: 25}}
+        style={{background: '#ffffff', marginBottom: 15}}
         bodyStyle={{cursor: 'pointer'}}
       />
 

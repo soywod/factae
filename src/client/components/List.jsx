@@ -65,7 +65,7 @@ function ClientList(props) {
         onRow={record => ({
           onClick: () => props.history.push(`/clients/${record.id}`, {...omit('key', record)}),
         })}
-        style={{background: '#ffffff', marginBottom: 25}}
+        style={{background: '#ffffff', marginBottom: 15}}
         bodyStyle={{cursor: 'pointer'}}
       />
 

@@ -345,8 +345,8 @@ function EditDocument(props) {
     <Container>
       <Form onSubmit={saveDocument}>
         {fields.map(([title, fields], key) => (
-          <Card key={key} title={title} style={{marginBottom: 25}}>
-            <Row gutter={25}>
+          <Card key={key} title={title} style={{marginBottom: 15}}>
+            <Row gutter={15}>
               {fields.map(([name, label, Component = <Input size="large" />], key) => (
                 <Col key={key} xs={24} sm={12} md={8} lg={6}>
                   <Form.Item label={label}>
@@ -362,8 +362,8 @@ function EditDocument(props) {
           </Card>
         ))}
 
-        <Card title={ConditionTitle} style={{marginBottom: 25}}>
-          <Row gutter={25}>
+        <Card title={ConditionTitle} style={{marginBottom: 15}}>
+          <Row gutter={15}>
             {conditionFields.map(([name, label, Component], key) => (
               <Col key={key} xs={24}>
                 <Form.Item label={label}>
@@ -378,10 +378,10 @@ function EditDocument(props) {
 
         <Card
           title={ItemsTitle}
-          bodyStyle={{padding: '1px 12.5px 0 12.5px', marginBottom: -1}}
-          style={{marginBottom: 25}}
+          bodyStyle={{padding: '1px 7.5px 0 7.5px', marginBottom: -1}}
+          style={{marginBottom: 15}}
         >
-          <Row gutter={25}>
+          <Row gutter={15}>
             <EditableTable
               pagination={false}
               dataSource={items}
@@ -395,10 +395,10 @@ function EditDocument(props) {
         {document.pdf && (
           <Card
             title={<Title>PDF</Title>}
-            bodyStyle={{padding: 25, textAlign: 'center'}}
-            style={{marginBottom: 25}}
+            bodyStyle={{padding: 15, textAlign: 'center'}}
+            style={{margin: '15px 0'}}
           >
-            <Row gutter={25}>
+            <Row gutter={15}>
               {document.pdf ? (
                 <iframe
                   title="document"
