@@ -190,11 +190,24 @@ function EditDocument(props) {
     return null
   }
 
-  const Footer = () => (
-    <div style={{textAlign: 'right', fontStyle: 'italic'}}>
-      Total HT : <strong>{toEuro(items.reduce((total, {amount = 0}) => total + amount, 0))}</strong>
-    </div>
-  )
+  const Footer = () => {
+    const totalHT = items.reduce((total, {amount = 0}) => total + amount, 0)
+    const totalTVA = Math.round(totalHT * document.taxRate) / 100
+    const totalTTC = totalHT + totalTVA
+
+    return (
+      <>
+        <div style={{textAlign: 'right', fontStyle: 'italic'}}>
+          Total HT : <strong>{toEuro(totalHT)}</strong>
+        </div>
+        {totalTVA > 0 && (
+          <div style={{textAlign: 'right', fontStyle: 'italic'}}>
+            Total TTC : <strong>{toEuro(totalTTC)}</strong>
+          </div>
+        )}
+      </>
+    )
+  }
 
   const columns = [
     {
@@ -281,11 +294,21 @@ function EditDocument(props) {
         ))}
       </Select>,
     ],
+    [
+      'taxRate',
+      'TVA (%)',
+      <InputNumber
+        size="large"
+        min={0}
+        step={1}
+        onChange={taxRate => setDocument({...document, taxRate})}
+        style={{width: '100%'}}
+      />,
+    ],
   ]
 
   if (document.type === 'quotation') {
     mainFields.push(
-      ['taxRate', 'TVA (%)', <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />],
       [
         'rate',
         'Tarification (€)',

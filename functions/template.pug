@@ -45,11 +45,6 @@ style(type="text/css") !{compiledStyle}
             |
             +toEuro(document.rate)
 
-        if document.conditions
-          .conditions
-            each condition in document.conditions.split('\n')
-              div #{condition}
-
     .client
       div
         if document.type === 'quotation'
@@ -65,6 +60,11 @@ style(type="text/css") !{compiledStyle}
           div #{client.firstName} #{client.lastName}
         div #{client.address}
         div #{client.zip} #{client.city}, #{client.country}
+
+  if document.conditions
+    .conditions
+      each condition in document.conditions.split('\n')
+        div #{condition}
 
   table.items
     thead.items-head
@@ -128,26 +128,25 @@ style(type="text/css") !{compiledStyle}
                   strong Code BIC
                 td #{profile.bic}
 
-    .contact-container
-      .contact
-        div
-          | Micro-entreprise :
-          |
-          if profile.tradingName
-            span #{profile.tradingName} (#{profile.firstName} #{profile.lastName})
-          else
-            span #{profile.firstName} #{profile.lastName}
-        div
-          | #{profile.address},
-          | #{profile.zip} #{profile.city},
-          | France
-        div
-          | Email : #{profile.email}
-          | —
-          | Téléphone : #{profile.phone}
-        div
-          | SIRET : #{profile.siret}
-          | —
-          | Code APE : #{profile.apeCode}
-        div
-          | N° TVA Intracommunautaire : #{profile.taxId}
+    .contact
+      div
+        | Micro-entreprise :
+        |
+        if profile.tradingName
+          span #{profile.tradingName} (#{profile.firstName} #{profile.lastName})
+        else
+          span #{profile.firstName} #{profile.lastName}
+      div
+        | #{profile.address},
+        | #{profile.zip} #{profile.city},
+        | France
+      div
+        | Email : #{profile.email}
+        | —
+        | Téléphone : #{profile.phone}
+      div
+        | SIRET : #{profile.siret}
+        | —
+        | Code APE : #{profile.apeCode}
+      div
+        | N° TVA Intracommunautaire : #{profile.taxId}

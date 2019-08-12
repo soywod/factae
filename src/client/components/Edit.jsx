@@ -41,6 +41,7 @@ const contactFields = [
   ['address', 'Adresse'],
   ['zip', 'Code postal'],
   ['city', 'Ville'],
+  ['country', 'Pays'],
 ]
 
 const fields = [[CompanyTitle, companyFields], [ContactTitle, contactFields]]

@@ -10,12 +10,11 @@ import Row from 'antd/es/row'
 import Select from 'antd/es/select'
 import Typography from 'antd/es/typography'
 import getOr from 'lodash/fp/getOr'
-import isEmpty from 'lodash/fp/isEmpty'
-import omitBy from 'lodash/fp/omitBy'
 
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import {useNotification} from '../../utils/notification'
+import {difference} from '../../utils/lodash'
 import {useProfile} from '../hooks'
 import $profile from '../service'
 
@@ -155,9 +154,8 @@ function Profile(props) {
     setLoading(true)
 
     await tryAndNotify(async () => {
-      const data = await props.form.validateFields()
-      const nextProfile = {...profile, ...omitBy(isEmpty, data)}
-      await $profile.update(nextProfile)
+      const form = await props.form.validateFields()
+      await $profile.update(difference(form, profile))
       return 'Profil mis à jour avec succès.'
     })
 

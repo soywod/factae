@@ -9,7 +9,7 @@ const firestore = admin.initializeApp().firestore()
 const stripe = new Stripe(String(process.env.STRIPE_API_KEY))
 
 function formatDate(iso) {
-  return DateTime.fromISO(iso, {locale: 'fr'}).toFormat('d LLL yyyy')
+  return DateTime.fromISO(iso).toFormat('dd/LL/yyyy')
 }
 
 exports.generatePdf = functions.https.onCall(async data => {
