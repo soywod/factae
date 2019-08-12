@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {withRouter} from 'react-router-dom'
-import {DateTime} from 'luxon'
 import isNull from 'lodash/fp/isNull'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
@@ -91,11 +90,11 @@ const Auth = withHOCs(props => {
 
   return (
     <div style={styles.container}>
-      <Spin size="large" spinning={loading || isNull(user) || isNull(profile)}>
+      <Spin size="large" spinning={loading || isNull(user) || (user && isNull(profile))}>
         <Card
           title={
             <div style={styles.title}>
-              <Logo />
+              <Logo width={150} />
             </div>
           }
           style={styles.card}
@@ -160,18 +159,18 @@ function Logout() {
 }
 
 function Demo(props) {
-  async function login() {
+  const login = useCallback(async () => {
     try {
       await $auth.login('demo@factae.fr', 'factae')
       props.history.push('/')
     } catch (error) {
       notify.error(error.message)
     }
-  }
+  }, [props.history])
 
   useEffect(() => {
     login()
-  }, [])
+  }, [login])
 
   return (
     <div style={styles.container}>

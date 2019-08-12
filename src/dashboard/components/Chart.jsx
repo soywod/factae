@@ -69,7 +69,7 @@ function Chart() {
       _.defaults(defaultData),
       _.values,
     ])(invoices)
-  }, [invoices])
+  }, [invoices, firstDayOfYear, lastDayOfYear])
 
   const turnovers = useMemo(() => {
     if (isNullOrEmpty(invoices)) return []
