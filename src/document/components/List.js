@@ -24,7 +24,7 @@ import {useDocuments} from '../hooks'
 import $document from '../service'
 
 const Tag = ({children, ...props}) => (
-  <AntdTag {...props} style={{float: 'right'}}>
+  <AntdTag {...props} style={{float: 'right', textTransform: 'lowercase'}}>
     {children}
   </AntdTag>
 )
@@ -88,14 +88,12 @@ function DocumentList(props) {
       width: '25%',
       render: (_, {type, status}) => (
         <>
-          {type === 'quotation' && 'Devis'}
-          {type === 'invoice' && 'Facture'}
-          {type === 'credit' && 'Avoir'}
-          {status === 'draft' && <Tag>brouillon</Tag>}
-          {status === 'sent' && <Tag color="blue">envoyé</Tag>}
-          {status === 'signed' && <Tag color="green">signé</Tag>}
-          {status === 'paid' && <Tag color="green">payé</Tag>}
-          {status === 'refunded' && <Tag color="green">remboursé</Tag>}
+          {t(type)}
+          {status === 'draft' && <Tag>{t('draft')}</Tag>}
+          {status === 'sent' && <Tag color="blue">{t('sent')}</Tag>}
+          {status === 'signed' && <Tag color="green">{t('signed')}</Tag>}
+          {status === 'paid' && <Tag color="green">{t('paid')}</Tag>}
+          {status === 'refunded' && <Tag color="green">{t('refunded')}</Tag>}
         </>
       ),
     },
