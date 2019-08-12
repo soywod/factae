@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {Suspense, useState} from 'react'
 import {BrowserRouter as Router, Route, Redirect, Switch} from 'react-router-dom'
 import Layout from 'antd/es/layout'
 
@@ -27,27 +27,29 @@ function App() {
   useDocumentService()
 
   return (
-    <Layout>
-      <Router>
-        <Layout.Sider style={{height: '100vh', left: 0, overflow: 'auto', position: 'fixed'}}>
-          <Sider onCollapse={setWidth} />
-        </Layout.Sider>
-        <Layout style={{marginLeft: width, zIndex: 1}}>
-          <Switch>
-            <Route path="/auth" component={Auth} />
-            <Route path="/demo" component={Auth.Demo} />
-            <PrivateRoute path="/logout" component={Auth.Logout} />
-            <PrivateRoute path="/documents/:id" component={DocumentEdit} />
-            <PrivateRoute path="/documents" component={DocumentList} />
-            <PrivateRoute path="/clients/:id" component={ClientEdit} />
-            <PrivateRoute path="/clients" component={ClientList} />
-            <PrivateRoute path="/profile" component={Profile} />
-            <PrivateRoute expact path="/" component={Dashboard} />
-            <Redirect to="/" />
-          </Switch>
-        </Layout>
-      </Router>
-    </Layout>
+    <Suspense fallback={null}>
+      <Layout>
+        <Router>
+          <Layout.Sider style={{height: '100vh', left: 0, overflow: 'auto', position: 'fixed'}}>
+            <Sider onCollapse={setWidth} />
+          </Layout.Sider>
+          <Layout style={{marginLeft: width, zIndex: 1}}>
+            <Switch>
+              <Route path="/auth" component={Auth} />
+              <Route path="/demo" component={Auth.Demo} />
+              <PrivateRoute path="/logout" component={Auth.Logout} />
+              <PrivateRoute path="/documents/:id" component={DocumentEdit} />
+              <PrivateRoute path="/documents" component={DocumentList} />
+              <PrivateRoute path="/clients/:id" component={ClientEdit} />
+              <PrivateRoute path="/clients" component={ClientList} />
+              <PrivateRoute path="/profile" component={Profile} />
+              <PrivateRoute expact path="/" component={Dashboard} />
+              <Redirect to="/" />
+            </Switch>
+          </Layout>
+        </Router>
+      </Layout>
+    </Suspense>
   )
 }
 

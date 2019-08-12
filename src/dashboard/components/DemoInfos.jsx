@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import Modal from 'antd/es/modal'
 
-import Link from '../../common/components/Link'
 import {useProfile} from '../../profile/hooks'
 
 const STORAGE_KEY = 'demo'
@@ -9,6 +9,7 @@ const STORAGE_KEY = 'demo'
 function DemoInfos() {
   const profile = useProfile()
   const [hidden, setHidden] = useState(Boolean(localStorage.getItem(STORAGE_KEY)))
+  const {t} = useTranslation()
 
   function closeModal() {
     setHidden(true)
@@ -21,21 +22,14 @@ function DemoInfos() {
 
   return (
     <Modal
-      title="Bienvenue sur factAE"
+      title={t('/dashboard.modal-title')}
       visible={!hidden}
-      cancelText="Fermer"
+      cancelText={t('close')}
       okButtonProps={{style: {display: 'none'}}}
       onCancel={closeModal}
     >
-      <p>
-        <strong>factAE</strong> est un outil de facturation pour micro-entrepreneurs à
-        <strong> 1 €/mois</strong>. Son objectif est simple : gérer ses clients, ses devis et ses
-        factures <strong>facilement</strong> et <strong>efficacement</strong>. Rien de plus.
-      </p>
-      <p style={{margin: 0}}>
-        Avec ce compte de test, vous avez accès à toute l'application en lecture seule. Vous pouvez
-        à tout moment créer un compte gratuitement en vous <Link to="/logout">déconnectant</Link>.
-      </p>
+      <p dangerouslySetInnerHTML={{__html: t('/dashboard.modal-content-1')}} />
+      <p style={{margin: 0}} dangerouslySetInnerHTML={{__html: t('/dashboard.modal-content-2')}} />
     </Modal>
   )
 }

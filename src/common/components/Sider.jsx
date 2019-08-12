@@ -1,5 +1,6 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
+import {useTranslation} from 'react-i18next'
 import Menu from 'antd/es/menu'
 import Icon from 'antd/es/icon'
 import Layout from 'antd/es/layout'
@@ -21,6 +22,7 @@ function Sider(props) {
   const {history} = props
   const route = history.location.pathname
   const user = useAuth()
+  const {t} = useTranslation()
 
   if (!user || route === '/logout') {
     return null
@@ -51,23 +53,23 @@ function Sider(props) {
       >
         <Menu.Item key="/">
           <Icon type="dashboard" />
-          <span>Vue d'ensemble</span>
+          <span>{t('overview')}</span>
         </Menu.Item>
         <Menu.Item key="/documents">
           <Icon type="copy" />
-          <span>Documents</span>
+          <span>{t('documents')}</span>
         </Menu.Item>
         <Menu.Item key="/clients">
           <Icon type="team" />
-          <span>Clients</span>
+          <span>{t('clients')}</span>
         </Menu.Item>
         <Menu.Item key="/profile">
           <Icon type="user" />
-          <span>Profil</span>
+          <span>{t('profil')}</span>
         </Menu.Item>
         <Menu.Item key="/logout">
           <Icon type="logout" />
-          <span>Déconnexion</span>
+          <span>{t('logout')}</span>
         </Menu.Item>
       </Menu>
     </Layout.Sider>

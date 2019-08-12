@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
 import Col from 'antd/es/col'
@@ -26,26 +27,6 @@ const Title = ({children}) => (
   </AntdTitle>
 )
 
-const CompanyTitle = <Title>Société</Title>
-const companyFields = [
-  ['tradingName', 'Nom commercial', <Input size="large" autoFocus />],
-  ['siret', 'SIRET'],
-]
-
-const ContactTitle = <Title>Contact</Title>
-const contactFields = [
-  ['firstName', 'Prénom', <Input size="large" />],
-  ['lastName', 'Nom'],
-  ['email', 'Email'],
-  ['phone', 'Téléphone'],
-  ['address', 'Adresse'],
-  ['zip', 'Code postal'],
-  ['city', 'Ville'],
-  ['country', 'Pays'],
-]
-
-const fields = [[CompanyTitle, companyFields], [ContactTitle, contactFields]]
-
 function EditClient(props) {
   const {match} = props
   const {getFieldDecorator} = props.form
@@ -54,6 +35,7 @@ function EditClient(props) {
   const [loading, setLoading] = useState(false)
   const [client, setClient] = useState(props.location.state)
   const tryAndNotify = useNotification()
+  const {t} = useTranslation()
 
   useEffect(() => {
     if (clients && !client) {
@@ -67,7 +49,7 @@ function EditClient(props) {
         setLoading(true)
         await $client.delete(client)
         props.history.push('/clients')
-        return 'Client supprimé avec succès.'
+        return t('/clients.deleted-successfully')
       },
       () => setLoading(false),
     )
@@ -82,7 +64,7 @@ function EditClient(props) {
       const data = await props.form.validateFields()
       const nextClient = {...client, ...omitBy(isEmpty, data)}
       await $client.update(nextClient)
-      return 'Client mis à jour avec succès.'
+      return t('/clients.updated-successfully')
     })
 
     setLoading(false)
@@ -91,6 +73,26 @@ function EditClient(props) {
   if (!clients || !client) {
     return null
   }
+
+  const CompanyTitle = <Title>{t('company')}</Title>
+  const companyFields = [
+    ['tradingName', t('trade-name'), <Input size="large" autoFocus />],
+    ['siret', t('siret')],
+  ]
+
+  const ContactTitle = <Title>{t('contact')}</Title>
+  const contactFields = [
+    ['firstName', t('first-name'), <Input size="large" />],
+    ['lastName', t('first-name')],
+    ['email', t('email')],
+    ['phone', t('phone')],
+    ['address', t('address')],
+    ['zip', t('zip')],
+    ['city', t('city')],
+    ['country', t('country')],
+  ]
+
+  const fields = [[CompanyTitle, companyFields], [ContactTitle, contactFields]]
 
   return (
     <Container>
@@ -113,19 +115,19 @@ function EditClient(props) {
         ))}
         <ActionBar>
           <Popconfirm
-            title="Êtes-vous sûr de vouloir supprimer ce client ?"
+            title={t('/clients.confirm-deletion')}
             onConfirm={deleteClient}
-            okText="Oui"
-            cancelText="Non"
+            okText={t('yes')}
+            cancelText={t('no')}
           >
             <Button type="danger" disabled={loading} style={{marginRight: 8}}>
               <Icon type="delete" />
-              Supprimer
+              {t('delete')}
             </Button>
           </Popconfirm>
           <Button type="primary" htmlType="submit" disabled={loading}>
             <Icon type={loading ? 'loading' : 'save'} />
-            Sauvegarder
+            {t('save')}
           </Button>
         </ActionBar>
       </Form>

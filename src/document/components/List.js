@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import AntdTag from 'antd/es/tag'
 import Button from 'antd/es/button'
 import Dropdown from 'antd/es/dropdown'
@@ -34,6 +35,7 @@ function DocumentList(props) {
   const documents = useDocuments()
   const [loading, setLoading] = useState(false)
   const tryAndNotify = useNotification()
+  const {t} = useTranslation()
 
   async function createDocument(event) {
     await tryAndNotify(
@@ -68,7 +70,7 @@ function DocumentList(props) {
 
         const id = await $document.create(document)
         props.history.push(`/documents/${id}`, {...document, id})
-        return 'Document créé avec succès.'
+        return t('/document.created-successfully')
       },
       () => setLoading(false),
     )
@@ -80,7 +82,7 @@ function DocumentList(props) {
 
   const columns = [
     {
-      title: <strong>Titre</strong>,
+      title: <strong>{t('title')}</strong>,
       dataIndex: 'type',
       key: 'type',
       width: '25%',
@@ -98,7 +100,7 @@ function DocumentList(props) {
       ),
     },
     {
-      title: <strong>Client</strong>,
+      title: <strong>{t('client')}</strong>,
       dataIndex: 'client',
       key: 'client',
       width: '35%',
@@ -108,7 +110,7 @@ function DocumentList(props) {
       },
     },
     {
-      title: <strong>Date</strong>,
+      title: <strong>{t('date')}</strong>,
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: '20%',
@@ -123,7 +125,7 @@ function DocumentList(props) {
       },
     },
     {
-      title: <strong>Total HT</strong>,
+      title: <strong>{t('total-without-taxes')}</strong>,
       dataIndex: 'total',
       key: 'total',
       width: '20%',
@@ -139,7 +141,7 @@ function DocumentList(props) {
 
   return (
     <Container>
-      <h1>Documents</h1>
+      <h1>{t('documents')}</h1>
       <Table
         bordered
         loading={loading}
@@ -159,15 +161,15 @@ function DocumentList(props) {
           disabled={loading || !profile}
           overlay={
             <Menu onClick={createDocument}>
-              <Menu.Item key="quotation">Devis</Menu.Item>
-              <Menu.Item key="invoice">Facture</Menu.Item>
-              <Menu.Item key="credit">Avoir</Menu.Item>
+              <Menu.Item key="quotation">{t('quotation')}</Menu.Item>
+              <Menu.Item key="invoice">{t('invoice')}</Menu.Item>
+              <Menu.Item key="credit">{t('credit')}</Menu.Item>
             </Menu>
           }
         >
           <Button type="primary">
             <Icon type={loading ? 'loading' : 'plus'} />
-            Nouveau
+            {t('new')}
           </Button>
         </Dropdown>
       </div>

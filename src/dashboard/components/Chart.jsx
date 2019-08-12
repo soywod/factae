@@ -1,4 +1,5 @@
 import React, {useEffect, useMemo, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {Chart as ChartJS} from 'chart.js'
 import _ from 'lodash/fp'
 import {DateTime} from 'luxon'
@@ -29,6 +30,7 @@ function Chart() {
   const [lowTVA, highTVA, AE] = useThresholds()
   const invoices = _.isNull(documents) ? null : _.filter({type: 'invoice'}, documents)
   const [firstDayOfYear, lastDayOfYear] = useFirstAndLastDayOfYear()
+  const {t} = useTranslation()
 
   function isNullOrEmpty(invoices) {
     return _.pipe([_.filter({status: 'paid'}), _.overSome([_.isNull, _.isEmpty])])(invoices)
@@ -222,7 +224,7 @@ function Chart() {
 
   return (
     <>
-      <h2>Chiffre d'affaire</h2>
+      <h2>{t('turnover')}</h2>
       <div>
         <canvas ref={ref} height="400" style={{background: '#f0f2f5'}} />
       </div>

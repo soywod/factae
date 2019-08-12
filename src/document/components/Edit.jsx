@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import Form from 'antd/es/form'
 import Input from 'antd/es/input'
 import InputNumber from 'antd/es/input-number'
@@ -57,6 +58,7 @@ function EditDocument(props) {
   const [document, setDocument] = useState(props.location.state)
   const [items, setItems] = useState((document && document.items) || [])
   const tryAndNotify = useNotification()
+  const {t} = useTranslation()
 
   useEffect(() => {
     if (documents && !document) {
@@ -103,7 +105,7 @@ function EditDocument(props) {
       let nextDocument = await buildNextDocument()
 
       if (!nextDocument.client) {
-        throw new Error('Vous devez sélectionner un client.')
+        throw new Error(t('client-required'))
       }
 
       const now = DateTime.local()
@@ -125,7 +127,7 @@ function EditDocument(props) {
 
       const nextClient = find({id: nextDocument.client}, clients)
       setDocument(await $document.generatePdf(profile, nextClient, nextDocument))
-      return 'Document PDF généré avec succès.'
+      return t('generated-successfully')
     })
 
     setLoading(false)
@@ -165,7 +167,7 @@ function EditDocument(props) {
         setLoading(true)
         await $document.delete(document)
         props.history.push('/documents')
-        return 'Document supprimé avec succès.'
+        return t('deleted-successfully')
       },
       () => setLoading(false),
     )
@@ -180,7 +182,7 @@ function EditDocument(props) {
       const nextDocument = await buildNextDocument()
       setDocument(nextDocument)
       await $document.update(nextDocument)
-      return 'Document mis à jour avec succès.'
+      return t('updated-successfully')
     })
 
     setLoading(false)
@@ -197,13 +199,25 @@ function EditDocument(props) {
 
     return (
       <>
-        <div style={{textAlign: 'right', fontStyle: 'italic'}}>
-          Total HT : <strong>{toEuro(totalHT)}</strong>
-        </div>
+        <div
+          style={{textAlign: 'right', fontStyle: 'italic'}}
+          dangerouslySetInnerHTML={{
+            __html: t('/documents.total', {
+              title: t('total-without-taxes'),
+              value: toEuro(totalHT),
+            }),
+          }}
+        />
         {totalTVA > 0 && (
-          <div style={{textAlign: 'right', fontStyle: 'italic'}}>
-            Total TTC : <strong>{toEuro(totalTTC)}</strong>
-          </div>
+          <div
+            style={{textAlign: 'right', fontStyle: 'italic'}}
+            dangerouslySetInnerHTML={{
+              __html: t('/documents.total', {
+                title: t('total-with-taxes'),
+                value: toEuro(totalTTC),
+              }),
+            }}
+          />
         )}
       </>
     )
@@ -211,21 +225,21 @@ function EditDocument(props) {
 
   const columns = [
     {
-      title: <strong>Designation</strong>,
+      title: <strong>{t('designation')}</strong>,
       dataIndex: 'designation',
       key: 'designation',
       editable: true,
       width: '45%',
     },
     {
-      title: <strong>Quantité</strong>,
+      title: <strong>{t('quantity')}</strong>,
       dataIndex: 'quantity',
       key: 'quantity',
       editable: true,
       width: '10%',
     },
     {
-      title: <strong>Prix unitaire</strong>,
+      title: <strong>{t('unit-price')}</strong>,
       dataIndex: 'unitPrice',
       key: 'unitPrice',
       editable: true,
@@ -233,7 +247,7 @@ function EditDocument(props) {
       render: (_, {unitPrice}) => toEuro(unitPrice),
     },
     {
-      title: <strong>Montant</strong>,
+      title: <strong>{t('amount')}</strong>,
       dataIndex: 'amount',
       key: 'amount',
       width: '20%',
@@ -254,38 +268,38 @@ function EditDocument(props) {
 
   const ItemsTitle = (
     <Title>
-      Désignations
+      {t('designations')}
       <Button type="dashed" shape="circle" onClick={addItem} style={{marginLeft: 12}}>
         <Icon type="plus" />
       </Button>
     </Title>
   )
 
-  const MainTitle = <Title>Informations générales</Title>
+  const MainTitle = <Title>{t('general-informations')}</Title>
   const mainFields = [
     [
       'type',
-      'Type de document',
+      t('document-type'),
       <Select size="large" disabled>
-        <Option value="quotation">Devis</Option>
-        <Option value="invoice">Facture</Option>
-        <Option value="credit">Avoir</Option>
+        <Option value="quotation">{t('quotation')}</Option>
+        <Option value="invoice">{t('invoice')}</Option>
+        <Option value="credit">{t('credit')}</Option>
       </Select>,
     ],
     [
       'status',
-      'Statut',
+      t('status'),
       <Select size="large" autoFocus>
-        <Option value="draft">Brouillon</Option>
-        <Option value="sent">Envoyé</Option>
-        {document.type === 'quotation' && <Option value="signed">Signé</Option>}
-        {document.type === 'invoice' && <Option value="paid">Payé</Option>}
-        {document.type === 'credit' && <Option value="refunded">Remboursé</Option>}
+        <Option value="draft">{t('draft')}</Option>
+        <Option value="sent">{t('sent')}</Option>
+        {document.type === 'quotation' && <Option value="signed">{t('signed')}</Option>}
+        {document.type === 'invoice' && <Option value="paid">{t('paid')}</Option>}
+        {document.type === 'credit' && <Option value="refunded">{t('refunded')}</Option>}
       </Select>,
     ],
     [
       'client',
-      'Client',
+      t('client'),
       <Select size="large">
         {clients.map(client => (
           <Option key={client.id} value={client.id}>
@@ -296,7 +310,7 @@ function EditDocument(props) {
     ],
     [
       'taxRate',
-      'TVA (%)',
+      t('tax-rate'),
       <InputNumber
         size="large"
         min={0}
@@ -309,48 +323,41 @@ function EditDocument(props) {
 
   if (document.type === 'quotation') {
     mainFields.push(
-      [
-        'rate',
-        'Tarification (€)',
-        <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
-      ],
+      ['rate', t('pricing'), <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />],
       [
         'rateUnit',
-        'Unité',
+        t('unit'),
         <Select size="large">
-          <Option value="hour">Par heure</Option>
-          <Option value="day">Par jour</Option>
-          <Option value="service">Par prestation</Option>
+          <Option value="hour">{t('per-hour')}</Option>
+          <Option value="day">{t('per-day')}</Option>
+          <Option value="service">{t('per-service')}</Option>
         </Select>,
       ],
     )
   }
 
   if (document.type === 'credit') {
-    mainFields.push(['invoiceNumber', 'N° de facture de référence'])
+    mainFields.push(['invoiceNumber', t('invoice-reference-number')])
   }
 
-  const DateTitle = <Title>Dates</Title>
+  const DateTitle = <Title>{t('dates')}</Title>
   const dateFields = [
     [
       'expiresAt',
-      "Expiration de l'offre",
+      t('expiration-offer'),
       <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
     ],
-    ['startsAt', 'Début', <DatePicker size="large" placeholder="" style={{width: '100%'}} />],
-    ['endsAt', 'Fin', <DatePicker size="large" placeholder="" style={{width: '100%'}} />],
+    ['startsAt', t('start'), <DatePicker size="large" placeholder="" style={{width: '100%'}} />],
+    ['endsAt', t('stop'), <DatePicker size="large" placeholder="" style={{width: '100%'}} />],
   ]
 
   const ConditionTitle = (
     <>
-      <Title level={3}>Conditions</Title>
-      <Paragraph>
-        Correspond aux conditions (de paiement, de livraison, d'exécution etc) qui s'afficheront en
-        bas du document.
-      </Paragraph>
+      <Title level={3}>{t('conditions')}</Title>
+      <Paragraph>{t('/documents.conditions-subtitle')}</Paragraph>
     </>
   )
-  const conditionFields = [['conditions', 'Conditions', <TextArea rows={4} />]]
+  const conditionFields = [['conditions', t('conditions'), <TextArea rows={4} />]]
 
   const fields = [[MainTitle, mainFields]]
 
@@ -435,23 +442,23 @@ function EditDocument(props) {
 
         <ActionBar>
           <Popconfirm
-            title="Êtes-vous sûr de vouloir supprimer ce document ?"
+            title={t('/documents.confirm-deletion')}
             onConfirm={deleteDocument}
-            okText="Oui"
-            cancelText="Non"
+            okText={t('yes')}
+            cancelText={t('no')}
           >
             <Button type="danger" disabled={loading} style={{marginRight: 8}}>
               <Icon type="delete" />
-              Supprimer
+              {t('delete')}
             </Button>
           </Popconfirm>
           <Button type="dashed" onClick={generatePdf} disabled={loading} style={{marginRight: 8}}>
             <Icon type="file-pdf" />
-            Générer PDF
+            {t('generate-pdf')}
           </Button>
           <Button type="primary" htmlType="submit" disabled={loading}>
             <Icon type={loading ? 'loading' : 'save'} />
-            Sauvegarder
+            {t('save')}
           </Button>
         </ActionBar>
       </Form>

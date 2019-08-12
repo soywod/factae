@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 
 import Container from '../../common/components/Container'
 import DemoInfos from './DemoInfos'
@@ -7,9 +8,11 @@ import Chart from './Chart'
 import Infos from './Infos'
 
 function Dashboard() {
+  const {t} = useTranslation()
+
   return (
     <Container>
-      <h1>Vue d'ensemble</h1>
+      <h1>{t('overview')}</h1>
       <Subscription />
       <Chart />
       <Infos />

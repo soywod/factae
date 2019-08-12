@@ -1,4 +1,5 @@
 import React, {Fragment, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
 import Col from 'antd/es/col'
@@ -38,115 +39,12 @@ const styles = {
   },
 }
 
-const ContactTitle = (
-  <Title level={3} style={styles.title}>
-    Informations personnelles
-  </Title>
-)
-
-const contactFields = [
-  ['firstName', 'Prénom', <Input size="large" autoFocus />],
-  ['lastName', 'Nom'],
-  ['email', 'Email', <Input size="large" disabled />],
-  ['phone', 'Téléphone'],
-  ['address', 'Adresse'],
-  ['zip', 'Code postal'],
-  ['city', 'Ville'],
-]
-
-const CompanyTitle = (
-  <Title level={3} style={styles.title}>
-    Micro-entreprise
-  </Title>
-)
-
-const companyFields = [
-  ['tradingName', 'Nom commercial'],
-  ['siret', 'SIRET'],
-  ['apeCode', 'Code APE'],
-  ['taxId', 'N° TVA Intracommunautaire'],
-  [
-    'taxRate',
-    'Taux de TVA (%)',
-    <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
-  ],
-  [
-    'activity',
-    "Type d'activité",
-    <Select size="large">
-      <Option value="trade">Commerce ou hébergement</Option>
-      <Option value="service">Prestation de service</Option>
-    </Select>,
-  ],
-]
-
-const RateTitle = (
-  <Fragment>
-    <Title level={3} style={styles.title}>
-      Tarification par défaut
-    </Title>
-    <Paragraph style={styles.subtitle}>
-      Correspond au taux horaire / journalier / forfaitaire qui s'affichera par défaut sur vos
-      devis.
-    </Paragraph>
-  </Fragment>
-)
-
-const rateFields = [
-  ['rate', 'Montant (€)', <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />],
-  [
-    'rateUnit',
-    'Unité',
-    <Select size="large">
-      <Option value="hour">Par heure</Option>
-      <Option value="day">Par jour</Option>
-      <Option value="service">Par prestation</Option>
-    </Select>,
-  ],
-]
-
-const BankTitle = (
-  <Fragment>
-    <Title level={3} style={styles.title}>
-      Informations bancaires
-    </Title>
-    <Paragraph style={styles.subtitle}>
-      Ces informations s'afficheront sur vos documents, pour faciliter le paiement de vos clients.
-    </Paragraph>
-  </Fragment>
-)
-
-const bankFields = [['rib', 'RIB'], ['iban', 'IBAN'], ['bic', 'BIC']]
-
-const ConditionTitle = (
-  <Fragment>
-    <Title level={3} style={styles.title}>
-      Conditions
-    </Title>
-    <Paragraph style={styles.subtitle}>
-      Correspond aux conditions (de paiement, de livraison, d'exécution etc) qui s'afficheront par
-      défaut sur vos documents.
-    </Paragraph>
-  </Fragment>
-)
-
-const conditionFields = [
-  ['quotationConditions', 'Devis', <TextArea rows={4} />],
-  ['invoiceConditions', 'Factures', <TextArea rows={4} />],
-]
-
-const fields = [
-  [ContactTitle, contactFields],
-  [CompanyTitle, companyFields],
-  [RateTitle, rateFields],
-  [BankTitle, bankFields],
-]
-
 function Profile(props) {
   const {getFieldDecorator} = props.form
   const [loading, setLoading] = useState(false)
   const profile = useProfile()
   const tryAndNotify = useNotification()
+  const {t} = useTranslation()
 
   async function saveProfile(event) {
     event.preventDefault()
@@ -165,6 +63,102 @@ function Profile(props) {
   if (!profile) {
     return null
   }
+
+  const ContactTitle = (
+    <Title level={3} style={styles.title}>
+      {t('personal-informations')}
+    </Title>
+  )
+
+  const contactFields = [
+    ['firstName', t('first-name'), <Input size="large" />],
+    ['lastName', t('first-name')],
+    ['email', t('email'), <Input size="large" disabled />],
+    ['phone', t('phone')],
+    ['address', t('address')],
+    ['zip', t('zip')],
+    ['city', t('city')],
+  ]
+
+  const CompanyTitle = (
+    <Title level={3} style={styles.title}>
+      {t('micro-entreprise')}
+    </Title>
+  )
+
+  const companyFields = [
+    ['tradingName', t('trade-name')],
+    ['siret', t('siret')],
+    ['apeCode', t('ape-code')],
+    ['taxId', t('tax-id')],
+    [
+      'taxRate',
+      t('tax-rate'),
+      <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+    ],
+    [
+      'activity',
+      t('activity-type'),
+      <Select size="large">
+        <Option value="trade">{t('activity-trade')}</Option>
+        <Option value="service">{t('activity-service')}</Option>
+      </Select>,
+    ],
+  ]
+
+  const RateTitle = (
+    <Fragment>
+      <Title level={3} style={styles.title}>
+        {t('default-pricing')}
+      </Title>
+      <Paragraph style={styles.subtitle}>{t('/profile.pricing-subtitle')}</Paragraph>
+    </Fragment>
+  )
+
+  const rateFields = [
+    ['rate', t('amount'), <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />],
+    [
+      'rateUnit',
+      t('unit'),
+      <Select size="large">
+        <Option value="hour">{t('per-hour')}</Option>
+        <Option value="day">{t('per-day')}</Option>
+        <Option value="service">{t('per-service')}</Option>
+      </Select>,
+    ],
+  ]
+
+  const BankTitle = (
+    <Fragment>
+      <Title level={3} style={styles.title}>
+        {t('bank-informations')}
+      </Title>
+      <Paragraph style={styles.subtitle}>{t('/profile.bank-subtitle')}</Paragraph>
+    </Fragment>
+  )
+
+  const bankFields = [['rib', t('rib')], ['iban', t('iban')], ['bic', t('bic')]]
+
+  const ConditionTitle = (
+    <Fragment>
+      <Title level={3} style={styles.title}>
+        {t('conditions')}
+      </Title>
+      <Paragraph style={styles.subtitle}>{t('/profile.conditions-subtitle')}</Paragraph>
+    </Fragment>
+  )
+
+  const conditionFields = [
+    ['quotationConditions', t('quotation'), <TextArea rows={4} />],
+    ['invoiceConditions', t('invoice'), <TextArea rows={4} />],
+  ]
+
+  const fields = [
+    [ContactTitle, contactFields],
+    [CompanyTitle, companyFields],
+    [RateTitle, rateFields],
+    [BankTitle, bankFields],
+  ]
 
   return (
     <Container>
@@ -203,7 +197,7 @@ function Profile(props) {
         <ActionBar>
           <Button type="primary" htmlType="submit" disabled={loading}>
             <Icon type={loading ? 'loading' : 'save'} />
-            Sauvegarder
+            {t('save')}
           </Button>
         </ActionBar>
       </Form>

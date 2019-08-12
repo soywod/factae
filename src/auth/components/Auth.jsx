@@ -1,4 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {withRouter} from 'react-router-dom'
 import isNull from 'lodash/fp/isNull'
 import Button from 'antd/es/button'
@@ -48,6 +49,7 @@ const Auth = withHOCs(props => {
   const [loading, setLoading] = useState(false)
   const user = useAuth()
   const profile = useProfile()
+  const {t, i18n} = useTranslation()
 
   const doAsyncTask = action => async event => {
     event.preventDefault()
@@ -69,21 +71,21 @@ const Auth = withHOCs(props => {
   async function register() {
     const {email, password} = await props.form.validateFields()
     await $auth.register(email, password)
-    notify.success("Compte créé avec succès. Vous bénéficiez de 30 jours d'essai gratuits.")
+    notify.success(t('/auth.registered-successfully'))
   }
 
   async function resetPassword() {
     const {email} = await props.form.validateFields(['email'])
     await $auth.resetPassword(email)
     props.form.resetFields()
-    notify.success('Un email vous a été envoyé avec la procédure à suivre.')
+    notify.success(t('/auth.password-reset-successfully'))
     setLoading(false)
   }
 
   useEffect(() => {
     if (user && profile) {
-      const diff = profile.expiresAt.toRelative({locale: 'fr'})
-      notify.info(`Bonjour ${profile.firstName.trim()}. Votre abonnement expire ${diff}.`)
+      const diff = profile.expiresAt.toRelative({locale: i18n.language})
+      notify.info(t('/auth.logged-in-successfully', {name: profile.firstName.trim(), date: diff}))
       props.history.push('/')
     }
   }, [user, profile, props.history])
@@ -104,13 +106,13 @@ const Auth = withHOCs(props => {
               {getFieldDecorator('email', {
                 initialValue: email,
                 rules: [
-                  {type: 'email', message: 'Adresse email invalide.'},
-                  {required: true, message: 'Adresse email requise.'},
+                  {type: 'email', message: t('email-invalid')},
+                  {required: true, message: t('email-required')},
                 ],
               })(
                 <Input
                   prefix={<Icon type="user" style={{color: 'rgba(0, 0, 0, .25)'}} />}
-                  placeholder="Email"
+                  placeholder={t('email')}
                   autoComplete="email"
                   autoFocus
                 />,
@@ -120,27 +122,27 @@ const Auth = withHOCs(props => {
               {getFieldDecorator('password', {
                 initialValue: password,
                 rules: [
-                  {min: 6, message: 'Mot de passe trop court.'},
-                  {required: true, message: 'Mot de passe requis.'},
+                  {min: 6, message: t('password-too-short')},
+                  {required: true, message: t('password-required')},
                 ],
               })(
                 <Input
                   prefix={<Icon type="lock" style={{color: 'rgba(0, 0, 0, .25)'}} />}
                   type="password"
-                  placeholder="Mot de passe"
+                  placeholder={t('password')}
                   autoComplete="current-password"
                 />,
               )}
             </Form.Item>
             <div>
               <Button block type="primary" htmlType="submit" style={{marginBottom: 8}}>
-                Se connecter
+                {t('login')}
               </Button>
               <Button block type="dashed" onClick={doAsyncTask(register)} style={{marginBottom: 8}}>
-                Créer un compte
+                {t('register')}
               </Button>
               <Button block type="link" to="/reset-password" onClick={doAsyncTask(resetPassword)}>
-                Mot de passe oublié
+                {t('forgotten-password')}
               </Button>
             </div>
           </Form>

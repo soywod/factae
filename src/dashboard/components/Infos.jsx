@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 
 import Link from '../../common/components/Link'
 import {toEuro} from '../../common/currency'
@@ -13,10 +14,11 @@ const links = [
 
 function Infos() {
   const [lowTVA, highTVA, AE] = useThresholds()
+  const {t} = useTranslation()
 
   return (
     <>
-      <h2>Plafonds</h2>
+      <h2>{t('thresholds')}</h2>
       <div>
         <strong>Le plafond de TVA bas</strong> <em>({toEuro(lowTVA)} HT)</em> correspond au plafond
         à partir du quel vous pouvez devenir redevable de la TVA (en fonction de votre chiffre
@@ -68,12 +70,14 @@ function Infos() {
         </li>
       </ul>
 
-      <h2>Liens utiles</h2>
-      {links.map((link, key) => (
-        <div key={key}>
-          <Link to={link} />
-        </div>
-      ))}
+      <h2>{t('useful-links')}</h2>
+      <ul>
+        {links.map((link, key) => (
+          <li key={key}>
+            <Link to={link} />
+          </li>
+        ))}
+      </ul>
     </>
   )
 }

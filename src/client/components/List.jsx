@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import Button from 'antd/es/button'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
@@ -10,37 +11,38 @@ import Container from '../../common/components/Container'
 import {useClients} from '../hooks'
 import $client from '../service'
 
-const columns = [
-  {
-    title: <strong>Nom commercial</strong>,
-    dataIndex: 'tradingName',
-    key: 'tradingName',
-  },
-  {
-    title: <strong>Prénom</strong>,
-    dataIndex: 'firstName',
-    key: 'firstName',
-  },
-  {
-    title: <strong>Nom</strong>,
-    dataIndex: 'lastName',
-    key: 'lastName',
-  },
-  {
-    title: <strong>Email</strong>,
-    dataIndex: 'email',
-    key: 'email',
-  },
-]
-
 function ClientList(props) {
   const clients = useClients()
   const [loading, setLoading] = useState(false)
   const tryAndNotify = useNotification()
+  const {t} = useTranslation()
 
   if (!clients) {
     return null
   }
+
+  const columns = [
+    {
+      title: <strong>{t('trade-name')}</strong>,
+      dataIndex: 'tradingName',
+      key: 'tradingName',
+    },
+    {
+      title: <strong>{t('first-name')}</strong>,
+      dataIndex: 'firstName',
+      key: 'firstName',
+    },
+    {
+      title: <strong>{t('last-name')}</strong>,
+      dataIndex: 'lastName',
+      key: 'lastName',
+    },
+    {
+      title: <strong>{t('email')}</strong>,
+      dataIndex: 'email',
+      key: 'email',
+    },
+  ]
 
   async function createClient() {
     await tryAndNotify(
@@ -48,7 +50,7 @@ function ClientList(props) {
         setLoading(true)
         const id = await $client.create()
         props.history.push(`/clients/${id}`, {id})
-        return 'Client créé avec succès.'
+        return t('created-successfully')
       },
       () => setLoading(false),
     )
@@ -56,7 +58,7 @@ function ClientList(props) {
 
   return (
     <Container>
-      <h1>Clients</h1>
+      <h1>{t('clients')}</h1>
       <Table
         bordered
         loading={loading}
@@ -74,7 +76,7 @@ function ClientList(props) {
       <div style={{textAlign: 'right'}}>
         <Button type="primary" disabled={loading} onClick={createClient}>
           <Icon type={loading ? 'loading' : 'plus'} />
-          Nouveau
+          {t('new')}
         </Button>
       </div>
     </Container>
