@@ -42,11 +42,13 @@ yarn start:pdf  # PDFs viewer at http://localhost:3001
 ## TODO
 
 - [ ] Improve tables (pagination, sort, filter...)
+- [ ] Improve PDF (pagination, font size...)
 - [ ] Improve form validation
+- [ ] Send form to new client (so they fill their own data) (google form?)
+- [ ] Send documents to clients by in-app mail
 - [ ] Set up prorata for new freelancers
 - [ ] Set up online sign system (eg: Blockusign)
 
 ## Credits
 
 - Design: [Ant Design](https://ant.design)
-- Background: [Dustin Lee](https://unsplash.com/@dustinlee) on [Unsplash](https://unsplash.com)
