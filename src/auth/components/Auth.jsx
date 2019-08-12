@@ -9,6 +9,8 @@ import Icon from 'antd/es/icon'
 import Input from 'antd/es/input'
 import Spin from 'antd/es/spin'
 
+import Loader from '../../common/components/Loader'
+import SelectLanguage from '../../common/components/SelectLanguage'
 import Logo from '../../common/components/Logo'
 import {notify} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
@@ -31,14 +33,19 @@ const styles = {
     zIndex: 1,
   },
   card: {
-    maxWidth: 350,
+    maxWidth: 450,
     width: '100%',
   },
   title: {
+    position: 'relative',
     alignItems: 'center',
     display: 'flex',
     justifyContent: 'center',
     width: '100%',
+  },
+  selectLanguage: {
+    position: 'absolute',
+    right: 0,
   },
 }
 
@@ -94,12 +101,13 @@ const Auth = withHOCs(props => {
     <div style={styles.container}>
       <Spin size="large" spinning={loading || isNull(user) || (user && isNull(profile))}>
         <Card
+          id="auth"
           title={
             <div style={styles.title}>
               <Logo width={150} />
+              <SelectLanguage style={styles.selectLanguage} />
             </div>
           }
-          style={styles.card}
         >
           <Form onSubmit={doAsyncTask(login)}>
             <Form.Item>
@@ -174,11 +182,7 @@ function Demo(props) {
     login()
   }, [login])
 
-  return (
-    <div style={styles.container}>
-      <Spin size="large" spinning />
-    </div>
-  )
+  return <Loader />
 }
 
 Auth.Logout = Logout

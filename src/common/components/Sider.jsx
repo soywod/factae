@@ -1,14 +1,25 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
-import Menu from 'antd/es/menu'
 import Icon from 'antd/es/icon'
 import Layout from 'antd/es/layout'
+import Menu from 'antd/es/menu'
 
+import SelectLanguage from './SelectLanguage'
 import {useAuth} from '../../auth/hooks'
 import Logo from './Logo'
 
 const styles = {
+  container: {
+    height: '100%',
+  },
+  flags: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    flex: 1,
+    marginBottom: 25,
+  },
   logo: {
     display: 'flex',
     justifyContent: 'center',
@@ -41,7 +52,7 @@ function Sider(props) {
   }
 
   return (
-    <Layout.Sider breakpoint="md" onCollapse={handleCollapse}>
+    <Layout.Sider breakpoint="md" onCollapse={handleCollapse} style={styles.container}>
       <div style={styles.logo}>
         <Logo light="#ffffff" dark="hsla(0, 0%, 100%, .65)" />
       </div>
@@ -72,6 +83,9 @@ function Sider(props) {
           <span>{t('logout')}</span>
         </Menu.Item>
       </Menu>
+      <div style={styles.flags}>
+        <SelectLanguage />
+      </div>
     </Layout.Sider>
   )
 }

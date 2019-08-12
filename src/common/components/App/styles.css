@@ -33,17 +33,19 @@ h2 {
   }
 }
 
-.ant-layout-sider {
-  width: 200px !important;
-  min-width: inherit !important;
-  max-width: inherit !important;
-
+#auth {
+  width: 450px;
 }
 
-@media only screen and (max-width: 768px) {
-  .ant-layout-sider {
-    width: 80px !important;
+@media only screen and (max-width: 576px) {
+  #auth {
+    width: 100%;
   }
+}
+
+.ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
 }
 
 .ant-notification-info {
