@@ -10,7 +10,7 @@ import Row from 'antd/es/row'
 import Typography from 'antd/es/typography'
 import find from 'lodash/fp/find'
 import getOr from 'lodash/fp/getOr'
-import isNil from 'lodash/fp/isNil'
+import isEmpty from 'lodash/fp/isEmpty'
 import omitBy from 'lodash/fp/omitBy'
 
 import {useNotification} from '../../utils/notification'
@@ -79,7 +79,7 @@ function EditClient(props) {
 
     await tryAndNotify(async () => {
       const data = await props.form.validateFields()
-      const nextClient = {...client, ...omitBy(isNil, data)}
+      const nextClient = {...client, ...omitBy(isEmpty, data)}
       await $client.update(nextClient)
       return 'Client mis à jour avec succès.'
     })

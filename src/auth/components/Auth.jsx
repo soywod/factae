@@ -83,8 +83,7 @@ const Auth = withHOCs(props => {
 
   useEffect(() => {
     if (user && profile) {
-      const expiresAt = DateTime.fromMillis(profile.expiresAt.seconds)
-      const diff = DateTime.local().toRelative({locale: 'fr', base: expiresAt})
+      const diff = profile.expiresAt.toRelative({locale: 'fr'})
       notify.info(`Bonjour ${profile.firstName.trim()}. Votre abonnement expire ${diff}.`)
       props.history.push('/')
     }

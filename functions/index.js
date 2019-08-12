@@ -1,7 +1,12 @@
 const functions = require('firebase-functions')
 const {DateTime} = require('luxon')
 const TeaSchool = require('tea-school')
+const Stripe = require('stripe')
+const admin = require('firebase-admin')
 const path = require('path')
+
+const firestore = admin.initializeApp().firestore()
+const stripe = new Stripe(String(process.env.STRIPE_API_KEY))
 
 function formatDate(iso) {
   return DateTime.fromISO(iso, {locale: 'fr'}).toFormat('d LLL yyyy')
@@ -49,4 +54,26 @@ exports.generatePdf = functions.https.onCall(async data => {
 
   const buffer = await TeaSchool.generatePdf(teaSchoolOptions)
   return buffer.toString('base64')
+})
+
+exports.charge = functions.https.onCall(async ({userId, token}) => {
+  const userDoc = firestore.collection('users').doc(userId)
+  const ref = await userDoc.get()
+  const transaction = await stripe.charges.create({
+    amount: 1200,
+    currency: 'EUR',
+    description: 'Abonnement 12 mois factAE',
+    receipt_email: ref.data().email,
+    source: token,
+  })
+
+  if (!transaction.paid) {
+    return {success: false, error: transaction.failure_message}
+  }
+
+  const createdAt = DateTime.fromSeconds(transaction.created)
+  const expiresAt = createdAt.plus({months: 12})
+  await userDoc.update({expiresAt: expiresAt.toJSDate()})
+
+  return {success: true, expiresAt: expiresAt.toISO()}
 })

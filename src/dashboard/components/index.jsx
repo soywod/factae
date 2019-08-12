@@ -2,13 +2,15 @@ import React from 'react'
 
 import Container from '../../common/components/Container'
 import DemoInfos from './DemoInfos'
+import Subscription from './Subscription'
 import Chart from './Chart'
 import Infos from './Infos'
 
 function Dashboard() {
   return (
     <Container>
-      <h1>Chiffre d'affaire</h1>
+      <h1>Vue d'ensemble</h1>
+      <Subscription />
       <Chart />
       <Infos />
       <DemoInfos />

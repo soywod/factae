@@ -9,9 +9,9 @@ import InputNumber from 'antd/es/input-number'
 import Row from 'antd/es/row'
 import Select from 'antd/es/select'
 import Typography from 'antd/es/typography'
-import omitBy from 'lodash/fp/omitBy'
-import isNil from 'lodash/fp/isNil'
 import getOr from 'lodash/fp/getOr'
+import isEmpty from 'lodash/fp/isEmpty'
+import omitBy from 'lodash/fp/omitBy'
 
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
@@ -156,7 +156,7 @@ function Profile(props) {
 
     await tryAndNotify(async () => {
       const data = await props.form.validateFields()
-      const nextProfile = {...profile, ...omitBy(isNil, data)}
+      const nextProfile = {...profile, ...omitBy(isEmpty, data)}
       await $profile.update(nextProfile)
       return 'Profil mis à jour avec succès.'
     })

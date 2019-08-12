@@ -221,9 +221,12 @@ function Chart() {
   }, [invoices, lowTVA])
 
   return (
-    <div>
-      <canvas ref={ref} height="400" style={{background: '#f0f2f5'}} />
-    </div>
+    <>
+      <h2>Chiffre d'affaire</h2>
+      <div>
+        <canvas ref={ref} height="400" style={{background: '#f0f2f5'}} />
+      </div>
+    </>
   )
 }
 

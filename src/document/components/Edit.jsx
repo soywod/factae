@@ -111,15 +111,16 @@ function EditDocument(props) {
 
       if (nextDocument.type !== 'quotation' && !nextDocument.number) {
         const count = documents
-          .map(({type, createdAt}) => [type, DateTime.fromISO(createdAt)])
-          .reduce((count, [type, createdAt]) => {
+          .map(({id, type, createdAt}) => [id, type, DateTime.fromISO(createdAt)])
+          .reduce((count, [id, type, createdAt]) => {
+            if (nextDocument.id === id) return count
             const matchMonth = createdAt.month === now.month
             const matchYear = createdAt.year === now.year
             const matchDocType = type === document.type
             return count + Number(matchMonth && matchYear && matchDocType)
-          }, 0)
+          }, 1)
 
-        nextDocument.number = `${now.toFormat('YYMM')}#${count}`
+        nextDocument.number = `${now.toFormat('yyMM')}#${count}`
       }
 
       const nextClient = find({id: nextDocument.client}, clients)

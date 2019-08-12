@@ -34,11 +34,7 @@ function DemoInfos() {
       </p>
       <p style={{margin: 0}}>
         Avec ce compte de test, vous avez accès à toute l'application en lecture seule. Vous pouvez
-        à tout moment créer un compte gratuitement en vous{' '}
-        <Link to="/logout" style={{padding: 0}}>
-          déconnectant
-        </Link>
-        .
+        à tout moment créer un compte gratuitement en vous <Link to="/logout">déconnectant</Link>.
       </p>
     </Modal>
   )

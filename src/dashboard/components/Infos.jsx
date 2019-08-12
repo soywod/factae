@@ -71,7 +71,7 @@ function Infos() {
       <h2>Liens utiles</h2>
       {links.map((link, key) => (
         <div key={key}>
-          <Link to={link} style={{padding: 0, margin: 0}} />
+          <Link to={link} />
         </div>
       ))}
     </>
