@@ -76,7 +76,7 @@ function Sider(props) {
         </Menu.Item>
         <Menu.Item key="/profile">
           <Icon type="user" />
-          <span>{t('profil')}</span>
+          <span>{t('profile')}</span>
         </Menu.Item>
         <Menu.Item key="/logout">
           <Icon type="logout" />

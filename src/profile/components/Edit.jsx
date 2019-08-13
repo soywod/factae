@@ -1,43 +1,19 @@
-import React, {Fragment, useState} from 'react'
+import React, {useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import Button from 'antd/es/button'
-import Card from 'antd/es/card'
-import Col from 'antd/es/col'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import Input from 'antd/es/input'
 import InputNumber from 'antd/es/input-number'
-import Row from 'antd/es/row'
 import Select from 'antd/es/select'
-import Typography from 'antd/es/typography'
-import getOr from 'lodash/fp/getOr'
 
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
+import FormCard, {FormCardTitle} from '../../common/components/FormCard'
 import {useNotification} from '../../utils/notification'
 import {difference} from '../../utils/lodash'
 import {useProfile} from '../hooks'
 import $profile from '../service'
-
-const {Title, Paragraph} = Typography
-const {Option} = Select
-const {TextArea} = Input
-
-const styles = {
-  title: {
-    fontSize: '1.2em',
-    marginBottom: 0,
-  },
-  subtitle: {
-    fontSize: '0.9em',
-    fontStyle: 'italic',
-    marginBottom: 0,
-    color: '#aaaaaa',
-  },
-  card: {
-    marginBottom: 15,
-  },
-}
 
 function Profile(props) {
   const {getFieldDecorator} = props.form
@@ -54,7 +30,7 @@ function Profile(props) {
     await tryAndNotify(async () => {
       const form = await props.form.validateFields()
       await $profile.update(difference(form, profile))
-      return 'Profil mis à jour avec succès.'
+      return t('/profile.updated-successfully')
     })
 
     setLoading(false)
@@ -64,135 +40,85 @@ function Profile(props) {
     return null
   }
 
-  const ContactTitle = (
-    <Title level={3} style={styles.title}>
-      {t('personal-informations')}
-    </Title>
-  )
-
-  const contactFields = [
-    ['firstName', t('first-name'), <Input size="large" />],
-    ['lastName', t('first-name')],
-    ['email', t('email'), <Input size="large" disabled />],
-    ['phone', t('phone')],
-    ['address', t('address')],
-    ['zip', t('zip')],
-    ['city', t('city')],
-  ]
-
-  const CompanyTitle = (
-    <Title level={3} style={styles.title}>
-      {t('micro-entreprise')}
-    </Title>
-  )
-
-  const companyFields = [
-    ['tradingName', t('trade-name')],
-    ['siret', t('siret')],
-    ['apeCode', t('ape-code')],
-    ['taxId', t('tax-id')],
-    [
-      'taxRate',
-      t('tax-rate'),
-      <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+  const contactFields = {
+    title: <FormCardTitle title="personal-informations" />,
+    fields: [
+      {name: 'firstName'},
+      {name: 'lastName'},
+      {name: 'email', Component: <Input size="large" disabled />},
+      {name: 'phone'},
+      {name: 'address'},
+      {name: 'zip'},
+      {name: 'city'},
     ],
-    [
-      'activity',
-      t('activity-type'),
-      <Select size="large">
-        <Option value="trade">{t('activity-trade')}</Option>
-        <Option value="service">{t('activity-service')}</Option>
-      </Select>,
+  }
+
+  const companyFields = {
+    title: <FormCardTitle title="micro-entreprise" />,
+    fields: [
+      {name: 'tradingName'},
+      {name: 'siret'},
+      {name: 'apeCode'},
+      {name: 'taxId'},
+      {
+        name: 'taxRate',
+        Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+      },
+      {
+        name: 'activity',
+        Component: (
+          <Select size="large">
+            <Select.Option value="trade">{t('activity-trade')}</Select.Option>
+            <Select.Option value="service">{t('activity-service')}</Select.Option>
+          </Select>
+        ),
+      },
     ],
-  ]
+  }
 
-  const RateTitle = (
-    <Fragment>
-      <Title level={3} style={styles.title}>
-        {t('default-pricing')}
-      </Title>
-      <Paragraph style={styles.subtitle}>{t('/profile.pricing-subtitle')}</Paragraph>
-    </Fragment>
-  )
-
-  const rateFields = [
-    ['rate', t('amount'), <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />],
-    [
-      'rateUnit',
-      t('unit'),
-      <Select size="large">
-        <Option value="hour">{t('per-hour')}</Option>
-        <Option value="day">{t('per-day')}</Option>
-        <Option value="service">{t('per-service')}</Option>
-      </Select>,
+  const rateFields = {
+    title: <FormCardTitle title="default-pricing" subtitle="/profile.pricing-subtitle" />,
+    fields: [
+      {
+        name: 'rate',
+        Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+      },
+      {
+        name: 'rateUnit',
+        Component: (
+          <Select size="large">
+            <Select.Option value="hour">{t('per-hour')}</Select.Option>
+            <Select.Option value="day">{t('per-day')}</Select.Option>
+            <Select.Option value="service">{t('per-service')}</Select.Option>
+          </Select>
+        ),
+      },
     ],
-  ]
+  }
 
-  const BankTitle = (
-    <Fragment>
-      <Title level={3} style={styles.title}>
-        {t('bank-informations')}
-      </Title>
-      <Paragraph style={styles.subtitle}>{t('/profile.bank-subtitle')}</Paragraph>
-    </Fragment>
-  )
+  const bankFields = {
+    title: <FormCardTitle title="bank-informations" subtitle="/profile.bank-subtitle" />,
+    fields: [{name: 'rib'}, {name: 'iban'}, {name: 'bic'}],
+  }
 
-  const bankFields = [['rib', t('rib')], ['iban', t('iban')], ['bic', t('bic')]]
+  const conditionsFields = {
+    title: <FormCardTitle title="conditions" subtitle="/profile.conditions-subtitle" />,
+    fields: [
+      {name: 'quotationConditions', fluid: true, Component: <Input.TextArea rows={4} />},
+      {name: 'invoiceConditions', fluid: true, Component: <Input.TextArea rows={4} />},
+    ],
+  }
 
-  const ConditionTitle = (
-    <Fragment>
-      <Title level={3} style={styles.title}>
-        {t('conditions')}
-      </Title>
-      <Paragraph style={styles.subtitle}>{t('/profile.conditions-subtitle')}</Paragraph>
-    </Fragment>
-  )
-
-  const conditionFields = [
-    ['quotationConditions', t('quotation'), <TextArea rows={4} />],
-    ['invoiceConditions', t('invoice'), <TextArea rows={4} />],
-  ]
-
-  const fields = [
-    [ContactTitle, contactFields],
-    [CompanyTitle, companyFields],
-    [RateTitle, rateFields],
-    [BankTitle, bankFields],
-  ]
+  const fields = [contactFields, companyFields, rateFields, bankFields, conditionsFields]
 
   return (
     <Container>
-      <h1>Profil</h1>
-      <Form onSubmit={saveProfile}>
-        {fields.map(([title, fields], key) => (
-          <Card key={key} title={title} style={styles.card}>
-            <Row gutter={15}>
-              {fields.map(([name, label, Component = <Input size="large" />], key) => (
-                <Col key={key} xs={24} sm={12} md={8} lg={6}>
-                  <Form.Item label={label}>
-                    {getFieldDecorator(name, {
-                      initialValue: getOr('', name, profile),
-                    })(Component)}
-                  </Form.Item>
-                </Col>
-              ))}
-            </Row>
-          </Card>
-        ))}
+      <h1>{t('profile')}</h1>
 
-        <Card title={ConditionTitle} style={styles.card}>
-          <Row gutter={15}>
-            {conditionFields.map(([name, label, Component], key) => (
-              <Col key={key} xs={24}>
-                <Form.Item label={label}>
-                  {getFieldDecorator(name, {
-                    initialValue: getOr('', name, profile),
-                  })(Component)}
-                </Form.Item>
-              </Col>
-            ))}
-          </Row>
-        </Card>
+      <Form onSubmit={saveProfile}>
+        {fields.map((props, key) => (
+          <FormCard key={key} getFieldDecorator={getFieldDecorator} {...props} />
+        ))}
 
         <ActionBar>
           <Button type="primary" htmlType="submit" disabled={loading}>
