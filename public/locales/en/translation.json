@@ -99,6 +99,17 @@
     "modal-content-1": "<strong>factAE</strong> est un outil de facturation pour micro-entrepreneurs à <strong> 1 €/mois</strong>. Son objectif est simple : gérer ses clients, ses devis et ses factures <strong>facilement</strong> et <strong>efficacement</strong>. Rien de plus.",
     "modal-content-2": "Avec ce compte de test, vous avez accès à toute l'application en lecture seule. Vous pouvez à tout moment créer un compte gratuitement en vous déconnectant.",
     "modal-title": "Welcome to factAE",
+    "part-a": "<strong>The low VAT threshold</strong> <em>({{value}})</em> corresponds to the ceiling from which you can become liable for VAT (depending on your previous turnover). An overtaking implies:",
+    "part-a-1": "to check your turnover of the last year:",
+    "part-a-2": "if your last year's turnover is lower than the low VAT ceiling => non liable",
+    "part-a-3": "if your turnover for the past year is higher than the high VAT ceiling => liable",
+    "part-a-4": "if your turnover from the past year is between the low and high VAT ceiling => check the year again before",
+    "part-b": "<strong>The high VAT threshold</strong> <em>({{value}})</em> corresponds to the ceiling from which you become liable for VAT. This takes effect on the first day of the month, the pre-tax turnover exceeds this threshold. An overtaking implies:",
+    "part-b-1": "to register the VAT on your new invoices + to reinvoice all those of the current month",
+    "part-b-2": "to create a pro account on impot.gouv.fr",
+    "part-b-3": "to apply for an intra-community VAT number with the SIE (Service des Impôts des Entreprises)",
+    "part-c": "<strong>The micro-entrepreneur threshold</strong> <em>({{value}})</em> corresponds to the maximum ceiling authorized by the micro-entrepreneur. An overrun over two consecutive years implies:",
+    "part-c-1": "the loss of your mirco-entrepreneur status (changeover in the individual business regime)",
     "subscription-expired": "Your subscription expires {{date}} ({{diff}})."
   },
   "/documents": {

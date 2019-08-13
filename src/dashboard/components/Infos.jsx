@@ -19,57 +19,27 @@ function Infos() {
   return (
     <>
       <h2>{t('thresholds')}</h2>
-      <div>
-        <strong>Le plafond de TVA bas</strong> <em>({toEuro(lowTVA)} HT)</em> correspond au plafond
-        à partir du quel vous pouvez devenir redevable de la TVA (en fonction de votre chiffre
-        d'affaire passé). Un dépassement implique :
-      </div>
+      <div dangerouslySetInnerHTML={{__html: t('/dashboard.part-a', {value: toEuro(lowTVA)})}} />
       <ul>
         <li>
-          de vérifier votre chiffre d'affaire de l'année passée :
+          {t('/dashboard.part-a-1')}
           <ul>
-            <li>
-              si votre chiffre d'affaire de l'année passée est inférieur au plafond de TVA bas =>
-              non redevable
-            </li>
-            <li>
-              si votre chiffre d'affaire de l'année passée est supérieur au plafond de TVA haut =>
-              redevable
-            </li>
-            <li>
-              si votre chiffre d'affaire de l'année passée est entre le plafond de TVA bas et haut
-              => vérifier l'année encore d'avant
-            </li>
+            <li>{t('/dashboard.part-a-2')}</li>
+            <li>{t('/dashboard.part-a-3')}</li>
+            <li>{t('/dashboard.part-a-4')}</li>
           </ul>
         </li>
       </ul>
-      <div>
-        <strong>Le plafond de TVA haut</strong> <em>({toEuro(highTVA)} HT)</em> correspond au
-        plafond à partir du quel vous devenez redevable de la TVA. Ceci prend effet le premier jour
-        du mois dont le chiffre d'affaire hors taxe dépasse ce seuil. Un dépassement implique :
-      </div>
+      <div dangerouslySetInnerHTML={{__html: t('/dashboard.part-b', {value: toEuro(highTVA)})}} />
       <ul>
-        <li>
-          d'inscrire la TVA sur vos nouvelles factures + refacturer toutes celles du mois en cours
-        </li>
-        <li>de créer un compte pro sur impot.gouv.fr</li>
-        <li>
-          de faire une demande de numéro de TVA intracommunautaire auprès du SIE (Service des Impôts
-          des Entreprises)
-        </li>
+        <li>{t('/dashboard.part-b-1')}</li>
+        <li>{t('/dashboard.part-b-2')}</li>
+        <li>{t('/dashboard.part-b-3')}</li>
       </ul>
-      <div>
-        <strong>Le plafond micro-entrepreneur</strong> <em>({toEuro(AE)} HT)</em> correspond au
-        plafond maximum autorisé par le micro-entrepreneur. Un dépassement sur deux années
-        consécutives implique :
-      </div>
+      <div dangerouslySetInnerHTML={{__html: t('/dashboard.part-c', {value: toEuro(AE)})}} />
       <ul>
-        <li>
-          la perte de votre statut mirco-entrepreneur (basculement dans le régime de l'entreprise
-          individuelle)
-        </li>
+        <li>{t('/dashboard.part-c-1')}</li>
       </ul>
-
       <h2>{t('useful-links')}</h2>
       <ul>
         {links.map((link, key) => (
