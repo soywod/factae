@@ -1,5 +1,6 @@
 import React from 'react'
 import {useTranslation} from 'react-i18next'
+import moment from 'moment'
 import Card from 'antd/es/card'
 import Col from 'antd/es/col'
 import Form from 'antd/es/form'
@@ -38,7 +39,7 @@ function FormCard({getFieldDecorator, model, title, fields}) {
           <Col key={key} {...(fluid ? pick('xs', breakpoints) : breakpoints)}>
             <Form.Item label={t(kebabCase(name))}>
               {getFieldDecorator(name, {
-                initialValue: getOr('', name, model),
+                initialValue: name.match(/At/) ? moment(model[name]) : getOr('', name, model),
               })(Component)}
             </Form.Item>
           </Col>
@@ -48,13 +49,14 @@ function FormCard({getFieldDecorator, model, title, fields}) {
   )
 }
 
-export function FormCardTitle({title, subtitle}) {
+export function FormCardTitle({title, subtitle, action}) {
   const {t} = useTranslation()
 
   return (
     <>
       <Typography.Title level={3} style={styles.title}>
         {t(title)}
+        {action}
       </Typography.Title>
       {subtitle && (
         <Typography.Paragraph style={styles.subtitle}>{t(subtitle)}</Typography.Paragraph>

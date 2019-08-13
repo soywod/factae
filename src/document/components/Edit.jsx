@@ -1,56 +1,35 @@
 import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import Form from 'antd/es/form'
-import Input from 'antd/es/input'
-import InputNumber from 'antd/es/input-number'
-import DatePicker from 'antd/es/date-picker'
-import Popconfirm from 'antd/es/popconfirm'
-import Select from 'antd/es/select'
+import {DateTime} from 'luxon'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
-import Row from 'antd/es/row'
-import Col from 'antd/es/col'
-import Icon from 'antd/es/icon'
-import Typography from 'antd/es/typography'
+import DatePicker from 'antd/es/date-picker'
 import Empty from 'antd/es/empty'
-import isNil from 'lodash/fp/isNil'
+import Form from 'antd/es/form'
+import Icon from 'antd/es/icon'
+import Input from 'antd/es/input'
+import InputNumber from 'antd/es/input-number'
+import Popconfirm from 'antd/es/popconfirm'
+import Row from 'antd/es/row'
+import Select from 'antd/es/select'
 import find from 'lodash/fp/find'
+import isNil from 'lodash/fp/isNil'
 import omitBy from 'lodash/fp/omitBy'
-import moment from 'moment'
-import {DateTime} from 'luxon'
 
-import {useNotification} from '../../utils/notification'
-import {toEuro} from '../../common/currency'
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import EditableTable from '../../common/components/EditableTable'
+import FormCard, {FormCardTitle} from '../../common/components/FormCard'
+import {toEuro} from '../../common/currency'
+import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
 import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
 import $document from '../service'
 
-const {Title: AntdTitle, Paragraph: AntdParagraph} = Typography
-const {Option} = Select
-const {TextArea} = Input
-
-const Title = ({children}) => (
-  <AntdTitle level={3} style={{fontSize: '1.2rem', marginBottom: 0}}>
-    {children}
-  </AntdTitle>
-)
-
-const Paragraph = ({children}) => (
-  <AntdParagraph
-    style={{fontSize: '0.9rem', marginBottom: 0, fontStyle: 'italic', color: '#aaaaaa'}}
-  >
-    {children}
-  </AntdParagraph>
-)
-
 function EditDocument(props) {
   const {match} = props
   const {getFieldDecorator} = props.form
-
   const profile = useProfile()
   const clients = useClients()
   const documents = useDocuments()
@@ -105,7 +84,7 @@ function EditDocument(props) {
       let nextDocument = await buildNextDocument()
 
       if (!nextDocument.client) {
-        throw new Error(t('client-required'))
+        throw new Error(t('/documents.client-required'))
       }
 
       const now = DateTime.local()
@@ -127,7 +106,7 @@ function EditDocument(props) {
 
       const nextClient = find({id: nextDocument.client}, clients)
       setDocument(await $document.generatePdf(profile, nextClient, nextDocument))
-      return t('generated-successfully')
+      return t('/documents.generated-successfully')
     })
 
     setLoading(false)
@@ -167,7 +146,7 @@ function EditDocument(props) {
         setLoading(true)
         await $document.delete(document)
         props.history.push('/documents')
-        return t('deleted-successfully')
+        return t('/documents.deleted-successfully')
       },
       () => setLoading(false),
     )
@@ -182,7 +161,7 @@ function EditDocument(props) {
       const nextDocument = await buildNextDocument()
       setDocument(nextDocument)
       await $document.update(nextDocument)
-      return t('updated-successfully')
+      return t('/documents.updated-successfully')
     })
 
     setLoading(false)
@@ -267,139 +246,138 @@ function EditDocument(props) {
   ]
 
   const ItemsTitle = (
-    <Title>
-      {t('designations')}
-      <Button type="dashed" shape="circle" onClick={addItem} style={{marginLeft: 12}}>
-        <Icon type="plus" />
-      </Button>
-    </Title>
+    <FormCardTitle
+      title="designations"
+      action={
+        <Button type="dashed" shape="circle" onClick={addItem} style={{marginLeft: 12}}>
+          <Icon type="plus" />
+        </Button>
+      }
+    />
   )
 
-  const MainTitle = <Title>{t('general-informations')}</Title>
-  const mainFields = [
-    [
-      'type',
-      t('document-type'),
-      <Select size="large" disabled>
-        <Option value="quotation">{t('quotation')}</Option>
-        <Option value="invoice">{t('invoice')}</Option>
-        <Option value="credit">{t('credit')}</Option>
-      </Select>,
+  const mainFields = {
+    title: <FormCardTitle title="general-informations" />,
+    fields: [
+      {
+        name: 'type',
+        Component: (
+          <Select size="large" disabled>
+            {['quotation', 'invoice', 'credit'].map(type => (
+              <Select.Option key={type} value={type}>
+                {t(type)}
+              </Select.Option>
+            ))}
+          </Select>
+        ),
+      },
+      {
+        name: 'status',
+        Component: (
+          <Select size="large" autoFocus>
+            <Select.Option value="draft">{t('draft')}</Select.Option>
+            <Select.Option value="sent">{t('sent')}</Select.Option>
+            {document.type === 'quotation' && (
+              <Select.Option value="signed">{t('signed')}</Select.Option>
+            )}
+            {document.type === 'invoice' && <Select.Option value="paid">{t('paid')}</Select.Option>}
+            {document.type === 'credit' && (
+              <Select.Option value="refunded">{t('refunded')}</Select.Option>
+            )}
+          </Select>
+        ),
+      },
+      {
+        name: 'client',
+        Component: (
+          <Select size="large">
+            {clients.map(client => (
+              <Select.Option key={client.id} value={client.id}>
+                {client.tradingName || client.email}
+              </Select.Option>
+            ))}
+          </Select>
+        ),
+      },
+      {
+        name: 'taxRate',
+        Component: (
+          <InputNumber
+            size="large"
+            min={0}
+            step={1}
+            onChange={taxRate => setDocument({...document, taxRate})}
+            style={{width: '100%'}}
+          />
+        ),
+      },
     ],
-    [
-      'status',
-      t('status'),
-      <Select size="large" autoFocus>
-        <Option value="draft">{t('draft')}</Option>
-        <Option value="sent">{t('sent')}</Option>
-        {document.type === 'quotation' && <Option value="signed">{t('signed')}</Option>}
-        {document.type === 'invoice' && <Option value="paid">{t('paid')}</Option>}
-        {document.type === 'credit' && <Option value="refunded">{t('refunded')}</Option>}
-      </Select>,
-    ],
-    [
-      'client',
-      t('client'),
-      <Select size="large">
-        {clients.map(client => (
-          <Option key={client.id} value={client.id}>
-            {client.tradingName || client.email}
-          </Option>
-        ))}
-      </Select>,
-    ],
-    [
-      'taxRate',
-      t('tax-rate'),
-      <InputNumber
-        size="large"
-        min={0}
-        step={1}
-        onChange={taxRate => setDocument({...document, taxRate})}
-        style={{width: '100%'}}
-      />,
-    ],
-  ]
+  }
 
   if (document.type === 'quotation') {
-    mainFields.push(
-      ['rate', t('pricing'), <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />],
-      [
-        'rateUnit',
-        t('unit'),
-        <Select size="large">
-          <Option value="hour">{t('per-hour')}</Option>
-          <Option value="day">{t('per-day')}</Option>
-          <Option value="service">{t('per-service')}</Option>
-        </Select>,
-      ],
+    mainFields.fields.push(
+      {
+        name: 'rate',
+        Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+      },
+      {
+        name: 'rateUnit',
+        Component: (
+          <Select size="large">
+            {['hour', 'day', 'service'].map(type => (
+              <Select.Option key={type} value={type}>
+                {t(`per-${type}`)}
+              </Select.Option>
+            ))}
+          </Select>
+        ),
+      },
     )
   }
 
   if (document.type === 'credit') {
-    mainFields.push(['invoiceNumber', t('invoice-reference-number')])
+    mainFields.fields.push({name: 'invoiceNumber'})
   }
 
-  const DateTitle = <Title>{t('dates')}</Title>
-  const dateFields = [
-    [
-      'expiresAt',
-      t('expiration-offer'),
-      <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
+  const dateFields = {
+    title: <FormCardTitle title="dates" />,
+    fields: [
+      {
+        name: 'expiresAt',
+        Component: <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
+      },
+      {
+        name: 'startsAt',
+        Component: <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
+      },
+      {
+        name: 'endsAt',
+        Component: <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
+      },
     ],
-    ['startsAt', t('start'), <DatePicker size="large" placeholder="" style={{width: '100%'}} />],
-    ['endsAt', t('stop'), <DatePicker size="large" placeholder="" style={{width: '100%'}} />],
-  ]
+  }
 
-  const ConditionTitle = (
-    <>
-      <Title level={3}>{t('conditions')}</Title>
-      <Paragraph>{t('/documents.conditions-subtitle')}</Paragraph>
-    </>
-  )
-  const conditionFields = [['conditions', t('conditions'), <TextArea rows={4} />]]
+  const conditionFields = {
+    title: <FormCardTitle title="conditions" subtitle="/documents.conditions-subtitle" />,
+    fields: [{name: 'conditions', fluid: true, Component: <Input.TextArea rows={4} />}],
+  }
 
-  const fields = [[MainTitle, mainFields]]
+  const fields = [mainFields]
 
   if (document.type === 'quotation') {
-    fields.push([DateTitle, dateFields])
+    fields.push(dateFields)
   }
+
+  fields.push(conditionFields)
 
   return (
     <Container>
-      <h1>Document</h1>
-      <Form onSubmit={saveDocument}>
-        {fields.map(([title, fields], key) => (
-          <Card key={key} title={title} style={{marginBottom: 15}}>
-            <Row gutter={15}>
-              {fields.map(([name, label, Component = <Input size="large" />], key) => (
-                <Col key={key} xs={24} sm={12} md={8} lg={6}>
-                  <Form.Item label={label}>
-                    {getFieldDecorator(name, {
-                      initialValue: ['expiresAt', 'startsAt', 'endsAt'].includes(name)
-                        ? moment(document[name])
-                        : document[name],
-                    })(Component)}
-                  </Form.Item>
-                </Col>
-              ))}
-            </Row>
-          </Card>
-        ))}
+      <h1>{t('documents')}</h1>
 
-        <Card title={ConditionTitle} style={{marginBottom: 15}}>
-          <Row gutter={15}>
-            {conditionFields.map(([name, label, Component], key) => (
-              <Col key={key} xs={24}>
-                <Form.Item label={label}>
-                  {getFieldDecorator(name, {
-                    initialValue: document[name],
-                  })(Component)}
-                </Form.Item>
-              </Col>
-            ))}
-          </Row>
-        </Card>
+      <Form onSubmit={saveDocument}>
+        {fields.map((props, key) => (
+          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={document} {...props} />
+        ))}
 
         <Card
           title={ItemsTitle}
@@ -419,7 +397,7 @@ function EditDocument(props) {
 
         {document.pdf && (
           <Card
-            title={<Title>PDF</Title>}
+            title={<FormCardTitle title="pdf" />}
             bodyStyle={{padding: 15, textAlign: 'center'}}
             style={{margin: '15px 0'}}
           >
@@ -452,10 +430,12 @@ function EditDocument(props) {
               {t('delete')}
             </Button>
           </Popconfirm>
+
           <Button type="dashed" onClick={generatePdf} disabled={loading} style={{marginRight: 8}}>
             <Icon type="file-pdf" />
             {t('generate-pdf')}
           </Button>
+
           <Button type="primary" htmlType="submit" disabled={loading}>
             <Icon type={loading ? 'loading' : 'save'} />
             {t('save')}

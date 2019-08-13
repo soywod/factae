@@ -14,7 +14,7 @@ function Subscription() {
   }
 
   const now = DateTime.local()
-  const date = profile.expiresAt.toFormat(t('date-format'))
+  const date = profile.expiresAt.setLocale(i18n.language).toFormat(t('date-format'))
   const diff = profile.expiresAt.toRelative({locale: i18n.language})
 
   return (

@@ -18,7 +18,7 @@ export function onProfileChanged() {
 
     profile$.next({
       ...profile,
-      expiresAt: DateTime.fromSeconds(profile.expiresAt.seconds, {locale: 'fr'}),
+      expiresAt: DateTime.fromSeconds(profile.expiresAt.seconds),
     })
   })
 }

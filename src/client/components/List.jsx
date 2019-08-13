@@ -6,6 +6,7 @@ import Icon from 'antd/es/icon'
 import Table from 'antd/es/table'
 import omit from 'lodash/fp/omit'
 
+import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import {useNotification} from '../../utils/notification'
 import {useClients} from '../hooks'
@@ -23,7 +24,7 @@ function ClientList(props) {
 
   const columns = [
     {
-      title: <strong>{t('trade-name')}</strong>,
+      title: <strong>{t('trading-name')}</strong>,
       dataIndex: 'tradingName',
       key: 'tradingName',
     },
@@ -50,7 +51,7 @@ function ClientList(props) {
         setLoading(true)
         const id = await $client.create()
         props.history.push(`/clients/${id}`, {id})
-        return t('created-successfully')
+        return t('/clients.created-successfully')
       },
       () => setLoading(false),
     )
@@ -74,12 +75,12 @@ function ClientList(props) {
         bodyStyle={{cursor: 'pointer'}}
       />
 
-      <div style={{textAlign: 'right'}}>
+      <ActionBar>
         <Button type="primary" disabled={loading} onClick={createClient}>
           <Icon type={loading ? 'loading' : 'plus'} />
           {t('new')}
         </Button>
-      </div>
+      </ActionBar>
     </Container>
   )
 }

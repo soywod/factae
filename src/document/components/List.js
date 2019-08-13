@@ -15,9 +15,10 @@ import orderBy from 'lodash/fp/orderBy'
 import pipe from 'lodash/fp/pipe'
 import {DateTime} from 'luxon'
 
-import {useNotification} from '../../utils/notification'
+import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import {toEuro} from '../../common/currency'
+import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
 import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
@@ -70,7 +71,7 @@ function DocumentList(props) {
 
         const id = await $document.create(document)
         props.history.push(`/documents/${id}`, {...document, id})
-        return t('/document.created-successfully')
+        return t('/documents.created-successfully')
       },
       () => setLoading(false),
     )
@@ -140,6 +141,7 @@ function DocumentList(props) {
   return (
     <Container>
       <h1>{t('documents')}</h1>
+
       <Table
         bordered
         loading={loading}
@@ -154,7 +156,7 @@ function DocumentList(props) {
         bodyStyle={{cursor: 'pointer'}}
       />
 
-      <div style={{textAlign: 'right'}}>
+      <ActionBar>
         <Dropdown
           disabled={loading || !profile}
           overlay={
@@ -170,7 +172,7 @@ function DocumentList(props) {
             {t('new')}
           </Button>
         </Dropdown>
-      </div>
+      </ActionBar>
     </Container>
   )
 }
