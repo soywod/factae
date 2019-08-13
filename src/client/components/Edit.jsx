@@ -1,36 +1,24 @@
 import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import Button from 'antd/es/button'
-import Card from 'antd/es/card'
-import Col from 'antd/es/col'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import Input from 'antd/es/input'
 import Popconfirm from 'antd/es/popconfirm'
-import Row from 'antd/es/row'
-import Typography from 'antd/es/typography'
 import find from 'lodash/fp/find'
-import getOr from 'lodash/fp/getOr'
 import isEmpty from 'lodash/fp/isEmpty'
 import omitBy from 'lodash/fp/omitBy'
 
-import {useNotification} from '../../utils/notification'
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
+import FormCard, {FormCardTitle} from '../../common/components/FormCard'
+import {useNotification} from '../../utils/notification'
 import {useClients} from '../hooks'
 import $client from '../service'
-
-const {Title: AntdTitle} = Typography
-const Title = ({children}) => (
-  <AntdTitle level={3} style={{fontSize: '1.2rem', marginBottom: 0}}>
-    {children}
-  </AntdTitle>
-)
 
 function EditClient(props) {
   const {match} = props
   const {getFieldDecorator} = props.form
-
   const clients = useClients()
   const [loading, setLoading] = useState(false)
   const [client, setClient] = useState(props.location.state)
@@ -74,45 +62,36 @@ function EditClient(props) {
     return null
   }
 
-  const CompanyTitle = <Title>{t('company')}</Title>
-  const companyFields = [
-    ['tradingName', t('trade-name'), <Input size="large" autoFocus />],
-    ['siret', t('siret')],
-  ]
+  const companyFields = {
+    title: <FormCardTitle title="company" />,
+    fields: [{name: 'tradingName', Component: <Input size="large" autoFocus />}, {name: 'siret'}],
+  }
 
-  const ContactTitle = <Title>{t('contact')}</Title>
-  const contactFields = [
-    ['firstName', t('first-name'), <Input size="large" />],
-    ['lastName', t('first-name')],
-    ['email', t('email')],
-    ['phone', t('phone')],
-    ['address', t('address')],
-    ['zip', t('zip')],
-    ['city', t('city')],
-    ['country', t('country')],
-  ]
+  const contactFields = {
+    title: <FormCardTitle title="contact" />,
+    fields: [
+      {name: 'firstName'},
+      {name: 'lastName'},
+      {name: 'email'},
+      {name: 'phone'},
+      {name: 'address'},
+      {name: 'zip'},
+      {name: 'city'},
+      {name: 'country'},
+    ],
+  }
 
-  const fields = [[CompanyTitle, companyFields], [ContactTitle, contactFields]]
+  const fields = [companyFields, contactFields]
 
   return (
     <Container>
-      <h1>Client</h1>
+      <h1>{t('client')}</h1>
+
       <Form onSubmit={saveClient}>
-        {fields.map(([title, fields], key) => (
-          <Card key={key} title={title} style={{marginBottom: 15}}>
-            <Row gutter={15}>
-              {fields.map(([name, label, Component = <Input size="large" />], key) => (
-                <Col key={key} xs={24} sm={12} md={8} lg={6}>
-                  <Form.Item label={label}>
-                    {getFieldDecorator(name, {
-                      initialValue: getOr('', name, client),
-                    })(Component)}
-                  </Form.Item>
-                </Col>
-              ))}
-            </Row>
-          </Card>
+        {fields.map((props, key) => (
+          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={client} {...props} />
         ))}
+
         <ActionBar>
           <Popconfirm
             title={t('/clients.confirm-deletion')}
@@ -125,6 +104,7 @@ function EditClient(props) {
               {t('delete')}
             </Button>
           </Popconfirm>
+
           <Button type="primary" htmlType="submit" disabled={loading}>
             <Icon type={loading ? 'loading' : 'save'} />
             {t('save')}

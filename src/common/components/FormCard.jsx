@@ -10,8 +10,6 @@ import getOr from 'lodash/fp/getOr'
 import pick from 'lodash/fp/pick'
 import kebabCase from 'lodash/fp/kebabCase'
 
-import {useProfile} from '../../profile/hooks'
-
 const styles = {
   title: {
     fontSize: '1.2em',
@@ -28,15 +26,10 @@ const styles = {
   },
 }
 
-function FormCard({getFieldDecorator, title, fields}) {
-  const profile = useProfile()
+const breakpoints = {xs: 24, sm: 12, md: 8, lg: 6}
+
+function FormCard({getFieldDecorator, model, title, fields}) {
   const {t} = useTranslation()
-
-  if (!profile) {
-    return null
-  }
-
-  const breakpoints = {xs: 24, sm: 12, md: 8, lg: 6}
 
   return (
     <Card title={title} style={styles.card}>
@@ -45,7 +38,7 @@ function FormCard({getFieldDecorator, title, fields}) {
           <Col key={key} {...(fluid ? pick('xs', breakpoints) : breakpoints)}>
             <Form.Item label={t(kebabCase(name))}>
               {getFieldDecorator(name, {
-                initialValue: getOr('', name, profile),
+                initialValue: getOr('', name, model),
               })(Component)}
             </Form.Item>
           </Col>

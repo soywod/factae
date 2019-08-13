@@ -6,8 +6,8 @@ import Icon from 'antd/es/icon'
 import Table from 'antd/es/table'
 import omit from 'lodash/fp/omit'
 
-import {useNotification} from '../../utils/notification'
 import Container from '../../common/components/Container'
+import {useNotification} from '../../utils/notification'
 import {useClients} from '../hooks'
 import $client from '../service'
 
@@ -59,6 +59,7 @@ function ClientList(props) {
   return (
     <Container>
       <h1>{t('clients')}</h1>
+
       <Table
         bordered
         loading={loading}

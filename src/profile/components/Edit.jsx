@@ -117,7 +117,7 @@ function Profile(props) {
 
       <Form onSubmit={saveProfile}>
         {fields.map((props, key) => (
-          <FormCard key={key} getFieldDecorator={getFieldDecorator} {...props} />
+          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={profile} {...props} />
         ))}
 
         <ActionBar>
