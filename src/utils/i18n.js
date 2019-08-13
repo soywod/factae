@@ -9,7 +9,7 @@ i18n
   .use(initReactI18next)
   .init({
     load: 'languageOnly',
-    fallbackLng: 'en',
+    fallbackLng: 'fr',
     debug: process.env.NODE_ENV === 'development',
     interpolation: {
       escapeValue: false,
