@@ -15,9 +15,9 @@ const styles = {
   },
   flags: {
     display: 'flex',
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-end',
-    flex: 1,
     marginBottom: 25,
   },
   logo: {
@@ -84,7 +84,7 @@ function Sider(props) {
         </Menu.Item>
       </Menu>
       <div style={styles.flags}>
-        <SelectLanguage />
+        <SelectLanguage placement="topCenter" />
       </div>
     </Layout.Sider>
   )
