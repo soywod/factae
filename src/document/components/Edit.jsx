@@ -245,17 +245,6 @@ function EditDocument(props) {
     },
   ]
 
-  const ItemsTitle = (
-    <FormCardTitle
-      title="designations"
-      action={
-        <Button type="dashed" shape="circle" onClick={addItem} style={{marginLeft: 12}}>
-          <Icon type="plus" />
-        </Button>
-      }
-    />
-  )
-
   const mainFields = {
     title: <FormCardTitle title="general-informations" />,
     fields: [
@@ -380,7 +369,7 @@ function EditDocument(props) {
         ))}
 
         <Card
-          title={ItemsTitle}
+          title={<FormCardTitle title="designations" />}
           bodyStyle={{padding: '1px 7.5px 0 7.5px', marginBottom: -1}}
           style={{marginBottom: 15}}
         >
@@ -392,6 +381,21 @@ function EditDocument(props) {
               footer={Footer}
               onSave={saveItems}
             />
+          </Row>
+          <Row gutter={15}>
+            <div
+              style={{
+                background: '#fafafa',
+                padding: 15,
+                textAlign: 'right',
+                borderTop: '1px solid #e8e8e8',
+              }}
+            >
+              <Button type="primary" onClick={addItem}>
+                <Icon type="plus" />
+                {t('add-designation')}
+              </Button>
+            </div>
           </Row>
         </Card>
 
