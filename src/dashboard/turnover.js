@@ -3,17 +3,18 @@ import filter from 'lodash/fp/filter'
 import isEmpty from 'lodash/fp/isEmpty'
 import isNil from 'lodash/fp/isNil'
 import mapValues from 'lodash/fp/mapValues'
-import overEvery from 'lodash/fp/overEvery'
+import overSome from 'lodash/fp/overSome'
 import pipe from 'lodash/fp/pipe'
-import sum from 'lodash/fp/sum'
 import reduce from 'lodash/fp/reduce'
+import sum from 'lodash/fp/sum'
 import sumBy from 'lodash/fp/sumBy'
 import values from 'lodash/fp/values'
 
-const isNilOrEmpty = overEvery([isNil, isEmpty])
+const isNilOrEmpty = overSome([isNil, isEmpty])
 
 export function getTurnover(documents, now, monthShift) {
   if (isNilOrEmpty(documents)) return null
+
   const firstDay = now
     .minus({month: monthShift})
     .set({day: 1, hour: 0, minute: 0, second: 0, millisecond: 0})

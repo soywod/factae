@@ -6,7 +6,7 @@ import {useProfile} from '../../profile/hooks'
 
 const STORAGE_KEY = 'demo'
 
-function DemoInfos() {
+function ModuleWelcomeDemo() {
   const profile = useProfile()
   const [hidden, setHidden] = useState(Boolean(localStorage.getItem(STORAGE_KEY)))
   const {t} = useTranslation()
@@ -34,4 +34,4 @@ function DemoInfos() {
   )
 }
 
-export default DemoInfos
+export default ModuleWelcomeDemo

@@ -1,6 +1,6 @@
 import {DateTime} from 'luxon'
 
-import {getTurnover} from '../utils'
+import {getTurnover} from '../turnover'
 
 describe('getTurnover', () => {
   const date = DateTime.fromISO('2018-04-01')

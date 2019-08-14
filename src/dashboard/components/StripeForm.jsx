@@ -1,5 +1,6 @@
-import React, {useState} from 'react'
-import {CardElement, injectStripe} from 'react-stripe-elements'
+import React, {useEffect, useState} from 'react'
+import {useTranslation} from 'react-i18next'
+import {CardElement, Elements, injectStripe, StripeProvider} from 'react-stripe-elements'
 import {DateTime} from 'luxon'
 import Button from 'antd/es/button'
 import Col from 'antd/es/col'
@@ -12,7 +13,7 @@ import {notify} from '../../utils/notification'
 import {functions} from '../../utils/firebase'
 import {useProfile} from '../../profile/hooks'
 
-function CheckoutForm({stripe}) {
+const StripeForm = injectStripe(({stripe}) => {
   const profile = useProfile()
   const [loading, setLoading] = useState(false)
 
@@ -92,6 +93,30 @@ function CheckoutForm({stripe}) {
       </div>
     </>
   )
+})
+
+function StripeFormContainer() {
+  const [ready, setReady] = useState(false)
+  const {i18n} = useTranslation()
+
+  useEffect(() => {
+    const stripeElement = document.createElement('script')
+    stripeElement.onload = () => setReady(true)
+    document.body.appendChild(stripeElement)
+    stripeElement.src = 'https://js.stripe.com/v3/'
+
+    return () => {
+      document.body.removeChild(stripeElement)
+    }
+  }, [])
+
+  return ready ? (
+    <StripeProvider apiKey={String(process.env.REACT_APP_STRIPE_API_KEY)}>
+      <Elements locale={i18n.language}>
+        <StripeForm />
+      </Elements>
+    </StripeProvider>
+  ) : null
 }
 
-export default injectStripe(CheckoutForm)
+export default StripeFormContainer

@@ -6,7 +6,7 @@ import isNil from 'lodash/fp/isNil'
 
 import {toEuro} from '../../common/currency'
 
-function TurnoverChart({data}) {
+function ChartDoughnutTurnover({data}) {
   const ref = useRef()
   const chart = useRef()
   const {t} = useTranslation()
@@ -24,7 +24,7 @@ function TurnoverChart({data}) {
             backgroundColor: ['#52c41a', '#1890ff'],
           },
         ],
-        labels: [t('billed'), t('pending')],
+        labels: [t('paid'), t('pending')],
       },
       options: {
         tooltips: {
@@ -47,4 +47,4 @@ function TurnoverChart({data}) {
   )
 }
 
-export default TurnoverChart
+export default ChartDoughnutTurnover
