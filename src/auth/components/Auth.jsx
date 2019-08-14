@@ -17,11 +17,15 @@ import {useProfile} from '../../profile/hooks'
 import $auth from '../service'
 import {useAuth} from '../hooks'
 
+import background from './background.jpeg'
+
 const styles = {
   container: {
     alignItems: 'center',
-    background: '#f0f2f5',
+    backgroundSize: 'cover',
+    background: `url(${background}) no-repeat center center`,
     bottom: 0,
+    padding: 15,
     display: 'flex',
     height: '100vh',
     justifyContent: 'center',
