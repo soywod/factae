@@ -3,34 +3,31 @@ import {useTranslation} from 'react-i18next'
 import {Chart as ChartJS} from 'chart.js'
 import _ from 'lodash/fp'
 import {DateTime} from 'luxon'
+import Card from 'antd/es/card'
+import Col from 'antd/es/col'
+import Row from 'antd/es/row'
+import range from 'lodash/fp/range'
 
-import {useDocuments} from '../../document/hooks'
 import {toEuro} from '../../common/currency'
-import {useThresholds, useFirstAndLastDayOfYear} from '../hooks'
-
-const months = [
-  'Janvier',
-  'Février',
-  'Mars',
-  'Avril',
-  'Mai',
-  'Juin',
-  'Juillet',
-  'Août',
-  'Septembre',
-  'Octobre',
-  'Novembre',
-  'Décembre',
-]
+import {FormCardTitle} from '../../common/components/FormCard'
+import {useDocuments} from '../../document/hooks'
+import {useFirstAndLastDayOfYear} from '../hooks'
+import ModuleMonthlyTurnover from './ModuleMonthlyTurnover'
+import ModuleQuarterlyTurnover from './ModuleQuarterlyTurnover'
 
 function Chart() {
   const ref = useRef()
   const chart = useRef()
   const documents = useDocuments()
-  const [lowTVA, highTVA, AE] = useThresholds()
   const invoices = _.isNull(documents) ? null : _.filter({type: 'invoice'}, documents)
   const [firstDayOfYear, lastDayOfYear] = useFirstAndLastDayOfYear()
-  const {t} = useTranslation()
+  const {t, i18n} = useTranslation()
+  const months = range(1, 13).map(month =>
+    DateTime.local()
+      .setLocale(i18n.language)
+      .set({month})
+      .toFormat('LLLL'),
+  )
 
   function isNullOrEmpty(invoices) {
     return _.pipe([_.filter({status: 'paid'}), _.overSome([_.isNull, _.isEmpty])])(invoices)
@@ -121,39 +118,22 @@ function Chart() {
         labels: months,
         datasets: [
           {
-            data: _.fill(0)(12)(lowTVA)(Array(12)),
-            label: `Plafond TVA (bas)`,
-            fill: false,
-            borderWidth: 1,
-            borderColor: 'rgba(0, 0, 0, .33)',
-            pointHitRadius: 20,
-            pointBorderWidth: 0,
-            pointRadius: 0,
-          },
-          {
-            data: _.fill(0)(12)(highTVA)(Array(12)),
-            label: `Plafond TVA (haut)`,
-            fill: false,
-            borderWidth: 1,
-            borderColor: 'rgba(0, 0, 0, .66)',
-            pointHitRadius: 20,
-            pointBorderWidth: 0,
-            pointRadius: 0,
-          },
-          {
-            data: _.fill(0)(12)(AE)(Array(12)),
-            label: `Plafond micro-entrepreneur`,
-            fill: false,
-            borderWidth: 1,
-            borderColor: 'black',
-            pointHitRadius: 20,
-            pointBorderWidth: 0,
-            pointRadius: 0,
-          },
-          {
             data: totals,
-            label: `CA réel`,
-            fill: false,
+            label: t('real-turnover'),
+            borderWidth: 3,
+            borderColor: '#52c41a',
+            pointBackgroundColor: '#52c41a',
+            pointBorderColor: '#52c41a',
+            pointHitRadius: 20,
+            pointBorderWidth: 2,
+            pointRadius: 2,
+            pointHoverBorderWidth: 3,
+            pointHoverRadius: 3,
+            lineTension: 0,
+          },
+          {
+            data: turnovers,
+            label: t('cumulative-turnover'),
             borderWidth: 3,
             borderColor: '#1890ff',
             pointBackgroundColor: '#1890ff',
@@ -163,32 +143,19 @@ function Chart() {
             pointRadius: 2,
             pointHoverBorderWidth: 3,
             pointHoverRadius: 3,
-          },
-          {
-            data: turnovers,
-            label: `CA cumulé`,
-            fill: false,
-            borderWidth: 3,
-            borderColor: '#f5222d',
-            pointBackgroundColor: '#f5222d',
-            pointBorderColor: '#f5222d',
-            pointHitRadius: 20,
-            pointBorderWidth: 2,
-            pointRadius: 2,
-            pointHoverBorderWidth: 3,
-            pointHoverRadius: 3,
+            lineTension: 0,
           },
           {
             data: theoricTurnovers,
-            label: `CA cumulé théorique`,
+            label: t('theoric-cumulative-turnover'),
             fill: false,
             borderWidth: 2,
             borderDash: [5, 5],
-            borderColor: 'rgba(0, 0, 0, .1)',
-            pointBackgroundColor: 'rgba(0, 0, 0, .2)',
-            pointBorderColor: 'rgba(0, 0, 0, .2)',
+            borderColor: 'rgba(245, 34, 45, .2)',
+            pointBackgroundColor: 'rgba(245, 34, 45, .2)',
+            pointBorderColor: 'rgba(245, 34, 45, .2)',
             pointBorderWidth: 2,
-            pointRadius: 2,
+            pointRadius: 0,
             pointHoverBorderWidth: 3,
             pointHoverRadius: 3,
             pointHitRadius: 20,
@@ -220,14 +187,28 @@ function Chart() {
         },
       },
     })
-  }, [invoices, lowTVA])
+  }, [invoices])
 
   return (
     <>
-      <h2>{t('turnover')}</h2>
-      <div>
-        <canvas ref={ref} height="400" style={{background: '#f0f2f5'}} />
-      </div>
+      <Row gutter={15} style={{marginBottom: 15}}>
+        <Col xs={24}>
+          <Card
+            title={
+              <FormCardTitle title={'fiscal-year'} titleData={{year: DateTime.local().year}} />
+            }
+          >
+            <div>
+              <canvas ref={ref} height="400" />
+            </div>
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={15} style={{marginBottom: 15}}>
+        <ModuleMonthlyTurnover />
+        <ModuleQuarterlyTurnover />
+      </Row>
     </>
   )
 }

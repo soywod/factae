@@ -1,7 +1,11 @@
 import React from 'react'
 import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
+import Card from 'antd/es/card'
+import Col from 'antd/es/col'
+import Row from 'antd/es/row'
 
+import {FormCardTitle} from '../../common/components/FormCard'
 import {useProfile} from '../../profile/hooks'
 import StripeForm from './StripeFormContainer'
 
@@ -19,12 +23,17 @@ function Subscription() {
 
   return (
     <>
-      <h2>{t('subscription')}</h2>
-      {profile.expiresAt > now ? (
-        <div>{t('/dashboard.subscription-expired', {date, diff})}</div>
-      ) : (
-        <StripeForm />
-      )}
+      <Row gutter={15} style={{marginBottom: 15}}>
+        <Col xs={24}>
+          <Card title={<FormCardTitle title={'subscription'} />}>
+            {profile.expiresAt > now ? (
+              <div>{t('/dashboard.subscription-expired', {date, diff})}</div>
+            ) : (
+              <StripeForm />
+            )}
+          </Card>
+        </Col>
+      </Row>
     </>
   )
 }

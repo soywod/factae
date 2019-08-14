@@ -49,13 +49,13 @@ function FormCard({getFieldDecorator, model, title, fields}) {
   )
 }
 
-export function FormCardTitle({title, subtitle, action}) {
+export function FormCardTitle({title, titleData, subtitle, action}) {
   const {t} = useTranslation()
 
   return (
     <>
       <Typography.Title level={3} style={styles.title}>
-        {t(title)}
+        {t(title, titleData)}
         {action}
       </Typography.Title>
       {subtitle && (
