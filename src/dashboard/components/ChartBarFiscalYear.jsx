@@ -3,15 +3,18 @@ import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
 import {Chart as ChartJS} from 'chart.js'
 import Empty from 'antd/es/empty'
+import fill from 'lodash/fp/fill'
 import isNil from 'lodash/fp/isNil'
 import range from 'lodash/fp/range'
 
 import {toEuro} from '../../common/currency'
+import {useThresholds} from '../hooks'
 
 function ChartBarFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurnover}) {
   const ref = useRef()
   const chart = useRef()
   const {t, i18n} = useTranslation()
+  const [lowTVA, highTVA, AE] = useThresholds()
 
   const months = range(1, 13).map(month =>
     DateTime.local()
@@ -42,7 +45,46 @@ function ChartBarFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurn
           {
             data: theoricCumulativeTurnover,
             label: t('theoric-cumulative-turnover'),
-            backgroundColor: 'rgba(0, 0, 0, .15)',
+            backgroundColor: '#d3d3d3',
+          },
+          {
+            type: 'line',
+            data: fill(0, 12, lowTVA, Array(12)),
+            label: t('threshold-vat-high'),
+            fill: false,
+            borderDash: [5, 5],
+            borderWidth: 1,
+            borderColor: '#f5222d',
+            pointHitRadius: 20,
+            pointBorderWidth: 0,
+            pointRadius: 0,
+            hidden: true,
+          },
+          {
+            type: 'line',
+            data: fill(0, 12, highTVA, Array(12)),
+            label: t('threshold-vat-high'),
+            fill: false,
+            borderDash: [5, 5],
+            borderWidth: 1,
+            borderColor: '#f5222d',
+            pointHitRadius: 20,
+            pointBorderWidth: 0,
+            pointRadius: 0,
+            hidden: true,
+          },
+          {
+            type: 'line',
+            data: fill(0, 12, AE, Array(12)),
+            label: t('threshold-micro-entrepreneur'),
+            fill: false,
+            borderWidth: 1,
+            borderDash: [5, 5],
+            borderColor: '#f5222d',
+            pointHitRadius: 20,
+            pointBorderWidth: 0,
+            pointRadius: 0,
+            hidden: true,
           },
         ],
       },

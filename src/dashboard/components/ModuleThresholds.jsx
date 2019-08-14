@@ -6,7 +6,7 @@ import Card from 'antd/es/card'
 import {FormCardTitle} from '../../common/components/FormCard'
 import Link from '../../common/components/Link'
 import {toEuro} from '../../common/currency'
-import {useProfile} from '../../profile/hooks'
+import {useThresholds} from '../hooks'
 
 const links = [
   'https://www.service-public.fr/professionnels-entreprises/vosdroits/F32353',
@@ -14,25 +14,6 @@ const links = [
   'https://www.portail-autoentrepreneur.fr/actualites/comment-faire-declaration-tva',
   'https://www.auto-entrepreneur.fr/statut-auto-entrepreneur/limites/plafonds.html',
 ]
-
-function useThresholds() {
-  const profile = useProfile()
-
-  if (!profile) {
-    return [0, 0, 0]
-  }
-
-  switch (profile.activity) {
-    case 'trade':
-      return [82800, 91000, 170000]
-
-    case 'service':
-      return [33200, 35200, 70000]
-
-    default:
-      return [0, 0, 0]
-  }
-}
 
 function ModuleThresholds() {
   const [lowTVA, highTVA, AE] = useThresholds()
