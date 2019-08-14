@@ -411,9 +411,9 @@ function EditDocument(props) {
                   title="document"
                   src={document.pdf}
                   width="100%"
-                  height={450}
+                  height={700}
                   scrolling="no"
-                  style={{maxWidth: 512}}
+                  style={{maxWidth: 700}}
                 ></iframe>
               ) : (
                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />

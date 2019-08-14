@@ -36,7 +36,7 @@ function DocumentList(props) {
   const documents = useDocuments()
   const [loading, setLoading] = useState(false)
   const tryAndNotify = useNotification()
-  const {t} = useTranslation()
+  const {t, i18n} = useTranslation()
 
   async function createDocument(event) {
     await tryAndNotify(
@@ -83,7 +83,7 @@ function DocumentList(props) {
 
   const columns = [
     {
-      title: <strong>{t('title')}</strong>,
+      title: <strong>{t('type')}</strong>,
       dataIndex: 'type',
       key: 'type',
       width: '25%',
@@ -114,11 +114,11 @@ function DocumentList(props) {
       key: 'createdAt',
       width: '20%',
       render: dateISO => {
-        const createdAt = DateTime.fromISO(dateISO, {locale: 'fr'})
+        const createdAt = DateTime.fromISO(dateISO, {locale: i18n.language})
 
         return (
-          <Tooltip title={createdAt.toFormat("'Le' d LLL yyyy 'à' HH'h'mm")}>
-            {createdAt.toRelative({locale: 'fr'})}
+          <Tooltip title={createdAt.toFormat(t('date-format'))}>
+            {createdAt.toRelative({locale: i18n.language})}
           </Tooltip>
         )
       },

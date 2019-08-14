@@ -24,14 +24,9 @@ function ModuleThresholds() {
       <Card title={<FormCardTitle title={'thresholds'} />}>
         <div dangerouslySetInnerHTML={{__html: t('/dashboard.part-a', {value: toEuro(lowTVA)})}} />
         <ul>
-          <li>
-            {t('/dashboard.part-a-1')}
-            <ul>
-              <li>{t('/dashboard.part-a-2')}</li>
-              <li>{t('/dashboard.part-a-3')}</li>
-              <li>{t('/dashboard.part-a-4')}</li>
-            </ul>
-          </li>
+          <li>{t('/dashboard.part-a-1')}</li>
+          <li>{t('/dashboard.part-a-2')}</li>
+          <li>{t('/dashboard.part-a-3')}</li>
         </ul>
         <div dangerouslySetInnerHTML={{__html: t('/dashboard.part-b', {value: toEuro(highTVA)})}} />
         <ul>

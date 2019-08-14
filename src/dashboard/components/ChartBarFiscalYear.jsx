@@ -50,7 +50,7 @@ function ChartBarFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurn
           {
             type: 'line',
             data: fill(0, 12, lowTVA, Array(12)),
-            label: t('threshold-vat-high'),
+            label: t('threshold-vat-low'),
             fill: false,
             borderDash: [5, 5],
             borderWidth: 1,

@@ -1,7 +1,9 @@
+import {useTranslation} from 'react-i18next'
 import notification from 'antd/es/notification'
 import noop from 'lodash/fp/noop'
 
 import {useProfile} from '../profile/hooks'
+import {isDemo} from '../dashboard/demo'
 
 const types = ['info', 'success', 'error']
 const placement = 'topRight'
@@ -26,6 +28,7 @@ export const notify = types.reduce(
 
 export function useNotification() {
   const profile = useProfile()
+  const {t} = useTranslation()
 
   if (!profile) {
     return noop
@@ -34,9 +37,7 @@ export function useNotification() {
   function getErrorMessage(error) {
     switch (error.code) {
       case 'permission-denied':
-        return profile.email === 'demo@factae.fr'
-          ? 'Les données sont verrouillées en mode démo.'
-          : 'Votre abonnement a expiré.'
+        return t(isDemo(profile) ? '/auth.locked-data-demo' : '/auth.subscription-expired')
       default:
         return error.message
     }

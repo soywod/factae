@@ -18,7 +18,7 @@ function ModuleQuarterlyTurnover() {
 
   const month = (() => {
     const date = isDemo(profile) ? demoDate : DateTime.local()
-    return date.setLocale(i18n.language).toFormat('LLL')
+    return date.setLocale(i18n.language).toFormat('LLLL')
   })()
 
   const turnover = useMemo(() => {
