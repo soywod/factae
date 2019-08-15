@@ -6,6 +6,7 @@ import App from './common/components/App'
 import serviceWorker from './utils/serviceWorker'
 
 import './utils/i18n'
+import './utils/analytics'
 
 ReactDOM.render(
   <Suspense fallback={<Loader />}>

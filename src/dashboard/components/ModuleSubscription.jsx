@@ -6,13 +6,14 @@ import Col from 'antd/es/col'
 
 import {FormCardTitle} from '../../common/components/FormCard'
 import {useProfile} from '../../profile/hooks'
+import {isDemo} from '../demo'
 import StripeForm from './StripeForm'
 
 function ModuleSubscription() {
   const profile = useProfile()
   const {t, i18n} = useTranslation()
 
-  if (!profile || profile.email === 'demo@factae.fr') {
+  if (!profile) {
     return null
   }
 
@@ -23,7 +24,7 @@ function ModuleSubscription() {
   return (
     <Col xs={24}>
       <Card title={<FormCardTitle title={'subscription'} />}>
-        {profile.expiresAt > now ? (
+        {isDemo(profile) || profile.expiresAt > now ? (
           <div>{t('/dashboard.subscription-expired', {date, diff})}</div>
         ) : (
           <StripeForm />

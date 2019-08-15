@@ -31,6 +31,7 @@
     "luxon": "^1.17.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-ga": "^2.6.0",
     "react-i18next": "^10.12.1",
     "react-router-dom": "^5.0.1",
     "react-stripe-elements": "^4.0.0",

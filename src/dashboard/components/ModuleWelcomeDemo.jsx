@@ -3,6 +3,7 @@ import {useTranslation} from 'react-i18next'
 import Modal from 'antd/es/modal'
 
 import {useProfile} from '../../profile/hooks'
+import {isDemo} from '../demo'
 
 const STORAGE_KEY = 'demo'
 
@@ -16,7 +17,7 @@ function ModuleWelcomeDemo() {
     localStorage.setItem(STORAGE_KEY, true)
   }
 
-  if (!profile || profile.email !== 'demo@factae.fr') {
+  if (!profile || !isDemo(profile)) {
     return null
   }
 
