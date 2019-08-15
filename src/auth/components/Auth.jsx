@@ -25,7 +25,7 @@ const styles = {
     backgroundSize: 'cover',
     background: `url(${background}) no-repeat center center`,
     bottom: 0,
-    padding: 15,
+    padding: '150px 15px 15px 15px',
     display: 'flex',
     height: '100vh',
     justifyContent: 'center',
@@ -55,7 +55,6 @@ const styles = {
 
 const withHOCs = Auth => Form.create()(withRouter(Auth))
 const Auth = withHOCs(props => {
-  const {email = '', password = ''} = props
   const {getFieldDecorator} = props.form
   const [loading, setLoading] = useState(false)
   const user = useAuth()
@@ -116,7 +115,7 @@ const Auth = withHOCs(props => {
           <Form onSubmit={doAsyncTask(login)}>
             <Form.Item>
               {getFieldDecorator('email', {
-                initialValue: email,
+                initialValue: 'demo@factae.fr',
                 rules: [
                   {type: 'email', message: t('email-invalid')},
                   {required: true, message: t('email-required')},
@@ -132,7 +131,7 @@ const Auth = withHOCs(props => {
             </Form.Item>
             <Form.Item>
               {getFieldDecorator('password', {
-                initialValue: password,
+                initialValue: 'factae',
                 rules: [
                   {min: 6, message: t('password-too-short')},
                   {required: true, message: t('password-required')},
