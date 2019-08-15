@@ -282,7 +282,7 @@ function EditDocument(props) {
           <Select size="large">
             {clients.map(client => (
               <Select.Option key={client.id} value={client.id}>
-                {client.tradingName || client.email}
+                {client.tradeName || client.email}
               </Select.Option>
             ))}
           </Select>

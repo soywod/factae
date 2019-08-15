@@ -1,7 +1,7 @@
 {
-  "name": "factae-app",
+  "name": "factae",
   "version": "1.0.0",
-  "description": "factAE web application.",
+  "description": "A simple billing tool for micro-enterprises.",
   "private": true,
   "browserslist": {
     "production": [
@@ -17,7 +17,6 @@
   },
   "devDependencies": {
     "firebase-tools": "^7.2.2",
-    "parcel-bundler": "^1.12.3",
     "prettier": "^1.18.2",
     "react-scripts": "3.0.1"
   },
@@ -39,7 +38,6 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start:pdf": "parcel --port 3001 --no-cache serve ./functions/index.pug",
     "build": "react-scripts build",
     "postbuild": "cp public/static/* build/",
     "test": "react-scripts test",

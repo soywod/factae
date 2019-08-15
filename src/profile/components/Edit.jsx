@@ -56,7 +56,7 @@ function Profile(props) {
   const companyFields = {
     title: <FormCardTitle title="micro-entreprise" />,
     fields: [
-      {name: 'tradingName'},
+      {name: 'tradeName'},
       {name: 'siret'},
       {name: 'apeCode'},
       {name: 'taxId'},

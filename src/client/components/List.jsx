@@ -25,8 +25,8 @@ function ClientList(props) {
   const columns = [
     {
       title: <strong>{t('trading-name')}</strong>,
-      dataIndex: 'tradingName',
-      key: 'tradingName',
+      dataIndex: 'tradeName',
+      key: 'tradeName',
     },
     {
       title: <strong>{t('first-name')}</strong>,

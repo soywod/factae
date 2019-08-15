@@ -1,22 +1,22 @@
-# [factAE](https://app.factae.fr)
+# [factAE](https://factae.fr)
 
-A simple billing tool for french freelancers.
+A simple billing tool for micro-enterprises.
 
 ## Introduction
 
 factAE helps you to manage your clients, quotations and invoices. For now, it
-has been designed for french freelancers (micro-entrepreneurs), but the aim is
-to extend it to any kind of individual companies. Be aware that factAE is not a
-certified tool: it's just a helper. Check first if your legal status allows you
-to use non-certified tools (like micro-entrepreneurs).
+has been designed for french micro-enterprises, but the aim is to extend it to
+any kind of individual companies. Be aware that factAE is not a certified tool:
+it's just a helper. Check first if your legal status allows you to use
+non-certified tools.
 
 ## Development
 
 Download sources:
 
 ```bash
-git clone https://github.com/factae/app.git factae-app
-cd factae-app
+git clone https://github.com/factae/factae.git factae
+cd factae
 ```
 
 Set up local env:
@@ -32,11 +32,10 @@ Install deps:
 yarn install
 ```
 
-Start the server:
+Start the web server (http://localhost:3000):
 
 ```bash
-yarn start      # Webapp server at http://localhost:3000
-yarn start:pdf  # PDFs viewer at http://localhost:3001
+yarn start
 ```
 
 ## TODO
@@ -52,3 +51,4 @@ yarn start:pdf  # PDFs viewer at http://localhost:3001
 ## Credits
 
 - Design: [Ant Design](https://ant.design)
+- Background: [Dustin Lee](https://unsplash.com/@dustinlee) on [Unsplash](https://unsplash.com)

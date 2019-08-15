@@ -105,7 +105,7 @@ function DocumentList(props) {
       width: '35%',
       render: id => {
         const client = find({id}, clients)
-        return client ? client.tradingName || client.email : ''
+        return client ? client.tradeName || client.email : ''
       },
     },
     {
