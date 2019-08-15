@@ -94,7 +94,7 @@
   "total-taxes": "Total TVA",
   "total-with-taxes": "Total TTC",
   "total-without-taxes": "Total HT",
-  "trading-name": "Nom commercial",
+  "trade-name": "Nom commercial",
   "type": "Type",
   "unit": "Unité",
   "unit-price": "Prix unitaire",
@@ -102,6 +102,7 @@
   "yes": "Oui",
   "zip": "Code postal",
   "/auth": {
+    "tagline": "Outil d'aide à la facturation pour micro-entreprises.",
     "logged-in-successfully": "Bonjour {{name}}. Votre abonnement expire {{date}}.",
     "password-reset-successfully": "Un email vous a été envoyé avec la procédure à suivre.",
     "registered-successfully": "Compte créé avec succès. Vous bénéficiez de 30 jours d'essai gratuits.",

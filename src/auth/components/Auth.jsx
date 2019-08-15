@@ -44,12 +44,20 @@ const styles = {
     position: 'relative',
     alignItems: 'center',
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     width: '100%',
+  },
+  subtitle: {
+    margin: '8px 0 0 0',
+    opacity: 0.3,
+    fontSize: '.9em',
+    fontStyle: 'italic',
   },
   selectLanguage: {
     position: 'absolute',
     right: 0,
+    top: 0,
   },
 }
 
@@ -95,7 +103,8 @@ const Auth = withHOCs(props => {
   useEffect(() => {
     if (user && profile) {
       const diff = profile.expiresAt.toRelative({locale: i18n.language})
-      notify.info(t('/auth.logged-in-successfully', {name: profile.firstName.trim(), date: diff}))
+      const name = profile && profile.firstName ? profile.firstName.trim() : ''
+      notify.info(t('/auth.logged-in-successfully', {name, date: diff}))
       props.history.push('/')
     }
   }, [user, profile, props.history])
@@ -109,6 +118,7 @@ const Auth = withHOCs(props => {
             <div style={styles.title}>
               <Logo width={150} />
               <SelectLanguage style={styles.selectLanguage} />
+              <div style={styles.subtitle}>{t('/auth.tagline')}</div>
             </div>
           }
         >

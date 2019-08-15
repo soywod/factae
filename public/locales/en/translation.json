@@ -94,7 +94,7 @@
   "total-taxes": "Sales tax",
   "total-with-taxes": "Grand total",
   "total-without-taxes": "Total",
-  "trading-name": "Trade name",
+  "trade-name": "Trade name",
   "type": "Type",
   "unit": "Unit",
   "unit-price": "Unit price",
@@ -102,6 +102,7 @@
   "yes": "Yes",
   "zip": "Zip",
   "/auth": {
+    "tagline": "A simple billing tool for micro-enterprises.",
     "logged-in-successfully": "Hello {{name}}. Your subscription expires {{date}}.",
     "password-reset-successfully": "An email has been sent to you with the procedure to follow.",
     "registered-successfully": "Successfully registered. You get 30 free trial days.",
@@ -109,8 +110,8 @@
     "subscription-expired": "Your subscription has expired."
   },
   "/dashboard": {
-    "modal-content-1": "<strong>factAE</strong> est un outil de facturation pour micro-entrepreneurs à <strong> 1 €/mois</strong>. Son objectif est simple : gérer ses clients, ses devis et ses factures <strong>facilement</strong> et <strong>efficacement</strong>. Rien de plus.",
-    "modal-content-2": "Avec ce compte de test, vous avez accès à toute l'application en lecture seule. Vous pouvez à tout moment créer un compte gratuitement en vous déconnectant.",
+    "modal-content-1": "<strong>factAE</strong> is a billing tool for micro-enterprises for <strong> 1 €/month</strong>. The aim is simple: to make you manage easily and effectively your clients, your quotations and your invoices. Nothing more.",
+    "modal-content-2": "With this trial account, you can access all the application in read-only mode. You can register whenever you want by logging out.",
     "modal-title": "Welcome to factAE",
     "part-a": "<strong>A low VAT threshold overrun</strong> <em>({{value}})</em> may oblige you to collect VAT from your clients, depending on your previous turnover:",
     "part-a-1": "if your last year's turnover is lower than the low VAT threshold => not applicable",
