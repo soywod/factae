@@ -111,7 +111,7 @@
   },
   "/dashboard": {
     "modal-content-1": "<strong>factAE</strong> est un outil de facturation pour micro-entrepreneurs à <strong> 1 €/mois</strong>. Son objectif est simple : gérer ses clients, ses devis et ses factures <strong>facilement</strong> et <strong>efficacement</strong>. Rien de plus.",
-    "modal-content-2": "Avec ce compte de test, vous avez accès à toute l'application en lecture seule. Vous pouvez à tout moment créer un compte gratuitement en vous déconnectant.",
+    "modal-content-2": "Avant de pouvoir éditer des documents, vous devez remplir votre profil, puis ajouter un premier client.",
     "modal-title": "Bienvenue sur factAE",
     "part-a": "<strong>Le plafond de TVA bas</strong> <em>({{value}} HT)</em> correspond au plafond à partir du quel vous pouvez devenir redevable de la TVA, en fonction de votre chiffre d'affaire passé :",
     "part-a-1": "si votre chiffre d'affaire de l'année passée est inférieur au plafond de TVA bas => non redevable",
@@ -146,7 +146,7 @@
     "bank-subtitle": "Ces informations s'afficheront sur vos documents, pour faciliter le paiement de vos clients.",
     "conditions-subtitle": "Correspond aux conditions (de paiement, de livraison, d'exécution etc) qui s'afficheront par défaut sur vos documents.",
     "pricing-subtitle": "Correspond au taux horaire / journalier / forfaitaire qui s'affichera par défaut sur vos devis.",
-    "updated-successfully": "Profile mis à jour avec succès.",
+    "updated-successfully": "Profil mis à jour avec succès.",
     "error-invalid": "Vous devez d'abord compléter votre profil."
   }
 }

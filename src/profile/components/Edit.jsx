@@ -28,7 +28,7 @@ function Profile(props) {
     if (loading) return
     setLoading(true)
 
-    tryAndNotify(async () => {
+    await tryAndNotify(async () => {
       const nextProfile = await validateFields(props.form)
       await $profile.update(difference(nextProfile, profile))
       return t('/profile.updated-successfully')

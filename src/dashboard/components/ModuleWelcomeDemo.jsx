@@ -1,30 +1,44 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import Modal from 'antd/es/modal'
 
 import {useProfile} from '../../profile/hooks'
+import $profile from '../../profile/service'
 import {isDemo} from '../demo'
 
 const STORAGE_KEY = 'demo'
 
 function ModuleWelcomeDemo() {
   const profile = useProfile()
-  const [hidden, setHidden] = useState(Boolean(localStorage.getItem(STORAGE_KEY)))
+  const [visible, setVisible] = useState(false)
   const {t} = useTranslation()
 
-  function closeModal() {
-    setHidden(true)
-    localStorage.setItem(STORAGE_KEY, true)
+  useEffect(() => {
+    if (profile && !isDemo(profile) && !profile.welcomed) {
+      setVisible(true)
+    }
+  }, [profile])
+
+  useEffect(() => {
+    if (profile && isDemo(profile)) {
+      setVisible(!localStorage.getItem(STORAGE_KEY))
+    }
+  }, [profile])
+
+  if (!profile) {
+    return null
   }
 
-  if (!profile || !isDemo(profile)) {
-    return null
+  function closeModal() {
+    setVisible(false)
+    $profile.update({...profile, welcomed: true})
+    localStorage.setItem(STORAGE_KEY, true)
   }
 
   return (
     <Modal
       title={t('/dashboard.modal-title')}
-      visible={!hidden}
+      visible={visible}
       cancelText={t('close')}
       okButtonProps={{style: {display: 'none'}}}
       onCancel={closeModal}
