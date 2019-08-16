@@ -16,13 +16,18 @@ const styles = {
 function SelectLanguage({style = styles.button, placement = 'bottomCenter'}) {
   const {i18n} = useTranslation()
 
+  function changeLanguage(lang) {
+    i18n.changeLanguage(lang)
+    window.location.reload()
+  }
+
   return (
     <Dropdown
       placement={placement}
       overlay={
         <Menu>
           {['fr', 'en'].map(lang => (
-            <Menu.Item key={lang} onClick={() => i18n.changeLanguage(lang)}>
+            <Menu.Item key={lang} onClick={() => changeLanguage(lang)}>
               {lang}
             </Menu.Item>
           ))}
