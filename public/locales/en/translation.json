@@ -20,7 +20,7 @@
   "credit": "Credit",
   "cumulative-turnover": "Cumulative turnover",
   "date": "Date",
-  "date-format": "on LLLL d, yyyy at HH:mm",
+  "date-format": "'on' LLLL d, yyyy 'at' HH:mm",
   "dates": "Dates",
   "default-pricing": "Default pricing",
   "delete": "Delete",
