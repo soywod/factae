@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import {useTranslation} from 'react-i18next'
+import {DateTime} from 'luxon'
 import AntdTag from 'antd/es/tag'
 import Button from 'antd/es/button'
 import Dropdown from 'antd/es/dropdown'
@@ -9,17 +10,18 @@ import Menu from 'antd/es/menu'
 import Table from 'antd/es/table'
 import Tooltip from 'antd/es/tooltip'
 import find from 'lodash/fp/find'
+import isEmpty from 'lodash/fp/isEmpty'
 import map from 'lodash/fp/map'
 import omit from 'lodash/fp/omit'
 import orderBy from 'lodash/fp/orderBy'
 import pipe from 'lodash/fp/pipe'
-import {DateTime} from 'luxon'
 
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import {toEuro} from '../../common/currency'
 import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
+import {isProfileValid} from '../../profile/utils'
 import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
 import $document from '../service'
@@ -41,7 +43,11 @@ function DocumentList(props) {
   async function createDocument(event) {
     await tryAndNotify(
       async () => {
+        if (!isProfileValid(profile)) throw new Error('/profile.error-invalid')
+        if (isEmpty(clients)) throw new Error('/clients.error-empty')
+
         setLoading(true)
+
         let document = {
           type: event.key,
           createdAt: DateTime.local().toISO(),
