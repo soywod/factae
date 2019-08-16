@@ -29,6 +29,7 @@
     "lodash": "^4.17.11",
     "luxon": "^1.17.2",
     "react": "^16.8.6",
+    "react-cookie-consent": "^2.4.0",
     "react-dom": "^16.8.6",
     "react-ga": "^2.6.0",
     "react-i18next": "^10.12.1",

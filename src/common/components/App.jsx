@@ -2,21 +2,22 @@ import React, {useState} from 'react'
 import {BrowserRouter as Router, Route, Redirect, Switch} from 'react-router-dom'
 import Layout from 'antd/es/layout'
 
-import {useAuthService} from '../../../auth/hooks'
-import {useProfileService} from '../../../profile/hooks'
-import {useClientService} from '../../../client/hooks'
-import {useDocumentService} from '../../../document/hooks'
-import Sider from '../../../common/components/Sider'
-import PrivateRoute from '../../../auth/components/PrivateRoute'
-import Auth from '../../../auth/components/Auth'
-import Profile from '../../../profile/components/Edit'
-import ClientList from '../../../client/components/List'
-import ClientEdit from '../../../client/components/Edit'
-import DocumentList from '../../../document/components/List'
-import DocumentEdit from '../../../document/components/Edit'
-import Dashboard from '../../../dashboard/components'
+import {useAuthService} from '../../auth/hooks'
+import {useProfileService} from '../../profile/hooks'
+import {useClientService} from '../../client/hooks'
+import {useDocumentService} from '../../document/hooks'
+import PrivateRoute from '../../auth/components/PrivateRoute'
+import Auth from '../../auth/components/Auth'
+import Profile from '../../profile/components/Edit'
+import ClientList from '../../client/components/List'
+import ClientEdit from '../../client/components/Edit'
+import DocumentList from '../../document/components/List'
+import DocumentEdit from '../../document/components/Edit'
+import Dashboard from '../../dashboard/components'
+import CookieConsent from './CookieConsent'
+import Sider from './Sider'
 
-import './styles.css'
+import './App.styles.css'
 
 function App() {
   const [width, setWidth] = useState(200)
@@ -47,6 +48,7 @@ function App() {
           </Switch>
         </Layout>
       </Router>
+      <CookieConsent />
     </Layout>
   )
 }
