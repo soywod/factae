@@ -23,7 +23,7 @@ export async function create() {
 }
 
 export async function update(client) {
-  await db(`users/${user$.value.uid}/clients`, client.id).set(client)
+  await db(`users/${user$.value.uid}/clients`, client.id).update(client)
 }
 
 export {_delete as delete}

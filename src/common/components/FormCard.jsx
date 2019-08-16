@@ -35,11 +35,12 @@ function FormCard({getFieldDecorator, model, title, fields}) {
   return (
     <Card title={title} style={styles.card}>
       <Row gutter={15}>
-        {fields.map(({name, fluid = false, Component = <Input size="large" />}, key) => (
-          <Col key={key} {...(fluid ? pick('xs', breakpoints) : breakpoints)}>
+        {fields.map(({name, fluid = false, Component = <Input size="large" />, rules = []}) => (
+          <Col key={name} {...(fluid ? pick('xs', breakpoints) : breakpoints)}>
             <Form.Item label={t(kebabCase(name))}>
               {getFieldDecorator(name, {
                 initialValue: name.match(/At/) ? moment(model[name]) : getOr('', name, model),
+                rules,
               })(Component)}
             </Form.Item>
           </Col>
@@ -63,6 +64,15 @@ export function FormCardTitle({title, titleData, subtitle, action}) {
       )}
     </>
   )
+}
+
+export async function validateFields(form) {
+  return new Promise((resolve, reject) => {
+    form.validateFieldsAndScroll((errors, values) => {
+      if (errors) reject(errors)
+      else resolve(values)
+    })
+  })
 }
 
 export default FormCard

@@ -16,10 +16,10 @@ import find from 'lodash/fp/find'
 import isNil from 'lodash/fp/isNil'
 import omitBy from 'lodash/fp/omitBy'
 
+import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import EditableTable from '../../common/components/EditableTable'
-import FormCard, {FormCardTitle} from '../../common/components/FormCard'
 import {toEuro} from '../../common/currency'
 import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
@@ -38,6 +38,7 @@ function EditDocument(props) {
   const [items, setItems] = useState((document && document.items) || [])
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
+  const requiredRules = {rules: [{required: true, message: t('field-required')}]}
 
   useEffect(() => {
     if (documents && !document) {
@@ -46,7 +47,6 @@ function EditDocument(props) {
   }, [document, documents, match.params.id])
 
   async function buildNextDocument() {
-    const data = await props.form.validateFields()
     const nextItems = items.filter(item => item.designation && item.unitPrice)
     const totalHT = nextItems.reduce((sum, {amount}) => sum + amount, 0)
     const totalTVA = Math.round(totalHT * document.taxRate) / 100
@@ -54,7 +54,7 @@ function EditDocument(props) {
 
     let nextDocument = {
       ...document,
-      ...omitBy(isNil, data),
+      ...(await validateFields(props.form)),
       items: nextItems,
       totalHT,
       totalTVA,
@@ -81,12 +81,8 @@ function EditDocument(props) {
     setLoading(true)
 
     await tryAndNotify(async () => {
+      await validateFields(props.form)
       let nextDocument = await buildNextDocument()
-
-      if (!nextDocument.client) {
-        throw new Error(t('/documents.client-required'))
-      }
-
       const now = DateTime.local()
       nextDocument.createdAt = now.toISO()
 
@@ -264,6 +260,7 @@ function EditDocument(props) {
             ))}
           </Select>
         ),
+        ...requiredRules,
       },
       {
         name: 'status',
@@ -280,6 +277,7 @@ function EditDocument(props) {
             )}
           </Select>
         ),
+        ...requiredRules,
       },
       {
         name: 'client',
@@ -292,6 +290,7 @@ function EditDocument(props) {
             ))}
           </Select>
         ),
+        ...requiredRules,
       },
       {
         name: 'taxRate',
@@ -339,10 +338,12 @@ function EditDocument(props) {
       {
         name: 'expiresAt',
         Component: <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
+        ...requiredRules,
       },
       {
         name: 'startsAt',
         Component: <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
+        ...requiredRules,
       },
       {
         name: 'endsAt',
@@ -361,8 +362,6 @@ function EditDocument(props) {
   if (document.type === 'quotation') {
     fields.push(dateFields)
   }
-
-  fields.push(conditionFields)
 
   return (
     <Container>
@@ -388,6 +387,8 @@ function EditDocument(props) {
             />
           </Row>
         </Card>
+
+        <FormCard getFieldDecorator={getFieldDecorator} model={document} {...conditionFields} />
 
         {document.pdf && (
           <Card
