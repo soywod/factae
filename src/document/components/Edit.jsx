@@ -233,13 +233,18 @@ function EditDocument(props) {
       render: (_, {amount}) => toEuro(amount),
     },
     {
-      title: '',
+      title: (
+        <Button type="primary" shape="circle" onClick={addItem}>
+          <Icon type="plus" />
+        </Button>
+      ),
       dataIndex: 'action',
       key: 'action',
       width: '5%',
+      align: 'right',
       render: (_, {key}) => (
         <Button type="danger" shape="circle" onClick={() => removeItem(key)}>
-          <Icon type="delete" />
+          <Icon type="minus" />
         </Button>
       ),
     },
@@ -381,21 +386,6 @@ function EditDocument(props) {
               footer={Footer}
               onSave={saveItems}
             />
-          </Row>
-          <Row gutter={15}>
-            <div
-              style={{
-                background: '#fafafa',
-                padding: 15,
-                textAlign: 'right',
-                borderTop: '1px solid #e8e8e8',
-              }}
-            >
-              <Button type="primary" onClick={addItem}>
-                <Icon type="plus" />
-                {t('add-designation')}
-              </Button>
-            </div>
           </Row>
         </Card>
 
