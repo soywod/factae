@@ -115,7 +115,7 @@ function EditDocument(props) {
   function addItem() {
     setItems([
       ...items,
-      {key: Date.now(), designation: '', unitPrice: profile.rate || '', quantity: '1'},
+      {key: Date.now(), designation: '', unitPrice: profile.rate || 0, quantity: 1},
     ])
   }
 
