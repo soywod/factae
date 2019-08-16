@@ -110,8 +110,8 @@
     "subscription-expired": "Your subscription has expired."
   },
   "/dashboard": {
-    "modal-content-1": "<strong>factAE</strong> is a billing tool for micro-enterprises for <strong> 1 €/month</strong>. The aim is simple: to make you manage easily and effectively your clients, your quotations and your invoices. Nothing more.",
-    "modal-content-2": "With this trial account, you can access all the application in read-only mode. You can register whenever you want by logging out.",
+    "modal-content-1": "<strong>factAE</strong> is a billing tool for micro-enterprises at <strong> 1 €/month</strong>. The aim is simple: help you to manage with ease your clients, your quotations and your invoices. Nothing more.",
+    "modal-content-2": "Before editing documents, you must set up your profile and add a first client.",
     "modal-title": "Welcome to factAE",
     "part-a": "<strong>A low VAT threshold overrun</strong> <em>({{value}})</em> may oblige you to collect VAT from your clients, depending on your previous turnover:",
     "part-a-1": "if your last year's turnover is lower than the low VAT threshold => not applicable",
