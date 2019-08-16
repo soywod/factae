@@ -4,17 +4,17 @@ import {DateTime} from 'luxon'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
 import DatePicker from 'antd/es/date-picker'
+import Dropdown from 'antd/es/dropdown'
 import Empty from 'antd/es/empty'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import Input from 'antd/es/input'
 import InputNumber from 'antd/es/input-number'
+import Menu from 'antd/es/menu'
 import Popconfirm from 'antd/es/popconfirm'
 import Row from 'antd/es/row'
 import Select from 'antd/es/select'
 import find from 'lodash/fp/find'
-import isNil from 'lodash/fp/isNil'
-import omitBy from 'lodash/fp/omitBy'
 
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import ActionBar from '../../common/components/ActionBar'
@@ -36,6 +36,9 @@ function EditDocument(props) {
   const [loading, setLoading] = useState(false)
   const [document, setDocument] = useState(props.location.state)
   const [items, setItems] = useState((document && document.items) || [])
+  const [submitVisible, setSubmitVisible] = useState(false)
+  const [deleteVisible, setDeleteVisible] = useState(false)
+
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
   const requiredRules = {rules: [{required: true, message: t('field-required')}]}
@@ -76,8 +79,8 @@ function EditDocument(props) {
     return nextDocument
   }
 
-  async function generatePdf(event) {
-    event.stopPropagation()
+  async function generatePdf() {
+    setSubmitVisible(false)
     setLoading(true)
 
     await tryAndNotify(async () => {
@@ -137,6 +140,7 @@ function EditDocument(props) {
   }
 
   async function deleteDocument() {
+    if (loading) return
     await tryAndNotify(
       async () => {
         setLoading(true)
@@ -151,6 +155,7 @@ function EditDocument(props) {
   async function saveDocument(event) {
     event.preventDefault()
     if (loading) return
+    setSubmitVisible(false)
     setLoading(true)
 
     await tryAndNotify(async () => {
@@ -419,6 +424,9 @@ function EditDocument(props) {
             onConfirm={deleteDocument}
             okText={t('yes')}
             cancelText={t('no')}
+            disabled={loading}
+            visible={deleteVisible && !loading}
+            onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
           >
             <Button type="danger" disabled={loading} style={{marginRight: 8}}>
               <Icon type="delete" />
@@ -426,15 +434,24 @@ function EditDocument(props) {
             </Button>
           </Popconfirm>
 
-          <Button type="dashed" onClick={generatePdf} disabled={loading} style={{marginRight: 8}}>
-            <Icon type="file-pdf" />
-            {t('generate-pdf')}
-          </Button>
-
-          <Button type="primary" htmlType="submit" disabled={loading}>
-            <Icon type={loading ? 'loading' : 'save'} />
-            {t('save')}
-          </Button>
+          <Dropdown
+            disabled={loading}
+            visible={submitVisible && !loading}
+            onVisibleChange={visible => setSubmitVisible(loading ? false : visible)}
+            overlay={
+              <Menu disabled={loading}>
+                <Menu.Item disabled={loading} onClick={generatePdf}>
+                  <Icon type="file-pdf" />
+                  {t('generate-pdf')}
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <Button type="primary" htmlType="submit" disabled={loading}>
+              <Icon type={loading ? 'loading' : 'save'} />
+              {t('save')}
+            </Button>
+          </Dropdown>
         </ActionBar>
       </Form>
     </Container>
