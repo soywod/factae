@@ -6,13 +6,12 @@ import Icon from 'antd/es/icon'
 import Input from 'antd/es/input'
 import Popconfirm from 'antd/es/popconfirm'
 import find from 'lodash/fp/find'
-import isEmpty from 'lodash/fp/isEmpty'
-import omitBy from 'lodash/fp/omitBy'
 
+import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
-import FormCard, {FormCardTitle} from '../../common/components/FormCard'
 import {useNotification} from '../../utils/notification'
+import {difference} from '../../utils/lodash'
 import {useClients} from '../hooks'
 import $client from '../service'
 
@@ -24,6 +23,8 @@ function EditClient(props) {
   const [client, setClient] = useState(props.location.state)
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
+  const requiredRules = {rules: [{required: true, message: t('field-required')}]}
+  const emailRules = {rules: [...requiredRules.rules, {type: 'email', message: t('email-invalid')}]}
 
   useEffect(() => {
     if (clients && !client) {
@@ -49,9 +50,8 @@ function EditClient(props) {
     setLoading(true)
 
     await tryAndNotify(async () => {
-      const data = await props.form.validateFields()
-      const nextClient = {...client, ...omitBy(isEmpty, data)}
-      await $client.update(nextClient)
+      const nextClient = await validateFields(props.form)
+      await $client.update({id: client.id, ...difference(nextClient, client)})
       return t('/clients.updated-successfully')
     })
 
@@ -64,20 +64,23 @@ function EditClient(props) {
 
   const companyFields = {
     title: <FormCardTitle title="company" />,
-    fields: [{name: 'tradeName', Component: <Input size="large" autoFocus />}, {name: 'siret'}],
+    fields: [
+      {name: 'tradeName', Component: <Input size="large" autoFocus />},
+      {name: 'siret', ...requiredRules},
+    ],
   }
 
   const contactFields = {
     title: <FormCardTitle title="contact" />,
     fields: [
-      {name: 'firstName'},
-      {name: 'lastName'},
-      {name: 'email'},
-      {name: 'phone'},
-      {name: 'address'},
-      {name: 'zip'},
-      {name: 'city'},
-      {name: 'country'},
+      {name: 'firstName', ...requiredRules},
+      {name: 'lastName', ...requiredRules},
+      {name: 'email', ...emailRules},
+      {name: 'phone', ...requiredRules},
+      {name: 'address', ...requiredRules},
+      {name: 'zip', ...requiredRules},
+      {name: 'city', ...requiredRules},
+      {name: 'country', ...requiredRules},
     ],
   }
 

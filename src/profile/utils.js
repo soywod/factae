@@ -7,8 +7,7 @@ export function isProfileValid(profile) {
     profile.city &&
     profile.siret &&
     profile.apeCode &&
-    profile.activity &&
-    ((!profile.taxId && !profile.taxRate) || (profile.taxId && profile.taxRate))
+    profile.activity
   )
 }
 
