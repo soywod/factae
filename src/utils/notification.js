@@ -39,7 +39,7 @@ export function useNotification() {
       case 'permission-denied':
         return t(isDemo(profile) ? '/auth.locked-data-demo' : '/auth.subscription-expired')
       default:
-        return error.message
+        return t(error.message)
     }
   }
 

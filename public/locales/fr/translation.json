@@ -138,12 +138,14 @@
     "confirm-deletion": "Êtes-vous sûr de vouloir supprimer ce client ?",
     "created-successfully": "Client créé avec succès.",
     "deleted-successfully": "Client supprimé avec succès.",
-    "updated-successfully": "Client mis à jour avec succès."
+    "updated-successfully": "Client mis à jour avec succès.",
+    "error-empty": "Vous devez d'abord ajouter un client."
   },
   "/profile": {
     "bank-subtitle": "Ces informations s'afficheront sur vos documents, pour faciliter le paiement de vos clients.",
     "conditions-subtitle": "Correspond aux conditions (de paiement, de livraison, d'exécution etc) qui s'afficheront par défaut sur vos documents.",
     "pricing-subtitle": "Correspond au taux horaire / journalier / forfaitaire qui s'affichera par défaut sur vos devis.",
-    "updated-successfully": "Profile mis à jour avec succès."
+    "updated-successfully": "Profile mis à jour avec succès.",
+    "error-invalid": "Vous devez d'abord compléter votre profil."
   }
 }
