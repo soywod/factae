@@ -19,6 +19,11 @@ import {useAuth} from '../hooks'
 
 import background from './background.jpeg'
 
+const {email, password} =
+  window.location.hostname === 'factae.fr'
+    ? {email: 'demo@factae.fr', password: 'factae'}
+    : {email: '', password: ''}
+
 const styles = {
   container: {
     alignItems: 'center',
@@ -125,7 +130,7 @@ const Auth = withHOCs(props => {
           <Form onSubmit={doAsyncTask(login)}>
             <Form.Item>
               {getFieldDecorator('email', {
-                initialValue: 'demo@factae.fr',
+                initialValue: email,
                 rules: [
                   {type: 'email', message: t('email-invalid')},
                   {required: true, message: t('email-required')},
@@ -141,7 +146,7 @@ const Auth = withHOCs(props => {
             </Form.Item>
             <Form.Item>
               {getFieldDecorator('password', {
-                initialValue: 'factae',
+                initialValue: password,
                 rules: [
                   {min: 6, message: t('password-too-short')},
                   {required: true, message: t('password-required')},
