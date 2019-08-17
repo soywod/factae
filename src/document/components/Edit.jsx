@@ -14,6 +14,7 @@ import Popconfirm from 'antd/es/popconfirm'
 import Row from 'antd/es/row'
 import Select from 'antd/es/select'
 import find from 'lodash/fp/find'
+import omit from 'lodash/fp/omit'
 
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import ActionBar from '../../common/components/ActionBar'
@@ -147,6 +148,35 @@ function EditDocument(props) {
         await $document.delete(document)
         props.history.push('/documents')
         return t('/documents.deleted-successfully')
+      },
+      () => setLoading(false),
+    )
+  }
+
+  async function cloneDocument({key: type}) {
+    await tryAndNotify(
+      async () => {
+        setLoading(true)
+
+        const conditionsFromProfile =
+          profile[`${type === 'quotation' ? 'quotation' : 'invoice'}Conditions`]
+
+        const nextDocument = omit(
+          ['id', 'pdf', 'expiresAt', 'startsAt', 'endsAt', 'conditions'],
+          await buildNextDocument(),
+        )
+
+        await $document.create({
+          ...nextDocument,
+          type,
+          items,
+          createdAt: DateTime.local().toISO(),
+          status: 'draft',
+          conditions: type === document.type ? document.conditions : conditionsFromProfile,
+        })
+
+        props.history.push(`/documents`)
+        return t('/documents.cloned-successfully')
       },
       () => setLoading(false),
     )
@@ -436,13 +466,29 @@ function EditDocument(props) {
 
           <Dropdown
             disabled={loading}
+            overlay={
+              <Menu disabled={loading} onClick={cloneDocument}>
+                <Menu.Item key="quotation">{t('quotation')}</Menu.Item>
+                <Menu.Item key="invoice">{t('invoice')}</Menu.Item>
+                <Menu.Item key="credit">{t('credit')}</Menu.Item>
+              </Menu>
+            }
+          >
+            <Button type="dashed" disabled={loading} style={{marginRight: 8}}>
+              <Icon type="switcher" />
+              {t('clone')}
+              {!loading && <Icon type="down" />}
+            </Button>
+          </Dropdown>
+
+          <Dropdown
+            disabled={loading}
             visible={submitVisible && !loading}
             onVisibleChange={visible => setSubmitVisible(loading ? false : visible)}
             overlay={
               <Menu disabled={loading}>
                 <Menu.Item disabled={loading} onClick={generatePdf}>
-                  <Icon type="file-pdf" />
-                  {t('generate-pdf')}
+                  {t('save-and-generate-pdf')}
                 </Menu.Item>
               </Menu>
             }
@@ -450,6 +496,7 @@ function EditDocument(props) {
             <Button type="primary" htmlType="submit" disabled={loading}>
               <Icon type={loading ? 'loading' : 'save'} />
               {t('save')}
+              {!loading && <Icon type="down" />}
             </Button>
           </Dropdown>
         </ActionBar>

@@ -11,6 +11,7 @@
   "city": "Ville",
   "client": "Client",
   "clients": "Clients",
+  "clone": "Cloner",
   "close": "Fermer",
   "company": "Société",
   "conditions": "Conditions",
@@ -39,7 +40,6 @@
   "fiscal-year": "Année fiscale ({{year}})",
   "forgotten-password": "Mot de passe oublié",
   "general-informations": "Informations générales",
-  "generate-pdf": "Générer PDF",
   "i-agree": "J'accepte",
   "iban": "IBAN",
   "invoice": "Facture",
@@ -77,6 +77,7 @@
   "register": "Créer un compte",
   "rib": "RIB",
   "save": "Sauvegarder",
+  "save-and-generate-pdf": "Sauvegarder & générer pdf",
   "sent": "Envoyé",
   "signed": "Signé",
   "siret": "SIRET",
@@ -104,12 +105,12 @@
   "yes": "Oui",
   "zip": "Code postal",
   "/auth": {
-    "tagline": "Outil d'aide à la facturation pour micro-entreprises.",
+    "locked-data-demo": "Les données sont verrouillées en mode démo.",
     "logged-in-successfully": "Bonjour {{name}}. Votre abonnement expire {{date}}.",
     "password-reset-successfully": "Un email vous a été envoyé avec la procédure à suivre.",
     "registered-successfully": "Compte créé avec succès. Vous bénéficiez de 30 jours d'essai gratuits.",
-    "locked-data-demo": "Les données sont verrouillées en mode démo.",
-    "subscription-expired": "Votre abonnement a expiré."
+    "subscription-expired": "Votre abonnement a expiré.",
+    "tagline": "Outil d'aide à la facturation pour micro-entreprises."
   },
   "/dashboard": {
     "modal-content-1": "<strong>factAE</strong> est un outil de facturation pour micro-entrepreneurs à <strong> 1 €/mois</strong>. Son objectif est simple : gérer ses clients, ses devis et ses factures <strong>facilement</strong> et <strong>efficacement</strong>. Rien de plus.",
@@ -129,6 +130,7 @@
   },
   "/documents": {
     "client-required": "Vous devez sélectionner un client.",
+    "cloned-successfully": "Document cloné avec succès.",
     "conditions-subtitle": "Correspond aux conditions (de paiement, de livraison, d'exécution etc) qui s'afficheront en bas du document.",
     "confirm-deletion": "Êtes-vous sûr de vouloir supprimer ce document ?",
     "created-successfully": "Document créé avec succès.",
@@ -141,14 +143,14 @@
     "confirm-deletion": "Êtes-vous sûr de vouloir supprimer ce client ?",
     "created-successfully": "Client créé avec succès.",
     "deleted-successfully": "Client supprimé avec succès.",
-    "updated-successfully": "Client mis à jour avec succès.",
-    "error-empty": "Vous devez d'abord ajouter un client."
+    "error-empty": "Vous devez d'abord ajouter un client.",
+    "updated-successfully": "Client mis à jour avec succès."
   },
   "/profile": {
     "bank-subtitle": "Ces informations s'afficheront sur vos documents, pour faciliter le paiement de vos clients.",
     "conditions-subtitle": "Correspond aux conditions (de paiement, de livraison, d'exécution etc) qui s'afficheront par défaut sur vos documents.",
+    "error-invalid": "Vous devez d'abord compléter votre profil.",
     "pricing-subtitle": "Correspond au taux horaire / journalier / forfaitaire qui s'affichera par défaut sur vos devis.",
-    "updated-successfully": "Profil mis à jour avec succès.",
-    "error-invalid": "Vous devez d'abord compléter votre profil."
+    "updated-successfully": "Profil mis à jour avec succès."
   }
 }
