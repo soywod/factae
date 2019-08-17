@@ -3,7 +3,6 @@ import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
-import DatePicker from 'antd/es/date-picker'
 import Dropdown from 'antd/es/dropdown'
 import Empty from 'antd/es/empty'
 import Form from 'antd/es/form'
@@ -26,6 +25,7 @@ import {useProfile} from '../../profile/hooks'
 import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
 import $document from '../service'
+import DatePicker from '../../common/components/DatePicker'
 
 function EditDocument(props) {
   const {match} = props
@@ -342,17 +342,17 @@ function EditDocument(props) {
     fields: [
       {
         name: 'expiresAt',
-        Component: <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
+        Component: <DatePicker />,
         ...requiredRules,
       },
       {
         name: 'startsAt',
-        Component: <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
+        Component: <DatePicker />,
         ...requiredRules,
       },
       {
         name: 'endsAt',
-        Component: <DatePicker size="large" placeholder="" style={{width: '100%'}} />,
+        Component: <DatePicker />,
       },
     ],
   }
