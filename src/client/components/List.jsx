@@ -3,6 +3,7 @@ import {useTranslation} from 'react-i18next'
 import Button from 'antd/es/button'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
+import Input from 'antd/es/input'
 import Table from 'antd/es/table'
 import omit from 'lodash/fp/omit'
 
@@ -11,11 +12,13 @@ import {useNotification} from '../../utils/notification'
 import {useClients} from '../hooks'
 import $client from '../service'
 
+const alphabeticSort = key => (a, b) => a[key].localeCompare(b[key])
+
 function ClientList(props) {
   const clients = useClients()
   const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState()
   const [pagination, setPagination] = useState({})
-
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
 
@@ -34,18 +37,21 @@ function ClientList(props) {
       title: <strong>{t('name')}</strong>,
       dataIndex: 'name',
       key: 'name',
-      width: '35%',
+      width: '40%',
+      sorter: alphabeticSort('name'),
     },
     {
       title: <strong>{t('email')}</strong>,
       dataIndex: 'email',
       key: 'email',
+      sorter: alphabeticSort('email'),
       width: '30%',
     },
     {
       title: <strong>{t('phone')}</strong>,
       dataIndex: 'phone',
       key: 'phone',
+      sorter: alphabeticSort('phone'),
       width: '30%',
     },
     {
@@ -57,7 +63,7 @@ function ClientList(props) {
       dataIndex: 'action',
       key: 'action',
       align: 'center',
-      width: '5%',
+      fixed: 'right',
       render: () => (
         <Button type="link" size="small" shape="circle">
           <Icon type="edit" />
@@ -78,6 +84,10 @@ function ClientList(props) {
     )
   }
 
+  const dataSource = clients
+    .map(client => ({...client, key: client.id}))
+    .filter(client => !search || JSON.stringify(client).indexOf(search) > -1)
+
   return (
     <Container>
       <h1>{t('clients')}</h1>
@@ -86,9 +96,16 @@ function ClientList(props) {
         bordered
         pagination={pagination}
         loading={loading}
-        dataSource={clients.map(client => ({...client, key: client.id}))}
+        dataSource={dataSource}
         columns={columns}
         rowKey={record => record.id}
+        footer={() => (
+          <Input.Search
+            size="large"
+            placeholder={t('search')}
+            onSearch={search => setSearch(search.trim())}
+          />
+        )}
         onRow={record => ({
           onClick: () => props.history.push(`/clients/${record.id}`, {...omit('key', record)}),
         })}
