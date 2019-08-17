@@ -24,7 +24,7 @@ function EditClient(props) {
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
   const requiredRules = {rules: [{required: true, message: t('field-required')}]}
-  const emailRules = {rules: [...requiredRules.rules, {type: 'email', message: t('email-invalid')}]}
+  const emailRules = {rules: [{type: 'email', message: t('email-invalid')}]}
 
   useEffect(() => {
     if (clients && !client) {
@@ -65,18 +65,16 @@ function EditClient(props) {
   const companyFields = {
     title: <FormCardTitle title="company" />,
     fields: [
-      {name: 'tradeName', Component: <Input size="large" autoFocus />},
-      {name: 'siret', ...requiredRules},
+      {name: 'name', Component: <Input size="large" autoFocus />, ...requiredRules},
+      {name: 'siret'},
+      {name: 'email', ...emailRules},
+      {name: 'phone'},
     ],
   }
 
-  const contactFields = {
-    title: <FormCardTitle title="contact" />,
+  const addressFields = {
+    title: <FormCardTitle title="address" />,
     fields: [
-      {name: 'firstName', ...requiredRules},
-      {name: 'lastName', ...requiredRules},
-      {name: 'email', ...emailRules},
-      {name: 'phone', ...requiredRules},
       {name: 'address', ...requiredRules},
       {name: 'zip', ...requiredRules},
       {name: 'city', ...requiredRules},
@@ -84,7 +82,7 @@ function EditClient(props) {
     ],
   }
 
-  const fields = [companyFields, contactFields]
+  const fields = [companyFields, addressFields]
 
   return (
     <Container>

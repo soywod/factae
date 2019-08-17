@@ -320,7 +320,7 @@ function EditDocument(props) {
           <Select size="large">
             {clients.map(client => (
               <Select.Option key={client.id} value={client.id}>
-                {client.tradeName || client.email}
+                {client.name}
               </Select.Option>
             ))}
           </Select>
