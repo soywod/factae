@@ -31,6 +31,8 @@ const Tag = ({children, ...props}) => (
   </AntdTag>
 )
 
+const alphabeticSort = key => (a, b) => a[key].localeCompare(b[key])
+
 function DocumentList(props) {
   const profile = useProfile()
   const clients = useClients()
@@ -98,7 +100,13 @@ function DocumentList(props) {
       title: <strong>{t('type')}</strong>,
       dataIndex: 'type',
       key: 'type',
-      width: '25%',
+      width: '30%',
+      sorter: alphabeticSort('type'),
+      filters: ['quotation', 'invoice', 'credit'].map(document => ({
+        text: t(document),
+        value: document,
+      })),
+      onFilter: (value, record) => record.type.indexOf(value) === 0,
       render: (_, {type, status}) => (
         <>
           {t(type)}
@@ -114,16 +122,23 @@ function DocumentList(props) {
       title: <strong>{t('client')}</strong>,
       dataIndex: 'client',
       key: 'client',
+      filters: clients.map(client => ({
+        text: client.name,
+        value: client.id,
+      })),
+      onFilter: (value, record) => record.client === value,
+      sorter: alphabeticSort('client'),
       width: '30%',
       render: id => {
         const client = find({id}, clients)
-        return client ? client.tradeName || client.email : ''
+        return client.name
       },
     },
     {
       title: <strong>{t('date')}</strong>,
       dataIndex: 'createdAt',
       key: 'createdAt',
+      sorter: alphabeticSort('createdAt'),
       width: '20%',
       render: dateISO => {
         const createdAt = DateTime.fromISO(dateISO, {locale: i18n.language})
@@ -139,6 +154,7 @@ function DocumentList(props) {
       title: <strong>{t('total-without-taxes')}</strong>,
       dataIndex: 'total',
       key: 'total',
+      sorter: (a, b) => a.totalHT - b.totalHT,
       width: '20%',
       align: 'right',
       render: (_, {totalHT}) => toEuro(totalHT),
@@ -164,7 +180,7 @@ function DocumentList(props) {
       dataIndex: 'action',
       key: 'action',
       align: 'center',
-      width: '5%',
+      fixed: 'right',
       render: () => (
         <Button type="link" size="small" shape="circle">
           <Icon type="edit" />
