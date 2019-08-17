@@ -24,24 +24,22 @@ function ClientList(props) {
 
   const columns = [
     {
-      title: <strong>{t('trade-name')}</strong>,
-      dataIndex: 'tradeName',
-      key: 'tradeName',
-    },
-    {
-      title: <strong>{t('first-name')}</strong>,
-      dataIndex: 'firstName',
-      key: 'firstName',
-    },
-    {
-      title: <strong>{t('last-name')}</strong>,
-      dataIndex: 'lastName',
-      key: 'lastName',
+      title: <strong>{t('name')}</strong>,
+      dataIndex: 'name',
+      key: 'name',
+      width: '40%',
     },
     {
       title: <strong>{t('email')}</strong>,
       dataIndex: 'email',
       key: 'email',
+      width: '30%',
+    },
+    {
+      title: <strong>{t('phone')}</strong>,
+      dataIndex: 'phone',
+      key: 'phone',
+      width: '30%',
     },
   ]
 
