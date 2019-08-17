@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
 import AntdTag from 'antd/es/tag'
@@ -16,7 +16,6 @@ import omit from 'lodash/fp/omit'
 import orderBy from 'lodash/fp/orderBy'
 import pipe from 'lodash/fp/pipe'
 
-import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import {toEuro} from '../../common/currency'
 import {useNotification} from '../../utils/notification'
@@ -37,6 +36,7 @@ function DocumentList(props) {
   const clients = useClients()
   const documents = useDocuments()
   const [loading, setLoading] = useState(false)
+  const [pagination, setPagination] = useState({})
   const tryAndNotify = useNotification()
   const {t, i18n} = useTranslation()
 
@@ -83,6 +83,12 @@ function DocumentList(props) {
     )
   }
 
+  useEffect(() => {
+    if (documents) {
+      setPagination({...pagination, total: documents.length})
+    }
+  }, [documents])
+
   if (!profile || !clients || !documents) {
     return null
   }
@@ -108,7 +114,7 @@ function DocumentList(props) {
       title: <strong>{t('client')}</strong>,
       dataIndex: 'client',
       key: 'client',
-      width: '35%',
+      width: '30%',
       render: id => {
         const client = find({id}, clients)
         return client ? client.tradeName || client.email : ''
@@ -137,6 +143,34 @@ function DocumentList(props) {
       align: 'right',
       render: (_, {totalHT}) => toEuro(totalHT),
     },
+    {
+      title: (
+        <Dropdown
+          disabled={loading || !profile}
+          placement="bottomCenter"
+          overlay={
+            <Menu onClick={createDocument}>
+              <Menu.Item key="quotation">{t('quotation')}</Menu.Item>
+              <Menu.Item key="invoice">{t('invoice')}</Menu.Item>
+              <Menu.Item key="credit">{t('credit')}</Menu.Item>
+            </Menu>
+          }
+        >
+          <Button type="primary" shape="circle">
+            <Icon type="plus" />
+          </Button>
+        </Dropdown>
+      ),
+      dataIndex: 'action',
+      key: 'action',
+      align: 'center',
+      width: '5%',
+      render: () => (
+        <Button type="link" size="small" shape="circle">
+          <Icon type="edit" />
+        </Button>
+      ),
+    },
   ]
 
   const dataSource = pipe([
@@ -150,10 +184,10 @@ function DocumentList(props) {
 
       <Table
         bordered
+        pagination={pagination}
         loading={loading}
         dataSource={dataSource(documents)}
         columns={columns}
-        pagination={false}
         rowKey={record => record.id}
         onRow={record => ({
           onClick: () => props.history.push(`/documents/${record.id}`, {...omit('key', record)}),
@@ -161,24 +195,6 @@ function DocumentList(props) {
         style={{background: '#ffffff', marginBottom: 15}}
         bodyStyle={{cursor: 'pointer'}}
       />
-
-      <ActionBar>
-        <Dropdown
-          disabled={loading || !profile}
-          overlay={
-            <Menu onClick={createDocument}>
-              <Menu.Item key="quotation">{t('quotation')}</Menu.Item>
-              <Menu.Item key="invoice">{t('invoice')}</Menu.Item>
-              <Menu.Item key="credit">{t('credit')}</Menu.Item>
-            </Menu>
-          }
-        >
-          <Button type="primary">
-            <Icon type={loading ? 'loading' : 'plus'} />
-            {t('new')}
-          </Button>
-        </Dropdown>
-      </ActionBar>
     </Container>
   )
 }

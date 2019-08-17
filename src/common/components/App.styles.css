@@ -44,6 +44,10 @@ h2 {
   }
 }
 
+.ant-table-pagination.ant-pagination {
+  margin-right: 15px;
+}
+
 .ant-layout-sider-children {
   display: flex;
   flex-direction: column;
