@@ -44,8 +44,12 @@ h2 {
   }
 }
 
+.ant-input {
+  border-color: #e8e8e8;
+}
+
 .ant-table-pagination.ant-pagination {
-  margin-right: 15px;
+  margin: 16px 0 0 0;
 }
 
 .ant-layout-sider-children {

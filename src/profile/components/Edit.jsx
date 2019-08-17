@@ -44,9 +44,9 @@ function Profile(props) {
   const contactFields = {
     title: <FormCardTitle title="personal-informations" />,
     fields: [
-      {name: 'firstName', Component: <Input size="large" autoFocus />, ...requiredRules},
+      {name: 'firstName', Component: <Input autoFocus />, ...requiredRules},
       {name: 'lastName', ...requiredRules},
-      {name: 'email', Component: <Input size="large" disabled />, ...requiredRules},
+      {name: 'email', Component: <Input disabled />, ...requiredRules},
       {name: 'phone'},
       {name: 'address', ...requiredRules},
       {name: 'zip', ...requiredRules},
@@ -63,7 +63,7 @@ function Profile(props) {
       {
         name: 'activity',
         Component: (
-          <Select size="large">
+          <Select>
             <Select.Option value="trade">{t('activity-trade')}</Select.Option>
             <Select.Option value="service">{t('activity-service')}</Select.Option>
           </Select>
@@ -73,7 +73,7 @@ function Profile(props) {
       {name: 'taxId'},
       {
         name: 'taxRate',
-        Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+        Component: <InputNumber min={0} step={1} style={{width: '100%'}} />,
       },
     ],
   }
@@ -83,12 +83,12 @@ function Profile(props) {
     fields: [
       {
         name: 'rate',
-        Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+        Component: <InputNumber min={0} step={1} style={{width: '100%'}} />,
       },
       {
         name: 'rateUnit',
         Component: (
-          <Select size="large">
+          <Select>
             <Select.Option value="hour">{t('per-hour')}</Select.Option>
             <Select.Option value="day">{t('per-day')}</Select.Option>
             <Select.Option value="service">{t('per-service')}</Select.Option>
