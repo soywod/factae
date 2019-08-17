@@ -65,7 +65,7 @@ function EditClient(props) {
   const companyFields = {
     title: <FormCardTitle title="company" />,
     fields: [
-      {name: 'name', Component: <Input size="large" autoFocus />, ...requiredRules},
+      {name: 'name', Component: <Input autoFocus />, ...requiredRules},
       {name: 'siret'},
       {name: 'email', ...emailRules},
       {name: 'phone'},

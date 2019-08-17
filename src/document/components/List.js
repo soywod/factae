@@ -200,6 +200,7 @@ function DocumentList(props) {
 
       <Table
         bordered
+        size="small"
         pagination={pagination}
         loading={loading}
         dataSource={dataSource(documents)}
@@ -208,8 +209,7 @@ function DocumentList(props) {
         onRow={record => ({
           onClick: () => props.history.push(`/documents/${record.id}`, {...omit('key', record)}),
         })}
-        style={{background: '#ffffff', marginBottom: 15}}
-        bodyStyle={{cursor: 'pointer'}}
+        bodyStyle={{background: '#ffffff', cursor: 'pointer'}}
       />
     </Container>
   )

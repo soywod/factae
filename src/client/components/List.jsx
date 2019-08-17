@@ -92,25 +92,25 @@ function ClientList(props) {
     <Container>
       <h1>{t('clients')}</h1>
 
+      <Input.Search
+        autoFocus
+        placeholder={t('search')}
+        onSearch={search => setSearch(search.trim())}
+        style={{marginBottom: 16}}
+      />
+
       <Table
         bordered
+        size="small"
         pagination={pagination}
         loading={loading}
         dataSource={dataSource}
         columns={columns}
         rowKey={record => record.id}
-        footer={() => (
-          <Input.Search
-            size="large"
-            placeholder={t('search')}
-            onSearch={search => setSearch(search.trim())}
-          />
-        )}
         onRow={record => ({
           onClick: () => props.history.push(`/clients/${record.id}`, {...omit('key', record)}),
         })}
-        style={{background: '#ffffff'}}
-        bodyStyle={{cursor: 'pointer'}}
+        bodyStyle={{background: '#ffffff', cursor: 'pointer'}}
       />
     </Container>
   )

@@ -235,11 +235,11 @@ function EditDocument(props) {
 
   const columns = [
     {
-      title: <strong>{t('designation')}</strong>,
+      title: <strong>{t('description')}</strong>,
       dataIndex: 'designation',
       key: 'designation',
       editable: true,
-      width: '45%',
+      width: '50%',
     },
     {
       title: <strong>{t('quantity')}</strong>,
@@ -271,7 +271,7 @@ function EditDocument(props) {
       ),
       dataIndex: 'action',
       key: 'action',
-      width: '5%',
+      fixed: 'right',
       align: 'right',
       render: (_, {key}) => (
         <Button type="danger" shape="circle" onClick={() => removeItem(key)}>
@@ -287,7 +287,7 @@ function EditDocument(props) {
       {
         name: 'type',
         Component: (
-          <Select size="large" disabled>
+          <Select disabled>
             {['quotation', 'invoice', 'credit'].map(type => (
               <Select.Option key={type} value={type}>
                 {t(type)}
@@ -300,7 +300,7 @@ function EditDocument(props) {
       {
         name: 'status',
         Component: (
-          <Select size="large" autoFocus>
+          <Select autoFocus>
             <Select.Option value="draft">{t('draft')}</Select.Option>
             <Select.Option value="sent">{t('sent')}</Select.Option>
             {document.type === 'quotation' && (
@@ -317,7 +317,7 @@ function EditDocument(props) {
       {
         name: 'client',
         Component: (
-          <Select size="large">
+          <Select>
             {clients.map(client => (
               <Select.Option key={client.id} value={client.id}>
                 {client.name}
@@ -331,7 +331,6 @@ function EditDocument(props) {
         name: 'taxRate',
         Component: (
           <InputNumber
-            size="large"
             min={0}
             step={1}
             onChange={taxRate => setDocument({...document, taxRate})}
@@ -346,12 +345,12 @@ function EditDocument(props) {
     mainFields.fields.push(
       {
         name: 'rate',
-        Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+        Component: <InputNumber min={0} step={1} style={{width: '100%'}} />,
       },
       {
         name: 'rateUnit',
         Component: (
-          <Select size="large">
+          <Select>
             {['hour', 'day', 'service'].map(type => (
               <Select.Option key={type} value={type}>
                 {t(`per-${type}`)}
@@ -414,6 +413,7 @@ function EditDocument(props) {
         >
           <Row gutter={15}>
             <EditableTable
+              size="middle"
               pagination={false}
               dataSource={items}
               columns={columns}
