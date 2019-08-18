@@ -45,7 +45,7 @@
   "iban": "IBAN",
   "invoice": "Facture",
   "invoice-conditions": "Conditions pour factures",
-  "invoice-reference-number": "N° de facture de référence",
+  "invoice-number": "N° de facture de référence",
   "last-name": "Nom",
   "login": "Se connecter",
   "logout": "Déconnexion",

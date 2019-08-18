@@ -45,7 +45,7 @@
   "iban": "IBAN",
   "invoice": "Invoice",
   "invoice-conditions": "Invoice conditions",
-  "invoice-reference-number": "Invoice reference number",
+  "invoice-number": "Invoice reference number",
   "last-name": "Last name",
   "login": "Login",
   "logout": "Logout",
