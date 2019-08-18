@@ -130,7 +130,7 @@ function DocumentList(props) {
       sorter: alphabeticSort('client'),
       width: '30%',
       render: id => {
-        const client = find({id}, clients)
+        const client = find({id}, clients) || {name: ''}
         return client.name
       },
     },
