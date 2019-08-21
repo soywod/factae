@@ -215,7 +215,7 @@ function EditDocument(props) {
     return (
       <>
         <div
-          style={{textAlign: 'right', fontStyle: 'italic'}}
+          style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1.2rem'}}
           dangerouslySetInnerHTML={{
             __html: t('/documents.total', {
               title: t('total-without-taxes'),
@@ -225,7 +225,7 @@ function EditDocument(props) {
         />
         {totalTVA > 0 && (
           <div
-            style={{textAlign: 'right', fontStyle: 'italic'}}
+            style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1.2rem'}}
             dangerouslySetInnerHTML={{
               __html: t('/documents.total', {
                 title: t('total-with-taxes'),
@@ -240,7 +240,7 @@ function EditDocument(props) {
 
   const columns = [
     {
-      title: <strong>{t('description')}</strong>,
+      title: <strong style={{marginLeft: 16}}>{t('description')}</strong>,
       dataIndex: 'designation',
       key: 'designation',
       editable: true,
@@ -292,7 +292,7 @@ function EditDocument(props) {
       {
         name: 'type',
         Component: (
-          <Select disabled>
+          <Select onChange={type => setDocument({...document, type})} size="large" autoFocus>
             {['quotation', 'invoice', 'credit'].map(type => (
               <Select.Option key={type} value={type}>
                 {t(type)}
@@ -305,7 +305,7 @@ function EditDocument(props) {
       {
         name: 'status',
         Component: (
-          <Select autoFocus>
+          <Select size="large">
             <Select.Option value="draft">{t('draft')}</Select.Option>
             <Select.Option value="sent">{t('sent')}</Select.Option>
             {document.type === 'quotation' && (
@@ -322,7 +322,7 @@ function EditDocument(props) {
       {
         name: 'client',
         Component: (
-          <Select>
+          <Select size="large">
             {clients.map(client => (
               <Select.Option key={client.id} value={client.id}>
                 {client.name}
@@ -336,6 +336,7 @@ function EditDocument(props) {
         name: 'taxRate',
         Component: (
           <InputNumber
+            size="large"
             min={0}
             step={1}
             onChange={taxRate => setDocument({...document, taxRate})}
@@ -347,48 +348,13 @@ function EditDocument(props) {
   }
 
   if (document.type === 'quotation') {
-    mainFields.fields.push(
-      {
-        name: 'rate',
-        Component: <InputNumber min={0} step={1} style={{width: '100%'}} />,
-      },
-      {
-        name: 'rateUnit',
-        Component: (
-          <Select>
-            {['hour', 'day', 'service'].map(type => (
-              <Select.Option key={type} value={type}>
-                {t(`per-${type}`)}
-              </Select.Option>
-            ))}
-          </Select>
-        ),
-      },
-    )
-  }
-
-  if (document.type === 'credit') {
-    mainFields.fields.push({name: 'invoiceNumber'})
-  }
-
-  const dateFields = {
-    title: <FormCardTitle title="dates" />,
-    fields: [
-      {
-        name: 'expiresAt',
-        Component: <DatePicker />,
-        ...requiredRules,
-      },
-      {
-        name: 'startsAt',
-        Component: <DatePicker />,
-        ...requiredRules,
-      },
-      {
-        name: 'endsAt',
-        Component: <DatePicker />,
-      },
-    ],
+    mainFields.fields.push({
+      name: 'expiresAt',
+      Component: <DatePicker />,
+      ...requiredRules,
+    })
+  } else if (document.type === 'credit') {
+    mainFields.fields.push({name: 'invoiceNumber', ...requiredRules})
   }
 
   const conditionFields = {
@@ -398,15 +364,11 @@ function EditDocument(props) {
 
   const fields = [mainFields]
 
-  if (document.type === 'quotation') {
-    fields.push(dateFields)
-  }
-
   return (
     <Container>
       <h1>{t('documents')}</h1>
 
-      <Form onSubmit={saveDocument}>
+      <Form noValidate layout="vertical" onSubmit={saveDocument}>
         {fields.map((props, key) => (
           <FormCard key={key} getFieldDecorator={getFieldDecorator} model={document} {...props} />
         ))}

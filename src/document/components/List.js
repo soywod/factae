@@ -50,9 +50,10 @@ function DocumentList(props) {
 
         setLoading(true)
 
+        const now = DateTime.local()
         let document = {
           type: event.key,
-          createdAt: DateTime.local().toISO(),
+          createdAt: now.toISO(),
           status: 'draft',
           taxRate: profile.taxRate,
           total: 0,
@@ -60,9 +61,8 @@ function DocumentList(props) {
 
         switch (event.key) {
           case 'quotation':
-            document.rate = profile.rate
-            document.rateUnit = profile.rateUnit
             document.conditions = profile.quotationConditions
+            document.expiresAt = now.plus({days: 60}).toISO()
             break
 
           case 'invoice':

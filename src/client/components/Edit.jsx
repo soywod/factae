@@ -65,7 +65,7 @@ function EditClient(props) {
   const companyFields = {
     title: <FormCardTitle title="company" />,
     fields: [
-      {name: 'name', Component: <Input autoFocus />, ...requiredRules},
+      {name: 'name', Component: <Input size="large" autoFocus />, ...requiredRules},
       {name: 'siret'},
       {name: 'email', ...emailRules},
       {name: 'phone'},
@@ -88,7 +88,7 @@ function EditClient(props) {
     <Container>
       <h1>{t('client')}</h1>
 
-      <Form onSubmit={saveClient}>
+      <Form noValidate layout="vertical" onSubmit={saveClient}>
         {fields.map((props, key) => (
           <FormCard key={key} getFieldDecorator={getFieldDecorator} model={client} {...props} />
         ))}
