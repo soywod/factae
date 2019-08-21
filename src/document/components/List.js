@@ -3,10 +3,8 @@ import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
 import AntdTag from 'antd/es/tag'
 import Button from 'antd/es/button'
-import Dropdown from 'antd/es/dropdown'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
-import Menu from 'antd/es/menu'
 import Table from 'antd/es/table'
 import Tooltip from 'antd/es/tooltip'
 import find from 'lodash/fp/find'
@@ -42,7 +40,7 @@ function DocumentList(props) {
   const tryAndNotify = useNotification()
   const {t, i18n} = useTranslation()
 
-  async function createDocument(event) {
+  async function createDocument() {
     await tryAndNotify(
       async () => {
         if (!isProfileValid(profile)) throw new Error('/profile.error-invalid')
@@ -51,30 +49,14 @@ function DocumentList(props) {
         setLoading(true)
 
         const now = DateTime.local()
-        let document = {
-          type: event.key,
-          createdAt: now.toISO(),
+        const document = {
+          type: 'quotation',
           status: 'draft',
+          createdAt: now.toISO(),
           taxRate: profile.taxRate,
+          conditions: profile.quotationConditions,
+          expiresAt: now.plus({days: 60}).toISO(),
           total: 0,
-        }
-
-        switch (event.key) {
-          case 'quotation':
-            document.conditions = profile.quotationConditions
-            document.expiresAt = now.plus({days: 60}).toISO()
-            break
-
-          case 'invoice':
-            document.conditions = profile.invoiceConditions
-            break
-
-          case 'credit':
-            document.invoiceNumber = ''
-            document.conditions = profile.invoiceConditions
-            break
-
-          default:
         }
 
         const id = await $document.create(document)
@@ -160,23 +142,7 @@ function DocumentList(props) {
       render: (_, {totalHT}) => toEuro(totalHT),
     },
     {
-      title: (
-        <Dropdown
-          disabled={loading || !profile}
-          placement="bottomCenter"
-          overlay={
-            <Menu onClick={createDocument}>
-              <Menu.Item key="quotation">{t('quotation')}</Menu.Item>
-              <Menu.Item key="invoice">{t('invoice')}</Menu.Item>
-              <Menu.Item key="credit">{t('credit')}</Menu.Item>
-            </Menu>
-          }
-        >
-          <Button type="primary" shape="circle">
-            <Icon type="plus" />
-          </Button>
-        </Dropdown>
-      ),
+      title: '',
       dataIndex: 'action',
       key: 'action',
       align: 'center',
@@ -196,11 +162,16 @@ function DocumentList(props) {
 
   return (
     <Container>
-      <h1>{t('documents')}</h1>
+      <h1 style={{display: 'flex', alignItems: 'center'}}>
+        <span style={{flex: 1}}>{t('documents')}</span>
+        <Button type="primary" disabled={loading} onClick={createDocument}>
+          <Icon type={loading ? 'loading' : 'plus'} />
+          {t('new')}
+        </Button>
+      </h1>
 
       <Table
         bordered
-        size="small"
         pagination={pagination}
         loading={loading}
         dataSource={dataSource(documents)}

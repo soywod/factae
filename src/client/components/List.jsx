@@ -55,11 +55,7 @@ function ClientList(props) {
       width: '30%',
     },
     {
-      title: (
-        <Button type="primary" shape="circle" onClick={createClient}>
-          <Icon type="plus" />
-        </Button>
-      ),
+      title: '',
       dataIndex: 'action',
       key: 'action',
       align: 'center',
@@ -90,10 +86,15 @@ function ClientList(props) {
 
   return (
     <Container>
-      <h1>{t('clients')}</h1>
-
+      <h1 style={{display: 'flex', alignItems: 'center'}}>
+        <span style={{flex: 1}}>{t('clients')}</span>
+        <Button type="primary" disabled={loading} onClick={createClient}>
+          <Icon type={loading ? 'loading' : 'plus'} />
+          {t('new')}
+        </Button>
+      </h1>
       <Input.Search
-        autoFocus
+        size="large"
         placeholder={t('search')}
         onSearch={search => setSearch(search.trim())}
         style={{marginBottom: 16}}
@@ -101,7 +102,6 @@ function ClientList(props) {
 
       <Table
         bordered
-        size="small"
         pagination={pagination}
         loading={loading}
         dataSource={dataSource}
