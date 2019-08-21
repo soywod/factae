@@ -96,7 +96,7 @@ function EditDocument(props) {
       const now = DateTime.local()
       nextDocument.createdAt = now.toISO()
 
-      if (nextDocument.type !== 'quotation' && !nextDocument.number) {
+      if (!nextDocument.number) {
         const count = documents
           .map(({id, type, createdAt}) => [id, type, DateTime.fromISO(createdAt)])
           .reduce((count, [id, type, createdAt]) => {
