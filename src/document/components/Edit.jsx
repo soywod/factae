@@ -50,6 +50,12 @@ function EditDocument(props) {
     }
   }, [document, documents, match.params.id])
 
+  function saveType(type) {
+    const conditionType = type === 'quotation' ? 'quotation' : 'invoice'
+    const conditions = (profile && profile[conditionType + 'Conditions']) || ''
+    setDocument({...document, type, conditions})
+  }
+
   async function buildNextDocument() {
     const nextItems = items.filter(item => item.designation && item.unitPrice)
     const totalHT = nextItems.reduce((sum, {amount}) => sum + amount, 0)
@@ -292,7 +298,7 @@ function EditDocument(props) {
       {
         name: 'type',
         Component: (
-          <Select onChange={type => setDocument({...document, type})} size="large" autoFocus>
+          <Select onChange={saveType} size="large" autoFocus>
             {['quotation', 'invoice', 'credit'].map(type => (
               <Select.Option key={type} value={type}>
                 {t(type)}
