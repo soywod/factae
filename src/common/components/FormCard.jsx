@@ -35,7 +35,7 @@ function FormCard({getFieldDecorator, model, title, fields}) {
   return (
     <Card title={title} style={styles.card}>
       <Row gutter={15}>
-        {fields.map(({name, fluid = false, Component = <Input />, rules = []}) => (
+        {fields.map(({name, fluid = false, Component = <Input size="large" />, rules = []}) => (
           <Col key={name} {...(fluid ? pick('xs', breakpoints) : breakpoints)}>
             <Form.Item label={t(kebabCase(name))}>
               {getFieldDecorator(name, {

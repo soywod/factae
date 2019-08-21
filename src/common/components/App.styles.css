@@ -44,6 +44,10 @@ h2 {
   }
 }
 
+.ant-card-head-title {
+  white-space: normal;
+}
+
 .ant-input {
   border-color: #e8e8e8;
 }
