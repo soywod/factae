@@ -50,11 +50,11 @@ function FormCard({getFieldDecorator, model, title, fields}) {
   )
 }
 
-export function FormCardTitle({title, titleData, subtitle, action}) {
+export function FormCardTitle({title, titleData, subtitle, action, style = {}}) {
   const {t} = useTranslation()
 
   return (
-    <>
+    <div style={style}>
       <Typography.Title level={3} style={styles.title}>
         {t(title, titleData)}
         {action}
@@ -62,7 +62,7 @@ export function FormCardTitle({title, titleData, subtitle, action}) {
       {subtitle && (
         <Typography.Paragraph style={styles.subtitle}>{t(subtitle)}</Typography.Paragraph>
       )}
-    </>
+    </div>
   )
 }
 
