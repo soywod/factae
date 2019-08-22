@@ -66,13 +66,13 @@ function Sider(props) {
           <Icon type="dashboard" />
           <span>{t('overview')}</span>
         </Menu.Item>
-        <Menu.Item key="/documents">
-          <Icon type="copy" />
-          <span>{t('documents')}</span>
-        </Menu.Item>
         <Menu.Item key="/clients">
           <Icon type="team" />
           <span>{t('clients')}</span>
+        </Menu.Item>
+        <Menu.Item key="/documents">
+          <Icon type="copy" />
+          <span>{t('documents')}</span>
         </Menu.Item>
         <Menu.Item key="/profile">
           <Icon type="user" />
