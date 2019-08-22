@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
-import AntdTag from 'antd/es/tag'
 import Button from 'antd/es/button'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
+import Spin from 'antd/es/spin'
 import Table from 'antd/es/table'
+import Tag from 'antd/es/tag'
 import Tooltip from 'antd/es/tooltip'
 import find from 'lodash/fp/find'
 import isEmpty from 'lodash/fp/isEmpty'
@@ -23,10 +24,10 @@ import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
 import $document from '../service'
 
-const Tag = ({children, ...props}) => (
-  <AntdTag {...props} style={{float: 'right', textTransform: 'lowercase'}}>
+const CustomTag = ({children, ...props}) => (
+  <Tag {...props} style={{float: 'right', textTransform: 'lowercase'}}>
     {children}
-  </AntdTag>
+  </Tag>
 )
 
 const alphabeticSort = key => (a, b) => a[key].localeCompare(b[key])
@@ -48,14 +49,13 @@ function DocumentList(props) {
 
         setLoading(true)
 
-        const now = DateTime.local()
         const document = {
           type: 'quotation',
           status: 'draft',
-          createdAt: now.toISO(),
+          createdAt: DateTime.local().toISO(),
           taxRate: profile.taxRate,
           conditions: profile.quotationConditions,
-          expiresAt: now.plus({days: 60}).toISO(),
+          expiresIn: 60,
           total: 0,
         }
 
@@ -92,11 +92,11 @@ function DocumentList(props) {
       render: (_, {type, status}) => (
         <>
           {t(type)}
-          {status === 'draft' && <Tag>{t('draft')}</Tag>}
-          {status === 'sent' && <Tag color="blue">{t('sent')}</Tag>}
-          {status === 'signed' && <Tag color="green">{t('signed')}</Tag>}
-          {status === 'paid' && <Tag color="green">{t('paid')}</Tag>}
-          {status === 'refunded' && <Tag color="green">{t('refunded')}</Tag>}
+          {status === 'draft' && <CustomTag>{t('draft')}</CustomTag>}
+          {status === 'sent' && <CustomTag color="blue">{t('sent')}</CustomTag>}
+          {status === 'signed' && <CustomTag color="green">{t('signed')}</CustomTag>}
+          {status === 'paid' && <CustomTag color="green">{t('paid')}</CustomTag>}
+          {status === 'refunded' && <CustomTag color="green">{t('refunded')}</CustomTag>}
         </>
       ),
     },
@@ -161,28 +161,29 @@ function DocumentList(props) {
   ])
 
   return (
-    <Container>
-      <h1 style={{display: 'flex', alignItems: 'center'}}>
-        <span style={{flex: 1}}>{t('documents')}</span>
-        <Button type="primary" disabled={loading} onClick={createDocument}>
-          <Icon type={loading ? 'loading' : 'plus'} />
-          {t('new')}
-        </Button>
-      </h1>
+    <Spin spinning={loading} size="large">
+      <Container>
+        <h1 style={{display: 'flex', alignItems: 'center'}}>
+          <span style={{flex: 1}}>{t('documents')}</span>
+          <Button type="primary" onClick={createDocument}>
+            <Icon type="plus" />
+            {t('new')}
+          </Button>
+        </h1>
 
-      <Table
-        bordered
-        pagination={pagination}
-        loading={loading}
-        dataSource={dataSource(documents)}
-        columns={columns}
-        rowKey={record => record.id}
-        onRow={record => ({
-          onClick: () => props.history.push(`/documents/${record.id}`, {...omit('key', record)}),
-        })}
-        bodyStyle={{background: '#ffffff', cursor: 'pointer'}}
-      />
-    </Container>
+        <Table
+          bordered
+          pagination={pagination}
+          dataSource={dataSource(documents)}
+          columns={columns}
+          rowKey={record => record.id}
+          onRow={record => ({
+            onClick: () => props.history.push(`/documents/${record.id}`, {...omit('key', record)}),
+          })}
+          bodyStyle={{background: '#ffffff', cursor: 'pointer'}}
+        />
+      </Container>
+    </Spin>
   )
 }
 

@@ -45,7 +45,8 @@ export function useNotification() {
 
   return async (resolve, reject) => {
     try {
-      notify.success(await resolve())
+      const message = await resolve()
+      if (message) notify.success(message)
     } catch (error) {
       const message = getErrorMessage(error)
       if (message) notify.error(message)

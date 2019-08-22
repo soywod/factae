@@ -40,4 +40,8 @@ export async function generatePdf(profile, client, document) {
   return nextDocument
 }
 
-export default {create, update, delete: _delete, generatePdf}
+export async function sendMail(options) {
+  await functions.httpsCallable('sendMail')(options)
+}
+
+export default {create, update, delete: _delete, generatePdf, sendMail}

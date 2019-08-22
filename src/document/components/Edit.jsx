@@ -3,16 +3,14 @@ import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
-import Dropdown from 'antd/es/dropdown'
-import Empty from 'antd/es/empty'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import Input from 'antd/es/input'
 import InputNumber from 'antd/es/input-number'
-import Menu from 'antd/es/menu'
 import Popconfirm from 'antd/es/popconfirm'
 import Row from 'antd/es/row'
 import Select from 'antd/es/select'
+import Spin from 'antd/es/spin'
 import find from 'lodash/fp/find'
 import omit from 'lodash/fp/omit'
 
@@ -21,15 +19,15 @@ import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import EditableTable from '../../common/components/EditableTable'
 import {toEuro} from '../../common/currency'
-import {useNotification} from '../../utils/notification'
+import {notify, useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
 import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
 import $document from '../service'
-import DatePicker from '../../common/components/DatePicker'
+import MailEditor from './MailEditor'
 
 function EditDocument(props) {
-  const {match} = props
+  const {history, match} = props
   const {getFieldDecorator} = props.form
   const profile = useProfile()
   const clients = useClients()
@@ -37,8 +35,8 @@ function EditDocument(props) {
   const [loading, setLoading] = useState(false)
   const [document, setDocument] = useState(props.location.state)
   const [items, setItems] = useState((document && document.items) || [])
-  const [submitVisible, setSubmitVisible] = useState(false)
   const [deleteVisible, setDeleteVisible] = useState(false)
+  const [mailEditorVisible, setMailEditorVisible] = useState(false)
 
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
@@ -50,53 +48,41 @@ function EditDocument(props) {
     }
   }, [document, documents, match.params.id])
 
-  function saveType(type) {
+  async function saveType(type) {
     const conditionType = type === 'quotation' ? 'quotation' : 'invoice'
     const conditions = (profile && profile[conditionType + 'Conditions']) || ''
-    setDocument({...document, type, conditions})
+    const nextDocument = await buildNextDocument()
+    setDocument({...nextDocument, type, conditions})
   }
 
-  async function buildNextDocument() {
+  async function buildNextDocument(override = {}) {
     const nextItems = items.filter(item => item.designation && item.unitPrice)
     const totalHT = nextItems.reduce((sum, {amount}) => sum + amount, 0)
     const totalTVA = Math.round(totalHT * document.taxRate) / 100
     const totalTTC = totalHT + totalTVA
 
-    let nextDocument = {
+    return {
       ...document,
       ...(await validateFields(props.form)),
       items: nextItems,
       totalHT,
       totalTVA,
       totalTTC,
+      ...override,
     }
-
-    if (nextDocument.expiresAt) {
-      nextDocument.expiresAt = nextDocument.expiresAt.toISOString()
-    }
-
-    if (nextDocument.startsAt) {
-      nextDocument.startsAt = nextDocument.startsAt.toISOString()
-    }
-
-    if (nextDocument.endsAt) {
-      nextDocument.endsAt = nextDocument.endsAt.toISOString()
-    }
-
-    return nextDocument
   }
 
-  async function generatePdf() {
-    setSubmitVisible(false)
+  async function prepareDocument() {
     setLoading(true)
+    notify.info(t('/documents.preparing'))
 
     await tryAndNotify(async () => {
       await validateFields(props.form)
-      let nextDocument = await buildNextDocument()
       const now = DateTime.local()
-      nextDocument.createdAt = now.toISO()
+      let nextDocument = await buildNextDocument({createdAt: now.toISO()})
 
       if (!nextDocument.number) {
+        const prefix = t(nextDocument.type)[0].toUpperCase()
         const count = documents
           .map(({id, type, createdAt}) => [id, type, DateTime.fromISO(createdAt)])
           .reduce((count, [id, type, createdAt]) => {
@@ -107,15 +93,41 @@ function EditDocument(props) {
             return count + Number(matchMonth && matchYear && matchDocType)
           }, 1)
 
-        nextDocument.number = `${now.toFormat('yyMM')}#${count}`
+        nextDocument.number = `${prefix}-${now.toFormat('yyMM')}-${count}`
       }
 
       const nextClient = find({id: nextDocument.client}, clients)
       setDocument(await $document.generatePdf(profile, nextClient, nextDocument))
-      return t('/documents.generated-successfully')
+      setMailEditorVisible(true)
     })
 
     setLoading(false)
+  }
+
+  async function sendDocument(data) {
+    setMailEditorVisible(false)
+    if (loading || !data) return
+    setLoading(true)
+
+    await tryAndNotify(
+      async () => {
+        const nextDocument = await buildNextDocument({status: 'sent'})
+        await $document.update(nextDocument)
+        await $document.sendMail({
+          ...data,
+          attachments: [
+            {
+              path: nextDocument.pdf,
+              filename: nextDocument.number + '.pdf',
+            },
+          ],
+        })
+
+        history.push('/documents')
+        return t('/documents.sent-successfully')
+      },
+      () => setLoading(false),
+    )
   }
 
   function addItem() {
@@ -157,7 +169,7 @@ function EditDocument(props) {
       async () => {
         setLoading(true)
         await $document.delete(document)
-        props.history.push('/documents')
+        history.push('/documents')
         return t('/documents.deleted-successfully')
       },
       () => setLoading(false),
@@ -173,7 +185,7 @@ function EditDocument(props) {
           profile[`${type === 'quotation' ? 'quotation' : 'invoice'}Conditions`]
 
         const nextDocument = omit(
-          ['id', 'pdf', 'expiresAt', 'startsAt', 'endsAt', 'conditions'],
+          ['id', 'pdf', 'expiresIn', 'startsAt', 'endsAt', 'conditions'],
           await buildNextDocument(),
         )
 
@@ -186,7 +198,7 @@ function EditDocument(props) {
           conditions: type === document.type ? document.conditions : conditionsFromProfile,
         })
 
-        props.history.push(`/documents`)
+        history.push('/documents')
         return t('/documents.cloned-successfully')
       },
       () => setLoading(false),
@@ -196,7 +208,6 @@ function EditDocument(props) {
   async function saveDocument(event) {
     event.preventDefault()
     if (loading) return
-    setSubmitVisible(false)
     setLoading(true)
 
     await tryAndNotify(async () => {
@@ -355,8 +366,8 @@ function EditDocument(props) {
 
   if (document.type === 'quotation') {
     mainFields.fields.push({
-      name: 'expiresAt',
-      Component: <DatePicker />,
+      name: 'expiresIn',
+      Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
       ...requiredRules,
     })
   } else if (document.type === 'credit') {
@@ -371,110 +382,93 @@ function EditDocument(props) {
   const fields = [mainFields]
 
   return (
-    <Container>
-      <h1>{t('documents')}</h1>
+    <Spin spinning={loading} size="large">
+      <Container>
+        <h1>{t('documents')}</h1>
 
-      <Form noValidate layout="vertical" onSubmit={saveDocument}>
-        {fields.map((props, key) => (
-          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={document} {...props} />
-        ))}
+        <Form noValidate layout="vertical" onSubmit={saveDocument}>
+          {fields.map((props, key) => (
+            <FormCard key={key} getFieldDecorator={getFieldDecorator} model={document} {...props} />
+          ))}
 
-        <Card
-          title={<FormCardTitle title="designations" />}
-          bodyStyle={{padding: '1px 7.5px 0 7.5px', marginBottom: -1}}
-          style={{marginBottom: 15}}
-        >
-          <Row gutter={15}>
-            <EditableTable
-              size="middle"
-              pagination={false}
-              dataSource={items}
-              columns={columns}
-              footer={Footer}
-              onSave={saveItems}
-            />
-          </Row>
-        </Card>
-
-        <FormCard getFieldDecorator={getFieldDecorator} model={document} {...conditionFields} />
-
-        {document.pdf && (
           <Card
-            title={<FormCardTitle title="pdf" />}
-            bodyStyle={{padding: 15, textAlign: 'center'}}
-            style={{margin: '15px 0'}}
+            title={<FormCardTitle title="designations" />}
+            bodyStyle={{padding: '1px 7.5px 0 7.5px', marginBottom: -1}}
+            style={{marginBottom: 15}}
           >
             <Row gutter={15}>
-              {document.pdf ? (
-                <iframe
-                  title="document"
-                  src={document.pdf}
-                  width="100%"
-                  height={700}
-                  scrolling="no"
-                  style={{maxWidth: 700}}
-                ></iframe>
-              ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-              )}
+              <EditableTable
+                size="middle"
+                pagination={false}
+                dataSource={items}
+                columns={columns}
+                footer={Footer}
+                onSave={saveItems}
+              />
             </Row>
           </Card>
-        )}
 
-        <ActionBar>
-          <Popconfirm
-            title={t('/documents.confirm-deletion')}
-            onConfirm={deleteDocument}
-            okText={t('yes')}
-            cancelText={t('no')}
-            disabled={loading}
-            visible={deleteVisible && !loading}
-            onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
-          >
-            <Button type="danger" disabled={loading} style={{marginRight: 8}}>
-              <Icon type="delete" />
-              {t('delete')}
-            </Button>
-          </Popconfirm>
+          <FormCard getFieldDecorator={getFieldDecorator} model={document} {...conditionFields} />
 
-          <Dropdown
-            disabled={loading}
-            overlay={
-              <Menu disabled={loading} onClick={cloneDocument}>
-                <Menu.Item key="quotation">{t('quotation')}</Menu.Item>
-                <Menu.Item key="invoice">{t('invoice')}</Menu.Item>
-                <Menu.Item key="credit">{t('credit')}</Menu.Item>
-              </Menu>
-            }
-          >
-            <Button type="dashed" disabled={loading} style={{marginRight: 8}}>
-              <Icon type="switcher" />
+          {document.pdf && (
+            <Card
+              title={
+                <a
+                  href={document.pdf}
+                  download={document.number}
+                  style={{display: 'flex', alignItems: 'center'}}
+                >
+                  <Icon type="file-pdf" style={{fontSize: '2em', marginRight: 12}} />
+                  <FormCardTitle
+                    title={t(document.type)}
+                    subtitle={document.number}
+                    style={{flex: 1}}
+                  />
+                  <Button type="link">
+                    <Icon type="download" />
+                    {t('download')}
+                  </Button>
+                </a>
+              }
+              bodyStyle={{padding: 0}}
+              style={{margin: '15px 0'}}
+            />
+          )}
+
+          <ActionBar>
+            <Popconfirm
+              title={t('/documents.confirm-deletion')}
+              onConfirm={deleteDocument}
+              okText={t('yes')}
+              cancelText={t('no')}
+              visible={deleteVisible && !loading}
+              onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
+            >
+              <Button type="danger" style={{marginRight: 8}}>
+                <Icon type="delete" />
+                {t('delete')}
+              </Button>
+            </Popconfirm>
+
+            <Button type="dashed" onClick={cloneDocument} style={{marginRight: 8}}>
+              <Icon type="copy" />
               {t('clone')}
-              {!loading && <Icon type="down" />}
             </Button>
-          </Dropdown>
 
-          <Dropdown
-            disabled={loading}
-            visible={submitVisible && !loading}
-            onVisibleChange={visible => setSubmitVisible(loading ? false : visible)}
-            overlay={
-              <Menu disabled={loading}>
-                <Menu.Item disabled={loading} onClick={generatePdf}>
-                  {t('save-and-generate-pdf')}
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button type="primary" htmlType="submit" disabled={loading}>
-              <Icon type={loading ? 'loading' : 'save'} />
-              {t('save')}
-              {!loading && <Icon type="down" />}
+            <Button type="dashed" onClick={prepareDocument} style={{marginRight: 8}}>
+              <Icon type="mail" />
+              {t('presend')}
             </Button>
-          </Dropdown>
-        </ActionBar>
-      </Form>
-    </Container>
+
+            <Button type="primary" htmlType="submit">
+              <Icon type="save" />
+              {t('save')}
+            </Button>
+          </ActionBar>
+        </Form>
+        <MailEditor visible={mailEditorVisible} document={document} onClose={sendDocument} />
+      </Container>
+    </Spin>
   )
 }
 

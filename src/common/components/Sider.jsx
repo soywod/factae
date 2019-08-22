@@ -12,6 +12,7 @@ import Logo from './Logo'
 const styles = {
   container: {
     height: '100%',
+    minHeight: '100%',
   },
   flags: {
     display: 'flex',
