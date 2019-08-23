@@ -162,10 +162,10 @@ const Auth = withHOCs(props => {
             </Form.Item>
             <div>
               <Button block type="primary" htmlType="submit" style={{marginBottom: 8}}>
-                {t('login')}
+                {t('sign-in')}
               </Button>
               <Button block type="dashed" onClick={doAsyncTask(register)} style={{marginBottom: 8}}>
-                {t('register')}
+                {t('sign-up')}
               </Button>
               <Button block type="link" to="/reset-password" onClick={doAsyncTask(resetPassword)}>
                 {t('forgotten-password')}

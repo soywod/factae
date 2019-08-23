@@ -4,7 +4,6 @@ import {DateTime} from 'luxon'
 import Button from 'antd/es/button'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
-import Spin from 'antd/es/spin'
 import Table from 'antd/es/table'
 import Tag from 'antd/es/tag'
 import Tooltip from 'antd/es/tooltip'
@@ -24,47 +23,39 @@ import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
 import $document from '../service'
 
+const alphabeticSort = key => (a, b) => a[key].localeCompare(b[key])
+
 const CustomTag = ({children, ...props}) => (
   <Tag {...props} style={{float: 'right', textTransform: 'lowercase'}}>
     {children}
   </Tag>
 )
 
-const alphabeticSort = key => (a, b) => a[key].localeCompare(b[key])
-
 function DocumentList(props) {
   const profile = useProfile()
   const clients = useClients()
   const documents = useDocuments()
-  const [loading, setLoading] = useState(false)
   const [pagination, setPagination] = useState({})
   const tryAndNotify = useNotification()
   const {t, i18n} = useTranslation()
 
   async function createDocument() {
-    await tryAndNotify(
-      async () => {
-        if (!isProfileValid(profile)) throw new Error('/profile.error-invalid')
-        if (isEmpty(clients)) throw new Error('/clients.error-empty')
+    await tryAndNotify(() => {
+      if (!isProfileValid(profile)) throw new Error('/profile.error-invalid')
+      if (isEmpty(clients)) throw new Error('/clients.error-empty')
 
-        setLoading(true)
+      const document = {
+        id: $document.generateId(),
+        type: 'quotation',
+        status: 'draft',
+        createdAt: DateTime.local().toISO(),
+        taxRate: profile.taxRate,
+        conditions: profile.quotationConditions,
+        expiresIn: 60,
+      }
 
-        const document = {
-          type: 'quotation',
-          status: 'draft',
-          createdAt: DateTime.local().toISO(),
-          taxRate: profile.taxRate,
-          conditions: profile.quotationConditions,
-          expiresIn: 60,
-          total: 0,
-        }
-
-        const id = await $document.create(document)
-        props.history.push(`/documents/${id}`, {...document, id})
-        return t('/documents.created-successfully')
-      },
-      () => setLoading(false),
-    )
+      props.history.push(`/documents/${document.id}`, document)
+    })
   }
 
   useEffect(() => {
@@ -161,29 +152,27 @@ function DocumentList(props) {
   ])
 
   return (
-    <Spin spinning={loading} size="large">
-      <Container>
-        <h1 style={{display: 'flex', alignItems: 'center'}}>
-          <span style={{flex: 1}}>{t('documents')}</span>
-          <Button type="primary" onClick={createDocument}>
-            <Icon type="plus" />
-            {t('new')}
-          </Button>
-        </h1>
+    <Container>
+      <h1 style={{display: 'flex', alignItems: 'center'}}>
+        <span style={{flex: 1}}>{t('documents')}</span>
+        <Button type="primary" onClick={createDocument}>
+          <Icon type="plus" />
+          {t('new')}
+        </Button>
+      </h1>
 
-        <Table
-          bordered
-          pagination={pagination}
-          dataSource={dataSource(documents)}
-          columns={columns}
-          rowKey={record => record.id}
-          onRow={record => ({
-            onClick: () => props.history.push(`/documents/${record.id}`, {...omit('key', record)}),
-          })}
-          bodyStyle={{background: '#ffffff', cursor: 'pointer'}}
-        />
-      </Container>
-    </Spin>
+      <Table
+        bordered
+        pagination={pagination}
+        dataSource={dataSource(documents)}
+        columns={columns}
+        rowKey={record => record.id}
+        onRow={record => ({
+          onClick: () => props.history.push(`/documents/${record.id}`, {...omit('key', record)}),
+        })}
+        bodyStyle={{background: '#ffffff', cursor: 'pointer'}}
+      />
+    </Container>
   )
 }
 

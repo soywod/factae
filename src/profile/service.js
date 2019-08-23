@@ -7,8 +7,8 @@ import {user$} from '../auth/service'
 
 export const profile$ = new BehaviorSubject(null)
 
-export async function update(profile) {
-  await db('users', user$.value.uid).update(omit('expiresAt', profile))
+export async function set(profile) {
+  await db('users', user$.value.uid).set(omit('expiresAt', profile), {merge: true})
 }
 
 export function onProfileChanged() {
@@ -23,4 +23,4 @@ export function onProfileChanged() {
   })
 }
 
-export default {update}
+export default {set}

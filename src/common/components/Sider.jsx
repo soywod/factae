@@ -45,6 +45,8 @@ function Sider(props) {
       return ['/documents']
     } else if (route.startsWith('/clients')) {
       return ['/clients']
+    } else if (route.startsWith('/records')) {
+      return ['/records']
     } else return [route]
   })()
 
@@ -72,8 +74,12 @@ function Sider(props) {
           <span>{t('clients')}</span>
         </Menu.Item>
         <Menu.Item key="/documents">
-          <Icon type="copy" />
+          <Icon type="form" />
           <span>{t('documents')}</span>
+        </Menu.Item>
+        <Menu.Item key="/records">
+          <Icon type="read" />
+          <span>{t('records')}</span>
         </Menu.Item>
         <Menu.Item key="/profile">
           <Icon type="user" />

@@ -11,7 +11,6 @@ import FormCard, {FormCardTitle, validateFields} from '../../common/components/F
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import {useNotification} from '../../utils/notification'
-import {difference} from '../../utils/lodash'
 import {useClients} from '../hooks'
 import $client from '../service'
 
@@ -50,8 +49,10 @@ function EditClient(props) {
     setLoading(true)
 
     await tryAndNotify(async () => {
-      const nextClient = await validateFields(props.form)
-      await $client.update({id: client.id, ...difference(nextClient, client)})
+      let nextClient = await validateFields(props.form)
+      nextClient.id = client.id
+      setClient(nextClient)
+      await $client.set(nextClient)
       return t('/clients.updated-successfully')
     })
 
