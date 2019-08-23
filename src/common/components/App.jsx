@@ -11,11 +11,14 @@ import {useAuthService} from '../../auth/hooks'
 import {useProfileService} from '../../profile/hooks'
 import {useClientService} from '../../client/hooks'
 import {useDocumentService} from '../../document/hooks'
+import {useRecordService} from '../../record/hooks'
 import PrivateRoute from '../../auth/components/PrivateRoute'
 import Auth from '../../auth/components/Auth'
 import Profile from '../../profile/components/Edit'
 import ClientList from '../../client/components/List'
 import ClientEdit from '../../client/components/Edit'
+import RecordList from '../../record/components/List'
+import RecordEdit from '../../record/components/Edit'
 import DocumentList from '../../document/components/List'
 import DocumentEdit from '../../document/components/Edit'
 import Dashboard from '../../dashboard/components'
@@ -37,6 +40,7 @@ function App() {
   useProfileService()
   useClientService()
   useDocumentService()
+  useRecordService()
 
   useEffect(() => {
     moment.locale(i18n.language)
@@ -54,10 +58,12 @@ function App() {
               <Route path="/auth" component={Auth} />
               <Route path="/demo" component={Auth.Demo} />
               <PrivateRoute path="/logout" component={Auth.Logout} />
-              <PrivateRoute path="/documents/:id" component={DocumentEdit} />
-              <PrivateRoute path="/documents" component={DocumentList} />
               <PrivateRoute path="/clients/:id" component={ClientEdit} />
               <PrivateRoute path="/clients" component={ClientList} />
+              <PrivateRoute path="/records/:id" component={RecordEdit} />
+              <PrivateRoute path="/records" component={RecordList} />
+              <PrivateRoute path="/documents/:id" component={DocumentEdit} />
+              <PrivateRoute path="/documents" component={DocumentList} />
               <PrivateRoute path="/profile" component={Profile} />
               <PrivateRoute expact path="/" component={Dashboard} />
               <Redirect to="/" />

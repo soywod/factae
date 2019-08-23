@@ -44,14 +44,6 @@ h2 {
   }
 }
 
-.ant-spin-nested-loading>div>.ant-spin {
-  max-height: inherit;
-}
-
-.ant-spin-blur {
-  opacity: .25;
-}
-
 .ant-card-head-title {
   white-space: normal;
 }

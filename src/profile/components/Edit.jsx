@@ -11,7 +11,6 @@ import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import {useNotification} from '../../utils/notification'
-import {difference} from '../../utils/lodash'
 import {useProfile} from '../hooks'
 import $profile from '../service'
 
@@ -30,7 +29,7 @@ function Profile(props) {
 
     await tryAndNotify(async () => {
       const nextProfile = await validateFields(props.form)
-      await $profile.update(difference(nextProfile, profile))
+      await $profile.set(nextProfile)
       return t('/profile.updated-successfully')
     })
 

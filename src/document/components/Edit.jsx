@@ -10,7 +10,6 @@ import InputNumber from 'antd/es/input-number'
 import Popconfirm from 'antd/es/popconfirm'
 import Row from 'antd/es/row'
 import Select from 'antd/es/select'
-import Spin from 'antd/es/spin'
 import find from 'lodash/fp/find'
 import omit from 'lodash/fp/omit'
 
@@ -112,7 +111,7 @@ function EditDocument(props) {
     await tryAndNotify(
       async () => {
         const nextDocument = await buildNextDocument({status: 'sent'})
-        await $document.update(nextDocument)
+        await $document.set(nextDocument)
         await $document.sendMail({
           ...data,
           attachments: [
@@ -213,7 +212,7 @@ function EditDocument(props) {
     await tryAndNotify(async () => {
       const nextDocument = await buildNextDocument()
       setDocument(nextDocument)
-      await $document.update(nextDocument)
+      await $document.set(nextDocument)
       return t('/documents.updated-successfully')
     })
 
@@ -307,9 +306,22 @@ function EditDocument(props) {
     title: <FormCardTitle title="general-informations" />,
     fields: [
       {
+        name: 'client',
+        Component: (
+          <Select size="large" autoFocus>
+            {clients.map(client => (
+              <Select.Option key={client.id} value={client.id}>
+                {client.name}
+              </Select.Option>
+            ))}
+          </Select>
+        ),
+        ...requiredRules,
+      },
+      {
         name: 'type',
         Component: (
-          <Select onChange={saveType} size="large" autoFocus>
+          <Select onChange={saveType} size="large">
             {['quotation', 'invoice', 'credit'].map(type => (
               <Select.Option key={type} value={type}>
                 {t(type)}
@@ -332,19 +344,6 @@ function EditDocument(props) {
             {document.type === 'credit' && (
               <Select.Option value="refunded">{t('refunded')}</Select.Option>
             )}
-          </Select>
-        ),
-        ...requiredRules,
-      },
-      {
-        name: 'client',
-        Component: (
-          <Select size="large">
-            {clients.map(client => (
-              <Select.Option key={client.id} value={client.id}>
-                {client.name}
-              </Select.Option>
-            ))}
           </Select>
         ),
         ...requiredRules,
@@ -382,93 +381,96 @@ function EditDocument(props) {
   const fields = [mainFields]
 
   return (
-    <Spin spinning={loading} size="large">
-      <Container>
-        <h1>{t('documents')}</h1>
+    <Container>
+      <h1>{t('documents')}</h1>
 
-        <Form noValidate layout="vertical" onSubmit={saveDocument}>
-          {fields.map((props, key) => (
-            <FormCard key={key} getFieldDecorator={getFieldDecorator} model={document} {...props} />
-          ))}
+      <Form noValidate layout="vertical" onSubmit={saveDocument}>
+        {fields.map((props, key) => (
+          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={document} {...props} />
+        ))}
 
-          <Card
-            title={<FormCardTitle title="designations" />}
-            bodyStyle={{padding: '1px 7.5px 0 7.5px', marginBottom: -1}}
-            style={{marginBottom: 15}}
-          >
-            <Row gutter={15}>
-              <EditableTable
-                size="middle"
-                pagination={false}
-                dataSource={items}
-                columns={columns}
-                footer={Footer}
-                onSave={saveItems}
-              />
-            </Row>
-          </Card>
-
-          <FormCard getFieldDecorator={getFieldDecorator} model={document} {...conditionFields} />
-
-          {document.pdf && (
-            <Card
-              title={
-                <a
-                  href={document.pdf}
-                  download={document.number}
-                  style={{display: 'flex', alignItems: 'center'}}
-                >
-                  <Icon type="file-pdf" style={{fontSize: '2em', marginRight: 12}} />
-                  <FormCardTitle
-                    title={t(document.type)}
-                    subtitle={document.number}
-                    style={{flex: 1}}
-                  />
-                  <Button type="link">
-                    <Icon type="download" />
-                    {t('download')}
-                  </Button>
-                </a>
-              }
-              bodyStyle={{padding: 0}}
-              style={{margin: '15px 0'}}
+        <Card
+          title={<FormCardTitle title="designations" />}
+          bodyStyle={{padding: '1px 7.5px 0 7.5px', marginBottom: -1}}
+          style={{marginBottom: 15}}
+        >
+          <Row gutter={15}>
+            <EditableTable
+              size="middle"
+              pagination={false}
+              dataSource={items}
+              columns={columns}
+              footer={Footer}
+              onSave={saveItems}
             />
-          )}
+          </Row>
+        </Card>
 
-          <ActionBar>
-            <Popconfirm
-              title={t('/documents.confirm-deletion')}
-              onConfirm={deleteDocument}
-              okText={t('yes')}
-              cancelText={t('no')}
-              visible={deleteVisible && !loading}
-              onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
-            >
-              <Button type="danger" style={{marginRight: 8}}>
-                <Icon type="delete" />
-                {t('delete')}
-              </Button>
-            </Popconfirm>
+        <FormCard getFieldDecorator={getFieldDecorator} model={document} {...conditionFields} />
 
-            <Button type="dashed" onClick={cloneDocument} style={{marginRight: 8}}>
-              <Icon type="copy" />
-              {t('clone')}
+        {document.pdf && (
+          <Card
+            title={
+              <a
+                href={document.pdf}
+                download={document.number}
+                style={{display: 'flex', alignItems: 'center'}}
+              >
+                <Icon type="file-pdf" style={{fontSize: '2em', marginRight: 12}} />
+                <FormCardTitle
+                  title={t(document.type)}
+                  subtitle={document.number}
+                  style={{flex: 1}}
+                />
+                <Button type="link">
+                  <Icon type="download" />
+                  {t('download')}
+                </Button>
+              </a>
+            }
+            bodyStyle={{padding: 0}}
+            style={{margin: '15px 0'}}
+          />
+        )}
+
+        <ActionBar>
+          <Popconfirm
+            title={t('/documents.confirm-deletion')}
+            onConfirm={deleteDocument}
+            okText={t('yes')}
+            cancelText={t('no')}
+            visible={deleteVisible && !loading}
+            onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
+          >
+            <Button type="danger" disabled={loading} style={{marginRight: 8}}>
+              <Icon type="delete" />
+              {t('delete')}
             </Button>
+          </Popconfirm>
 
-            <Button type="dashed" onClick={prepareDocument} style={{marginRight: 8}}>
-              <Icon type="mail" />
-              {t('presend')}
-            </Button>
+          <Button type="dashed" disabled={loading} onClick={cloneDocument} style={{marginRight: 8}}>
+            <Icon type="copy" />
+            {t('clone')}
+          </Button>
 
-            <Button type="primary" htmlType="submit">
-              <Icon type="save" />
-              {t('save')}
-            </Button>
-          </ActionBar>
-        </Form>
-        <MailEditor visible={mailEditorVisible} document={document} onClose={sendDocument} />
-      </Container>
-    </Spin>
+          <Button
+            type="dashed"
+            disabled={loading}
+            onClick={prepareDocument}
+            style={{marginRight: 8}}
+          >
+            <Icon type="mail" />
+            {t('presend')}
+          </Button>
+
+          <Button type="primary" disabled={loading} htmlType="submit">
+            <Icon type={loading ? 'loading' : 'save'} />
+            {t('save')}
+          </Button>
+        </ActionBar>
+      </Form>
+      <MailEditor visible={mailEditorVisible} document={document} onClose={sendDocument} />
+    </Container>
   )
 }
 

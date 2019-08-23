@@ -8,7 +8,6 @@ import Table from 'antd/es/table'
 import omit from 'lodash/fp/omit'
 
 import Container from '../../common/components/Container'
-import {useNotification} from '../../utils/notification'
 import {useClients} from '../hooks'
 import $client from '../service'
 
@@ -16,10 +15,8 @@ const alphabeticSort = key => (a, b) => a[key].localeCompare(b[key])
 
 function ClientList(props) {
   const clients = useClients()
-  const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState()
   const [pagination, setPagination] = useState({})
-  const tryAndNotify = useNotification()
   const {t} = useTranslation()
 
   useEffect(() => {
@@ -68,16 +65,9 @@ function ClientList(props) {
     },
   ]
 
-  async function createClient() {
-    await tryAndNotify(
-      async () => {
-        setLoading(true)
-        const id = await $client.create()
-        props.history.push(`/clients/${id}`, {id})
-        return t('/clients.created-successfully')
-      },
-      () => setLoading(false),
-    )
+  function createClient() {
+    const client = {id: $client.generateId()}
+    props.history.push(`/clients/${client.id}`, client)
   }
 
   const dataSource = clients
@@ -88,11 +78,12 @@ function ClientList(props) {
     <Container>
       <h1 style={{display: 'flex', alignItems: 'center'}}>
         <span style={{flex: 1}}>{t('clients')}</span>
-        <Button type="primary" disabled={loading} onClick={createClient}>
-          <Icon type={loading ? 'loading' : 'plus'} />
+        <Button type="primary" onClick={createClient}>
+          <Icon type="plus" />
           {t('new')}
         </Button>
       </h1>
+
       <Input.Search
         size="large"
         placeholder={t('search')}
@@ -103,7 +94,6 @@ function ClientList(props) {
       <Table
         bordered
         pagination={pagination}
-        loading={loading}
         dataSource={dataSource}
         columns={columns}
         rowKey={record => record.id}

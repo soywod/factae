@@ -17,13 +17,12 @@ export function onClientsChanged() {
   })
 }
 
-export async function create() {
-  const {id} = await db(`users/${user$.value.uid}/clients`).add({})
-  return id
+export function generateId() {
+  return db(`users/${user$.value.uid}/clients`).doc().id
 }
 
-export async function update(client) {
-  await db(`users/${user$.value.uid}/clients`, client.id).update(client)
+export async function set(client) {
+  await db(`users/${user$.value.uid}/clients`, client.id).set(client, {merge: true})
 }
 
 export {_delete as delete}
@@ -31,4 +30,4 @@ async function _delete(client) {
   await db(`users/${user$.value.uid}/clients`, client.id).delete()
 }
 
-export default {create, update, delete: _delete}
+export default {generateId, set, delete: _delete}

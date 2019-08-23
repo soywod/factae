@@ -18,8 +18,8 @@ export const auth = firebase.auth()
 
 export function db(collection, document) {
   const firestore = firebase.firestore()
+  if (!collection) return firestore
   const db = firestore.collection(collection)
-
   return document ? db.doc(document) : db
 }
 

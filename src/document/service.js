@@ -17,13 +17,12 @@ export function onDocumentsChanged() {
   })
 }
 
-export async function create(document) {
-  const {id} = await db(`users/${user$.value.uid}/documents`).add(document)
-  return id
+export function generateId() {
+  return db(`users/${user$.value.uid}/documents`).doc().id
 }
 
-export async function update(document) {
-  await db(`users/${user$.value.uid}/documents`, document.id).set(document)
+export async function set(document) {
+  await db(`users/${user$.value.uid}/documents`, document.id).set(document, {merge: true})
 }
 
 export {_delete as delete}
@@ -44,4 +43,4 @@ export async function sendMail(options) {
   await functions.httpsCallable('sendMail')(options)
 }
 
-export default {create, update, delete: _delete, generatePdf, sendMail}
+export default {generateId, set, delete: _delete, generatePdf, sendMail}
