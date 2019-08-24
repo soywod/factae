@@ -77,7 +77,12 @@ function ClientList(props) {
 
   return (
     <Container>
-      <Title label="clients" handler={createClient} handlerLabel="new" handlerIcon="plus" />
+      <Title label="clients">
+        <Button type="primary" onClick={createClient}>
+          <Icon type="plus" />
+          {t('new')}
+        </Button>
+      </Title>
 
       <Input.Search
         size="large"
@@ -87,7 +92,6 @@ function ClientList(props) {
       />
 
       <Table
-        bordered
         pagination={pagination}
         dataSource={dataSource}
         columns={columns}

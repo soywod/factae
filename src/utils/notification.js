@@ -6,8 +6,8 @@ import {useProfile} from '../profile/hooks'
 import {isDemo} from '../dashboard/demo'
 
 const types = ['info', 'success', 'error']
-const placement = 'topRight'
-const duration = 3
+const placement = 'bottomRight'
+const duration = 3.5
 const bottom = 0
 
 export const notify = types.reduce(

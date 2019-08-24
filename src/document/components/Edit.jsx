@@ -16,7 +16,6 @@ import omit from 'lodash/fp/omit'
 import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
-import ActionBar from '../../common/components/ActionBar'
 import EditableTable from '../../common/components/EditableTable'
 import NatureField from '../../common/components/NatureField'
 import PaymentMethodField from '../../common/components/PaymentMethodField'
@@ -43,6 +42,7 @@ function EditDocument(props) {
   const [senderVisible, setSenderVisible] = useState(false)
   const [previewVisible, setPreviewVisible] = useState(false)
   const [postValidationVisible, setPostValidationVisible] = useState(false)
+  const [status, setStatus] = useState()
 
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
@@ -61,13 +61,18 @@ function EditDocument(props) {
   }
 
   async function postValidation(data) {
+    if (!data) {
+      props.form.setFieldsValue({status: document.status})
+      return setPostValidationVisible(false)
+    }
+
     setLoading(true)
 
     await tryAndNotify(async () => {
       const nextDocument =
-        document.status === 'sent'
-          ? {...(await buildNextDocumentWithPdf()), ...data}
-          : {...document, ...data}
+        status === 'sent'
+          ? {...(await buildNextDocumentWithPdf()), ...data, status}
+          : {...document, ...data, status}
       setDocument(nextDocument)
       await $document.set(nextDocument)
       return t('/documents.updated-successfully')
@@ -84,9 +89,9 @@ function EditDocument(props) {
     setDocument({...nextDocument, type, conditions})
   }
 
-  async function saveStatus(status) {
-    setDocument({...document, status})
-    if (status !== 'draft') setPostValidationVisible(true)
+  async function saveStatus(nextStatus) {
+    setStatus(nextStatus)
+    if (nextStatus !== 'draft') setPostValidationVisible(true)
   }
 
   async function buildNextDocument(override = {}) {
@@ -253,7 +258,7 @@ function EditDocument(props) {
     return (
       <>
         <div
-          style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1.2rem'}}
+          style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1rem'}}
           dangerouslySetInnerHTML={{
             __html: t('/documents.total', {
               title: t('total-without-taxes'),
@@ -263,7 +268,7 @@ function EditDocument(props) {
         />
         {totalTVA > 0 && (
           <div
-            style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1.2rem'}}
+            style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1rem'}}
             dangerouslySetInnerHTML={{
               __html: t('/documents.total', {
                 title: t('total-with-taxes'),
@@ -424,33 +429,8 @@ function EditDocument(props) {
 
   return (
     <Container>
-      <Title loading={loading} label="documents" handler={saveDocument} handlerLabel="save" />
-
       <Form noValidate layout="vertical" onSubmit={saveDocument}>
-        {fields.map((props, key) => (
-          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={document} {...props} />
-        ))}
-
-        <Card
-          title={<FormCardTitle title="designations" />}
-          bodyStyle={{padding: '1px 7.5px 0 7.5px', marginBottom: -1}}
-          style={{marginBottom: 15}}
-        >
-          <Row gutter={15}>
-            <EditableTable
-              size="middle"
-              pagination={false}
-              dataSource={items}
-              columns={columns}
-              footer={Footer}
-              onSave={saveItems}
-            />
-          </Row>
-        </Card>
-
-        <FormCard getFieldDecorator={getFieldDecorator} model={document} {...conditionFields} />
-
-        <ActionBar>
+        <Title label="documents">
           <Button.Group>
             <Popconfirm
               title={t('/documents.confirm-deletion')}
@@ -480,12 +460,35 @@ function EditDocument(props) {
                 {t('download')}
               </Button>
             )}
-            <Button type="primary" disabled={loading} htmlType="submit">
+            <Button type="primary" htmlType="submit" disabled={loading}>
               <Icon type={loading ? 'loading' : 'save'} />
               {t('save')}
             </Button>
           </Button.Group>
-        </ActionBar>
+        </Title>
+
+        {fields.map((props, key) => (
+          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={document} {...props} />
+        ))}
+
+        <Card
+          title={<FormCardTitle title="designations" />}
+          bodyStyle={{padding: '1px 7.5px 0 7.5px', marginBottom: -1}}
+          style={{marginTop: 15}}
+        >
+          <Row gutter={15}>
+            <EditableTable
+              size="middle"
+              pagination={false}
+              dataSource={items}
+              columns={columns}
+              footer={Footer}
+              onSave={saveItems}
+            />
+          </Row>
+        </Card>
+
+        <FormCard getFieldDecorator={getFieldDecorator} model={document} {...conditionFields} />
       </Form>
 
       <ModalPreview
@@ -503,7 +506,7 @@ function EditDocument(props) {
       />
 
       <ModalPostValidation
-        status={document.status}
+        status={status}
         visible={postValidationVisible}
         loading={loading}
         onSubmit={postValidation}

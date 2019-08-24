@@ -9,7 +9,6 @@ import find from 'lodash/fp/find'
 
 import Title from '../../common/components/Title'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
-import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import {useNotification} from '../../utils/notification'
 import {useClients} from '../hooks'
@@ -88,31 +87,30 @@ function EditClient(props) {
 
   return (
     <Container>
-      <Title label="client" />
-
       <Form noValidate layout="vertical" onSubmit={saveClient}>
+        <Title label="client">
+          <Button.Group>
+            <Popconfirm
+              title={t('/clients.confirm-deletion')}
+              onConfirm={deleteClient}
+              okText={t('yes')}
+              cancelText={t('no')}
+            >
+              <Button type="danger" disabled={loading}>
+                <Icon type="delete" />
+                {t('delete')}
+              </Button>
+            </Popconfirm>
+            <Button type="primary" htmlType="submit" disabled={loading}>
+              <Icon type={loading ? 'loading' : 'save'} />
+              {t('save')}
+            </Button>
+          </Button.Group>
+        </Title>
+
         {fields.map((props, key) => (
           <FormCard key={key} getFieldDecorator={getFieldDecorator} model={client} {...props} />
         ))}
-
-        <ActionBar>
-          <Popconfirm
-            title={t('/clients.confirm-deletion')}
-            onConfirm={deleteClient}
-            okText={t('yes')}
-            cancelText={t('no')}
-          >
-            <Button type="danger" disabled={loading} style={{marginRight: 8}}>
-              <Icon type="delete" />
-              {t('delete')}
-            </Button>
-          </Popconfirm>
-
-          <Button type="primary" htmlType="submit" disabled={loading}>
-            <Icon type={loading ? 'loading' : 'save'} />
-            {t('save')}
-          </Button>
-        </ActionBar>
       </Form>
     </Container>
   )

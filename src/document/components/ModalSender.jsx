@@ -45,7 +45,7 @@ function ModalSender({form, document, visible, loading, onClose: close}) {
 
   const footer = (
     <Button.Group>
-      <Button type="danger" onClick={() => close()} disabled={loading}>
+      <Button onClick={() => close()} disabled={loading}>
         {t('cancel')}
       </Button>
       <Button htmlType="submit" type="primary" onClick={submit} disabled={loading}>
