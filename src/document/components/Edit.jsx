@@ -17,6 +17,7 @@ import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import EditableTable from '../../common/components/EditableTable'
+import DatePicker from '../../common/components/DatePicker'
 import NatureField from '../../common/components/NatureField'
 import PaymentMethodField from '../../common/components/PaymentMethodField'
 import {toEuro} from '../../common/currency'
@@ -379,6 +380,18 @@ function EditDocument(props) {
         ),
         ...requiredRules,
       },
+      {
+        name: 'taxRate',
+        Component: (
+          <InputNumber
+            size="large"
+            min={0}
+            step={1}
+            onChange={taxRate => setDocument({...document, taxRate})}
+            style={{width: '100%'}}
+          />
+        ),
+      },
     ],
   }
 
@@ -388,8 +401,12 @@ function EditDocument(props) {
       Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
       ...requiredRules,
     })
-  } else if (document.type === 'credit') {
-    mainFields.fields.push({name: 'invoiceNumber', ...requiredRules})
+  } else {
+    mainFields.fields.push({name: 'paymentDeadlineAt', Component: <DatePicker />, ...requiredRules})
+
+    if (document.type === 'credit') {
+      mainFields.fields.push({name: 'invoiceNumber', ...requiredRules})
+    }
   }
 
   if (['paid', 'refunded'].includes(document.status)) {
@@ -406,19 +423,6 @@ function EditDocument(props) {
       },
     )
   }
-
-  mainFields.fields.push({
-    name: 'taxRate',
-    Component: (
-      <InputNumber
-        size="large"
-        min={0}
-        step={1}
-        onChange={taxRate => setDocument({...document, taxRate})}
-        style={{width: '100%'}}
-      />
-    ),
-  })
 
   const conditionFields = {
     title: <FormCardTitle title="conditions" subtitle="/documents.conditions-subtitle" />,

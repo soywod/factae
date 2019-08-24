@@ -94,40 +94,22 @@ function Profile(props) {
     ],
   }
 
-  const rateFields = {
-    title: <FormCardTitle title="default-pricing" subtitle="/profile.pricing-subtitle" />,
-    fields: [
-      {
-        name: 'rate',
-        Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
-      },
-      {
-        name: 'rateUnit',
-        Component: (
-          <Select size="large">
-            <Select.Option value="hour">{t('per-hour')}</Select.Option>
-            <Select.Option value="day">{t('per-day')}</Select.Option>
-            <Select.Option value="service">{t('per-service')}</Select.Option>
-          </Select>
-        ),
-      },
-    ],
-  }
-
   const bankFields = {
     title: <FormCardTitle title="bank-informations" subtitle="/profile.bank-subtitle" />,
     fields: [{name: 'rib'}, {name: 'iban'}, {name: 'bic'}],
   }
 
   const conditionsFields = {
-    title: <FormCardTitle title="conditions" subtitle="/profile.conditions-subtitle" />,
+    title: (
+      <FormCardTitle title="mentions-and-conditions" subtitle="/profile.conditions-subtitle" />
+    ),
     fields: [
-      {name: 'quotationConditions', fluid: true, Component: <Input.TextArea rows={4} />},
-      {name: 'invoiceConditions', fluid: true, Component: <Input.TextArea rows={4} />},
+      {name: 'quotationConditions', fluid: true, Component: <Input.TextArea rows={5} />},
+      {name: 'invoiceConditions', fluid: true, Component: <Input.TextArea rows={5} />},
     ],
   }
 
-  const fields = [contactFields, companyFields, rateFields, bankFields, conditionsFields]
+  const fields = [contactFields, companyFields, conditionsFields, bankFields]
 
   return (
     <Container>

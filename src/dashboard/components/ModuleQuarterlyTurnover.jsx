@@ -44,7 +44,7 @@ function ModuleQuarterlyTurnover() {
 
   return (
     <Card bodyStyle={styles.card}>
-      <span style={{...styles.turnover, ...color}}>{toEuro(turnover)}</span>
+      <span style={{...styles.turnover, ...color}}>{toEuro(turnover || 0)}</span>
       <em style={styles.info}>{t('collected-turnover-this-quarter')}</em>
       <em style={styles.info}>
         ({t('to-declare')}{' '}

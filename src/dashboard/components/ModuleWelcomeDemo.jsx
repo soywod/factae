@@ -31,7 +31,7 @@ function ModuleWelcomeDemo() {
 
   function closeModal() {
     setVisible(false)
-    $profile.update({...profile, welcomed: true})
+    $profile.set({...profile, welcomed: true})
     localStorage.setItem(STORAGE_KEY, true)
   }
 
