@@ -15,6 +15,7 @@ import orderBy from 'lodash/fp/orderBy'
 import pipe from 'lodash/fp/pipe'
 
 import Container from '../../common/components/Container'
+import Title from '../../common/components/Title'
 import {toEuro} from '../../common/currency'
 import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
@@ -153,13 +154,7 @@ function DocumentList(props) {
 
   return (
     <Container>
-      <h1 style={{display: 'flex', alignItems: 'center'}}>
-        <span style={{flex: 1}}>{t('documents')}</span>
-        <Button type="primary" onClick={createDocument}>
-          <Icon type="plus" />
-          {t('new')}
-        </Button>
-      </h1>
+      <Title label="documents" handler={createDocument} handlerLabel="new" handlerIcon="plus" />
 
       <Table
         bordered

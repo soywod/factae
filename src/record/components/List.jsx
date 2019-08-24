@@ -10,6 +10,7 @@ import Tooltip from 'antd/es/tooltip'
 import find from 'lodash/fp/find'
 
 import Container from '../../common/components/Container'
+import Title from '../../common/components/Title'
 import {toEuro} from '../../common/currency'
 import {useDocuments} from '../../document/hooks'
 import {useRecords} from '../hooks'
@@ -131,13 +132,7 @@ function RecordList(props) {
 
   return (
     <Container>
-      <h1 style={{display: 'flex', alignItems: 'center'}}>
-        <span style={{flex: 1}}>{t('records')}</span>
-        <Button type="primary" onClick={createRecord}>
-          <Icon type="plus" />
-          {t('new')}
-        </Button>
-      </h1>
+      <Title label="records" handler={createRecord} handlerLabel="new" handlerIcon="plus" />
 
       <Table
         bordered

@@ -16,9 +16,10 @@ import concat from 'lodash/fp/concat'
 import compact from 'lodash/fp/compact'
 import filter from 'lodash/fp/filter'
 
+import Container from '../../common/components/Container'
+import Title from '../../common/components/Title'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import ActionBar from '../../common/components/ActionBar'
-import Container from '../../common/components/Container'
 import DatePicker from '../../common/components/DatePicker'
 import NatureField from '../../common/components/NatureField'
 import PaymentMethodField from '../../common/components/PaymentMethodField'
@@ -167,7 +168,7 @@ function EditRecord(props) {
 
   return (
     <Container>
-      <h1>{t('record')}</h1>
+      <Title label="record" />
 
       <Form noValidate layout="vertical" onSubmit={saveRecord}>
         {fields.map((props, key) => (
