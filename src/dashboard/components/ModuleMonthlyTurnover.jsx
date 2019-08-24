@@ -30,10 +30,6 @@ function ModuleMonthlyTurnover() {
     return getMonthlyTurnover(documents)
   }, [profile, documents])
 
-  if (!turnover) {
-    return null
-  }
-
   const color = turnover ? {color: '#52c41a'} : {}
 
   return (
