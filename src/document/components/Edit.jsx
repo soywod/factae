@@ -18,12 +18,14 @@ import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import EditableTable from '../../common/components/EditableTable'
 import {toEuro} from '../../common/currency'
-import {notify, useNotification} from '../../utils/notification'
+import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
 import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
 import $document from '../service'
-import MailEditor from './MailEditor'
+import ModalPreview from './ModalPreview'
+import ModalSender from './ModalSender'
+import ModalPostValidation from './ModalPostValidation'
 
 function EditDocument(props) {
   const {history, match} = props
@@ -35,7 +37,9 @@ function EditDocument(props) {
   const [document, setDocument] = useState(props.location.state)
   const [items, setItems] = useState((document && document.items) || [])
   const [deleteVisible, setDeleteVisible] = useState(false)
-  const [mailEditorVisible, setMailEditorVisible] = useState(false)
+  const [senderVisible, setSenderVisible] = useState(false)
+  const [previewVisible, setPreviewVisible] = useState(false)
+  const [postValidationVisible, setPostValidationVisible] = useState(false)
 
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
@@ -47,11 +51,39 @@ function EditDocument(props) {
     }
   }, [document, documents, match.params.id])
 
+  function postPreview(showSender) {
+    setPreviewVisible(false)
+    setLoading(false)
+    if (showSender) setSenderVisible(true)
+  }
+
+  async function postValidation(data) {
+    setLoading(true)
+
+    await tryAndNotify(async () => {
+      const nextDocument =
+        document.status === 'sent'
+          ? {...(await buildNextDocumentWithPdf()), ...data}
+          : {...document, ...data}
+      setDocument(nextDocument)
+      await $document.set(nextDocument)
+      return t('/documents.updated-successfully')
+    })
+
+    setPostValidationVisible(false)
+    setLoading(false)
+  }
+
   async function saveType(type) {
     const conditionType = type === 'quotation' ? 'quotation' : 'invoice'
     const conditions = (profile && profile[conditionType + 'Conditions']) || ''
     const nextDocument = await buildNextDocument()
     setDocument({...nextDocument, type, conditions})
+  }
+
+  async function saveStatus(status) {
+    setDocument({...document, status})
+    if (status !== 'draft') setPostValidationVisible(true)
   }
 
   async function buildNextDocument(override = {}) {
@@ -71,58 +103,51 @@ function EditDocument(props) {
     }
   }
 
-  async function prepareDocument() {
+  async function buildNextDocumentWithPdf() {
+    const now = DateTime.local()
+    let nextDocument = await buildNextDocument({createdAt: now.toISO()})
+
+    const prefix = t(nextDocument.type)[0].toUpperCase()
+    const count = documents
+      .map(({id, type, status, createdAt}) => [id, type, status, DateTime.fromISO(createdAt)])
+      .reduce((count, [id, type, status, createdAt]) => {
+        if (nextDocument.id === id) return count
+        const matchMonth = createdAt.month === now.month
+        const matchYear = createdAt.year === now.year
+        const matchType = type === document.type
+        const matchStatus = status !== 'draft'
+        return count + Number(matchMonth && matchYear && matchType && matchStatus)
+      }, 1)
+
+    nextDocument.number = `${prefix}-${now.toFormat('yyMM')}-${count}`
+    const nextClient = find({id: nextDocument.client}, clients)
+
+    return await $document.generatePdf(profile, nextClient, nextDocument)
+  }
+
+  async function previewDocument() {
     setLoading(true)
-    notify.info(t('/documents.preparing'))
-
-    await tryAndNotify(async () => {
-      await validateFields(props.form)
-      const now = DateTime.local()
-      let nextDocument = await buildNextDocument({createdAt: now.toISO()})
-
-      if (!nextDocument.number) {
-        const prefix = t(nextDocument.type)[0].toUpperCase()
-        const count = documents
-          .map(({id, type, createdAt}) => [id, type, DateTime.fromISO(createdAt)])
-          .reduce((count, [id, type, createdAt]) => {
-            if (nextDocument.id === id) return count
-            const matchMonth = createdAt.month === now.month
-            const matchYear = createdAt.year === now.year
-            const matchDocType = type === document.type
-            return count + Number(matchMonth && matchYear && matchDocType)
-          }, 1)
-
-        nextDocument.number = `${prefix}-${now.toFormat('yyMM')}-${count}`
-      }
-
-      const nextClient = find({id: nextDocument.client}, clients)
-      setDocument(await $document.generatePdf(profile, nextClient, nextDocument))
-      setMailEditorVisible(true)
-    })
-
+    setPreviewVisible(true)
+    await tryAndNotify(async () => setDocument(await buildNextDocumentWithPdf()))
     setLoading(false)
   }
 
   async function sendDocument(data) {
-    setMailEditorVisible(false)
-    if (loading || !data) return
+    if (loading) return
+    if (!data) return setSenderVisible(false)
     setLoading(true)
 
     await tryAndNotify(
       async () => {
-        const nextDocument = await buildNextDocument({status: 'sent'})
-        await $document.set(nextDocument)
-        await $document.sendMail({
-          ...data,
-          attachments: [
-            {
-              path: nextDocument.pdf,
-              filename: nextDocument.number + '.pdf',
-            },
-          ],
+        const nextDocument = await buildNextDocument({
+          status: 'sent',
+          sentAt: DateTime.local().toISO(),
         })
 
-        history.push('/documents')
+        setDocument(nextDocument)
+        await $document.set(nextDocument)
+        await $document.sendMail(data)
+        props.history.push('/documents')
         return t('/documents.sent-successfully')
       },
       () => setLoading(false),
@@ -175,33 +200,27 @@ function EditDocument(props) {
     )
   }
 
-  async function cloneDocument({key: type}) {
-    await tryAndNotify(
-      async () => {
-        setLoading(true)
+  async function cloneDocument() {
+    setLoading(true)
 
-        const conditionsFromProfile =
-          profile[`${type === 'quotation' ? 'quotation' : 'invoice'}Conditions`]
-
-        const nextDocument = omit(
-          ['id', 'pdf', 'expiresIn', 'startsAt', 'endsAt', 'conditions'],
-          await buildNextDocument(),
-        )
-
-        await $document.create({
-          ...nextDocument,
-          type,
-          items,
+    await tryAndNotify(async () => {
+      const nextDocument = omit(
+        ['number', 'pdf', 'conditions', 'sentAt', 'signedAt', 'paidAt', 'refundedAt'],
+        await buildNextDocument({
+          id: $document.generateId(),
           createdAt: DateTime.local().toISO(),
           status: 'draft',
-          conditions: type === document.type ? document.conditions : conditionsFromProfile,
-        })
+          items,
+        }),
+      )
 
-        history.push('/documents')
-        return t('/documents.cloned-successfully')
-      },
-      () => setLoading(false),
-    )
+      await $document.set(nextDocument)
+      props.history.push('/documents')
+      props.history.replace(`/documents/${nextDocument.id}`, nextDocument)
+      return t('/documents.cloned-successfully')
+    })
+
+    setLoading(false)
   }
 
   async function saveDocument(event) {
@@ -321,7 +340,7 @@ function EditDocument(props) {
       {
         name: 'type',
         Component: (
-          <Select onChange={saveType} size="large">
+          <Select size="large" disabled={document.status !== 'draft'} onChange={saveType}>
             {['quotation', 'invoice', 'credit'].map(type => (
               <Select.Option key={type} value={type}>
                 {t(type)}
@@ -334,34 +353,39 @@ function EditDocument(props) {
       {
         name: 'status',
         Component: (
-          <Select size="large">
+          <Select size="large" onChange={saveStatus}>
             <Select.Option value="draft">{t('draft')}</Select.Option>
-            <Select.Option value="sent">{t('sent')}</Select.Option>
-            {document.type === 'quotation' && (
+            {['draft', 'sent'].includes(document.status) && (
+              <Select.Option value="sent">{t('sent')}</Select.Option>
+            )}
+            {document.type === 'quotation' && document.status !== 'draft' && (
               <Select.Option value="signed">{t('signed')}</Select.Option>
             )}
-            {document.type === 'invoice' && <Select.Option value="paid">{t('paid')}</Select.Option>}
-            {document.type === 'credit' && (
+            {document.type === 'invoice' && document.status !== 'draft' && (
+              <Select.Option value="paid">{t('paid')}</Select.Option>
+            )}
+            {document.type === 'credit' && document.status !== 'draft' && (
               <Select.Option value="refunded">{t('refunded')}</Select.Option>
             )}
           </Select>
         ),
         ...requiredRules,
       },
-      {
-        name: 'taxRate',
-        Component: (
-          <InputNumber
-            size="large"
-            min={0}
-            step={1}
-            onChange={taxRate => setDocument({...document, taxRate})}
-            style={{width: '100%'}}
-          />
-        ),
-      },
     ],
   }
+
+  mainFields.fields.push({
+    name: 'taxRate',
+    Component: (
+      <InputNumber
+        size="large"
+        min={0}
+        step={1}
+        onChange={taxRate => setDocument({...document, taxRate})}
+        style={{width: '100%'}}
+      />
+    ),
+  })
 
   if (document.type === 'quotation') {
     mainFields.fields.push({
@@ -408,68 +432,64 @@ function EditDocument(props) {
 
         <FormCard getFieldDecorator={getFieldDecorator} model={document} {...conditionFields} />
 
-        {document.pdf && (
-          <Card
-            title={
-              <a
-                href={document.pdf}
-                download={document.number}
-                style={{display: 'flex', alignItems: 'center'}}
-              >
-                <Icon type="file-pdf" style={{fontSize: '2em', marginRight: 12}} />
-                <FormCardTitle
-                  title={t(document.type)}
-                  subtitle={document.number}
-                  style={{flex: 1}}
-                />
-                <Button type="link">
-                  <Icon type="download" />
-                  {t('download')}
-                </Button>
-              </a>
-            }
-            bodyStyle={{padding: 0}}
-            style={{margin: '15px 0'}}
-          />
-        )}
-
         <ActionBar>
-          <Popconfirm
-            title={t('/documents.confirm-deletion')}
-            onConfirm={deleteDocument}
-            okText={t('yes')}
-            cancelText={t('no')}
-            visible={deleteVisible && !loading}
-            onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
-          >
-            <Button type="danger" disabled={loading} style={{marginRight: 8}}>
-              <Icon type="delete" />
-              {t('delete')}
+          <Button.Group>
+            <Popconfirm
+              title={t('/documents.confirm-deletion')}
+              onConfirm={deleteDocument}
+              okText={t('yes')}
+              cancelText={t('no')}
+              visible={deleteVisible && !loading}
+              onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
+            >
+              <Button type="danger" disabled={loading}>
+                <Icon type="delete" />
+                {t('delete')}
+              </Button>
+            </Popconfirm>
+            <Button type="dashed" disabled={loading} onClick={cloneDocument}>
+              <Icon type="copy" />
+              {t('clone')}
             </Button>
-          </Popconfirm>
-
-          <Button type="dashed" disabled={loading} onClick={cloneDocument} style={{marginRight: 8}}>
-            <Icon type="copy" />
-            {t('clone')}
-          </Button>
-
-          <Button
-            type="dashed"
-            disabled={loading}
-            onClick={prepareDocument}
-            style={{marginRight: 8}}
-          >
-            <Icon type="mail" />
-            {t('presend')}
-          </Button>
-
-          <Button type="primary" disabled={loading} htmlType="submit">
-            <Icon type={loading ? 'loading' : 'save'} />
-            {t('save')}
-          </Button>
+            {document.status === 'draft' ? (
+              <Button disabled={loading} onClick={previewDocument}>
+                <Icon type="eye" />
+                {t('preview')}
+              </Button>
+            ) : (
+              <Button disabled={loading} href={document.pdf} download={document.number}>
+                <Icon type="download" />
+                {t('download')}
+              </Button>
+            )}
+            <Button type="primary" disabled={loading} htmlType="submit">
+              <Icon type={loading ? 'loading' : 'save'} />
+              {t('save')}
+            </Button>
+          </Button.Group>
         </ActionBar>
       </Form>
-      <MailEditor visible={mailEditorVisible} document={document} onClose={sendDocument} />
+
+      <ModalPreview
+        document={document}
+        visible={previewVisible}
+        loading={loading}
+        onClose={postPreview}
+      />
+
+      <ModalSender
+        document={document}
+        visible={senderVisible}
+        loading={loading}
+        onClose={sendDocument}
+      />
+
+      <ModalPostValidation
+        status={document.status}
+        visible={postValidationVisible}
+        loading={loading}
+        onSubmit={postValidation}
+      />
     </Container>
   )
 }

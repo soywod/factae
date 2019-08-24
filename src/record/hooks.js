@@ -27,10 +27,10 @@ export function useRecords() {
     const mapToRecord = map(x => ({
       document: x.id,
       type: 'revenue',
+      createdAt: x[`${x.status}At`],
       client: pipe([find({id: x.client}), getOr('', 'name')])(clients),
       reference: x.number,
-      nature: x.title,
-      ...pick(['id', 'createdAt', 'totalHT', 'totalTVA', 'totalTTC'], x),
+      ...pick(['id', 'nature', 'paymentMethod', 'totalHT', 'totalTVA', 'totalTTC'], x),
     }))
 
     setRecords(
