@@ -2,7 +2,6 @@ import React from 'react'
 import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
 import Card from 'antd/es/card'
-import Col from 'antd/es/col'
 
 import {FormCardTitle} from '../../common/components/FormCard'
 import {useProfile} from '../../profile/hooks'
@@ -22,15 +21,13 @@ function ModuleSubscription() {
   const diff = profile.expiresAt.toRelative({locale: i18n.language})
 
   return (
-    <Col xs={24}>
-      <Card title={<FormCardTitle title={'subscription'} />}>
-        {isDemo(profile) || profile.expiresAt > now ? (
-          <div>{t('/dashboard.subscription-expired', {date, diff})}</div>
-        ) : (
-          <StripeForm />
-        )}
-      </Card>
-    </Col>
+    <Card title={<FormCardTitle title={'subscription'} />}>
+      {isDemo(profile) || profile.expiresAt > now ? (
+        <div>{t('/dashboard.subscription-expired', {date, diff})}</div>
+      ) : (
+        <StripeForm />
+      )}
+    </Card>
   )
 }
 

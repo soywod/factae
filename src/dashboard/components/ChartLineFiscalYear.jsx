@@ -10,7 +10,22 @@ import range from 'lodash/fp/range'
 import {toEuro} from '../../common/currency'
 import {useThresholds} from '../hooks'
 
-function ChartBarFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurnover}) {
+const datasetBaseOptions = color => ({
+  backgroundColor: color,
+  borderColor: color,
+  borderWidth: 4,
+  cubicInterpolationMode: 'monotone',
+  fill: false,
+  pointBackgroundColor: 'transparent',
+  pointBorderWidth: 1,
+  pointHitRadius: 30,
+  pointHoverBackgroundColor: color,
+  pointHoverBorderWidth: 1,
+  pointHoverRadius: 5,
+  pointRadius: 5,
+})
+
+function ChartLineFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurnover, ...props}) {
   const ref = useRef()
   const chart = useRef()
   const {t, i18n} = useTranslation()
@@ -28,24 +43,27 @@ function ChartBarFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurn
     if (chart.current) chart.current.destroy()
 
     chart.current = new ChartJS(ref.current, {
-      type: 'bar',
+      type: 'line',
       data: {
         labels: months,
         datasets: [
           {
             data: turnover,
             label: t('real-turnover'),
-            backgroundColor: '#52c41a',
+            hidden: !props.turnoverVisible,
+            ...datasetBaseOptions('#52c41a'),
           },
           {
             data: cumulativeTurnover,
             label: t('cumulative-turnover'),
-            backgroundColor: '#1890ff',
+            hidden: !props.cumulativeTurnoverVisible,
+            ...datasetBaseOptions('#1890ff'),
           },
           {
             data: theoricCumulativeTurnover,
             label: t('theoric-cumulative-turnover'),
-            backgroundColor: '#d3d3d3',
+            hidden: !props.theoricCumulativeTurnoverVisible,
+            ...datasetBaseOptions('#d3d3d3'),
           },
           {
             type: 'line',
@@ -58,7 +76,7 @@ function ChartBarFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurn
             pointHitRadius: 20,
             pointBorderWidth: 0,
             pointRadius: 0,
-            hidden: true,
+            hidden: !props.thresholdVATLowVisible,
           },
           {
             type: 'line',
@@ -71,12 +89,12 @@ function ChartBarFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurn
             pointHitRadius: 20,
             pointBorderWidth: 0,
             pointRadius: 0,
-            hidden: true,
+            hidden: !props.thresholdVATHighVisible,
           },
           {
             type: 'line',
             data: fill(0, 12, AE, Array(12)),
-            label: t('threshold-micro-entrepreneur'),
+            label: t('threshold-me'),
             fill: false,
             borderWidth: 1,
             borderDash: [5, 5],
@@ -84,11 +102,18 @@ function ChartBarFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurn
             pointHitRadius: 20,
             pointBorderWidth: 0,
             pointRadius: 0,
-            hidden: true,
+            hidden: !props.thresholdMEVisible,
           },
         ],
       },
       options: {
+        animation: false,
+        layout: {
+          padding: 15,
+        },
+        legend: {
+          display: false,
+        },
         maintainAspectRatio: false,
         tooltips: {
           callbacks: {
@@ -96,8 +121,18 @@ function ChartBarFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurn
           },
         },
         scales: {
+          xAxes: [
+            {
+              gridLines: {
+                color: '#f0f2f5',
+              },
+            },
+          ],
           yAxes: [
             {
+              gridLines: {
+                color: '#f0f2f5',
+              },
               ticks: {
                 callback: toEuro,
               },
@@ -106,7 +141,17 @@ function ChartBarFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurn
         },
       },
     })
-  }, [turnover, cumulativeTurnover, theoricCumulativeTurnover])
+  }, [
+    turnover,
+    cumulativeTurnover,
+    theoricCumulativeTurnover,
+    props.turnoverVisible,
+    props.cumulativeTurnoverVisible,
+    props.theoricCumulativeTurnoverVisible,
+    props.thresholdVATLowVisible,
+    props.thresholdVATHighVisible,
+    props.thresholdMEVisible,
+  ])
 
   if (!turnover) {
     return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -114,9 +159,9 @@ function ChartBarFiscalYear({turnover, cumulativeTurnover, theoricCumulativeTurn
 
   return (
     <div>
-      <canvas ref={ref} height="400" />
+      <canvas ref={ref} height={400} />
     </div>
   )
 }
 
-export default ChartBarFiscalYear
+export default ChartLineFiscalYear

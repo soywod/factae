@@ -1,37 +1,56 @@
 import React from 'react'
-import {useTranslation} from 'react-i18next'
+import Col from 'antd/es/col'
 import Row from 'antd/es/row'
 
+import {useProfile} from '../../profile/hooks'
 import Container from '../../common/components/Container'
-import ModuleSubscription from './ModuleSubscription'
-import ModuleFiscalYear from './ModuleFiscalYear'
+import Title from '../../common/components/Title'
 import ModuleMonthlyTurnover from './ModuleMonthlyTurnover'
 import ModuleQuarterlyTurnover from './ModuleQuarterlyTurnover'
+import ModulePendingQuotationsTurnover from './ModulePendingQuotationsTurnover'
+import ModulePendingInvoicesTurnover from './ModulePendingInvoicesTurnover'
+import ModuleFiscalYear from './ModuleFiscalYear'
 import ModuleThresholds from './ModuleThresholds'
+import ModuleSubscription from './ModuleSubscription'
 import ModuleWelcomeDemo from './ModuleWelcomeDemo'
 
 function Dashboard() {
-  const {t} = useTranslation()
+  const profile = useProfile()
+
+  if (!profile) {
+    return null
+  }
 
   return (
     <Container>
-      <h1>{t('overview')}</h1>
+      <Title label="overview" />
 
       <Row gutter={15} style={{marginBottom: 15}}>
-        <ModuleSubscription />
+        <Col sm={24} md={8}>
+          {profile.declarationPeriod === 'monthly' && <ModuleMonthlyTurnover />}
+          {profile.declarationPeriod === 'quarterly' && <ModuleQuarterlyTurnover />}
+        </Col>
+        <Col sm={24} md={8}>
+          <ModulePendingQuotationsTurnover />
+        </Col>
+        <Col sm={24} md={8}>
+          <ModulePendingInvoicesTurnover />
+        </Col>
       </Row>
-
       <Row gutter={15} style={{marginBottom: 15}}>
-        <ModuleFiscalYear />
+        <Col sm={24}>
+          <ModuleFiscalYear />
+        </Col>
       </Row>
-
       <Row gutter={15} style={{marginBottom: 15}}>
-        <ModuleMonthlyTurnover />
-        <ModuleQuarterlyTurnover />
+        <Col sm={24}>
+          <ModuleThresholds />
+        </Col>
       </Row>
-
-      <Row gutter={15} style={{marginBottom: 15}}>
-        <ModuleThresholds />
+      <Row gutter={15}>
+        <Col sm={24}>
+          <ModuleSubscription />
+        </Col>
       </Row>
 
       <ModuleWelcomeDemo />
