@@ -13,7 +13,7 @@ export function useThresholds() {
   const now = DateTime.local()
   const activityStartedAt = DateTime.fromISO(profile.activityStartedAt)
 
-  if (activityStartedAt.year === now.year) {
+  if (activityStartedAt.isValid && activityStartedAt.year === now.year) {
     const firstDayOfYear = now.set({
       month: 1,
       day: 1,

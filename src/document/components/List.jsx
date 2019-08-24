@@ -45,14 +45,16 @@ function DocumentList(props) {
       if (!isProfileValid(profile)) throw new Error('/profile.error-invalid')
       if (isEmpty(clients)) throw new Error('/clients.error-empty')
 
+      const now = DateTime.local()
       const document = {
         id: $document.generateId(),
         type: 'quotation',
         status: 'draft',
-        createdAt: DateTime.local().toISO(),
+        createdAt: now.toISO(),
         taxRate: profile.taxRate,
         conditions: profile.quotationConditions,
         expiresIn: 60,
+        paymentDeadlineAt: now.plus({days: 30}).toISO(),
       }
 
       props.history.push(`/documents/${document.id}`, document)

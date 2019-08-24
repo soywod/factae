@@ -3,6 +3,7 @@ import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
 import Card from 'antd/es/card'
 import compact from 'lodash/fp/compact'
+import defaultTo from 'lodash/fp/defaultTo'
 import filter from 'lodash/fp/filter'
 import last from 'lodash/fp/last'
 import pipe from 'lodash/fp/pipe'
@@ -48,7 +49,7 @@ function ModuleThresholdTurnover() {
   }, [profile, invoices, turnover])
 
   const [value, threshold] = (() => {
-    const turnover = pipe([compact, last])(cumulativeTurnover)
+    const turnover = pipe([compact, last, defaultTo(0)])(cumulativeTurnover)
     if (turnover < lowTVA) return [lowTVA - turnover, lowTVA]
     if (turnover < highTVA) return [highTVA - turnover, highTVA]
     return [AE - turnover, AE]
