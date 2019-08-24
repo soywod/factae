@@ -2,12 +2,13 @@ export default {
   card: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
     minHeight: 150,
   },
   turnover: {
-    fontSize: '2rem',
+    fontSize: '1.75rem',
     fontWeight: 'bold',
   },
   info: {

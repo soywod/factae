@@ -9,6 +9,7 @@ import ModuleMonthlyTurnover from './ModuleMonthlyTurnover'
 import ModuleQuarterlyTurnover from './ModuleQuarterlyTurnover'
 import ModulePendingQuotationsTurnover from './ModulePendingQuotationsTurnover'
 import ModulePendingInvoicesTurnover from './ModulePendingInvoicesTurnover'
+import ModuleThresholdTurnover from './ModuleThresholdTurnover'
 import ModuleFiscalYear from './ModuleFiscalYear'
 import ModuleThresholds from './ModuleThresholds'
 import ModuleSubscription from './ModuleSubscription'
@@ -26,15 +27,18 @@ function Dashboard() {
       <Title label="overview" />
 
       <Row gutter={15} style={{marginBottom: 15}}>
-        <Col sm={24} md={8}>
+        <Col xs={24} sm={12} lg={12} xl={6}>
           {profile.declarationPeriod === 'monthly' && <ModuleMonthlyTurnover />}
           {profile.declarationPeriod === 'quarterly' && <ModuleQuarterlyTurnover />}
         </Col>
-        <Col sm={24} md={8}>
+        <Col xs={24} sm={12} lg={12} xl={6}>
           <ModulePendingQuotationsTurnover />
         </Col>
-        <Col sm={24} md={8}>
+        <Col xs={24} sm={12} lg={12} xl={6}>
           <ModulePendingInvoicesTurnover />
+        </Col>
+        <Col xs={24} sm={12} lg={12} xl={6}>
+          <ModuleThresholdTurnover />
         </Col>
       </Row>
       <Row gutter={15} style={{marginBottom: 15}}>
