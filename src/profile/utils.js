@@ -7,7 +7,9 @@ export function isProfileValid(profile) {
     profile.city &&
     profile.siret &&
     profile.apeCode &&
-    profile.activity
+    profile.activity &&
+    profile.declarationPeriod &&
+    profile.activityStartedAt
   )
 }
 
