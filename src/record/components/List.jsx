@@ -132,10 +132,14 @@ function RecordList(props) {
 
   return (
     <Container>
-      <Title label="records" handler={createRecord} handlerLabel="new" handlerIcon="plus" />
+      <Title label="records">
+        <Button type="primary" onClick={createRecord}>
+          <Icon type="plus" />
+          {t('new')}
+        </Button>
+      </Title>
 
       <Table
-        bordered
         pagination={pagination}
         dataSource={dataSource}
         columns={columns}

@@ -19,7 +19,6 @@ import filter from 'lodash/fp/filter'
 import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
-import ActionBar from '../../common/components/ActionBar'
 import DatePicker from '../../common/components/DatePicker'
 import NatureField from '../../common/components/NatureField'
 import PaymentMethodField from '../../common/components/PaymentMethodField'
@@ -168,31 +167,31 @@ function EditRecord(props) {
 
   return (
     <Container>
-      <Title label="record" />
-
       <Form noValidate layout="vertical" onSubmit={saveRecord}>
+        <Title label="record">
+          <Button.Group>
+            <Popconfirm
+              title={t('/records.confirm-deletion')}
+              onConfirm={deleteRecord}
+              okText={t('yes')}
+              cancelText={t('no')}
+            >
+              <Button type="danger" disabled={loading}>
+                <Icon type="delete" />
+                {t('delete')}
+              </Button>
+            </Popconfirm>
+
+            <Button type="primary" htmlType="submit" disabled={loading}>
+              <Icon type={loading ? 'loading' : 'save'} />
+              {t('save')}
+            </Button>
+          </Button.Group>
+        </Title>
+
         {fields.map((props, key) => (
           <FormCard key={key} getFieldDecorator={getFieldDecorator} model={record} {...props} />
         ))}
-
-        <ActionBar>
-          <Popconfirm
-            title={t('/records.confirm-deletion')}
-            onConfirm={deleteRecord}
-            okText={t('yes')}
-            cancelText={t('no')}
-          >
-            <Button type="danger" disabled={loading} style={{marginRight: 8}}>
-              <Icon type="delete" />
-              {t('delete')}
-            </Button>
-          </Popconfirm>
-
-          <Button type="primary" htmlType="submit" disabled={loading}>
-            <Icon type={loading ? 'loading' : 'save'} />
-            {t('save')}
-          </Button>
-        </ActionBar>
       </Form>
     </Container>
   )

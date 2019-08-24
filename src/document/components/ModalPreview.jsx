@@ -10,7 +10,7 @@ function Preview({document, visible, loading, onClose: close}) {
 
   const footer = (
     <Button.Group>
-      <Button type="danger" onClick={() => close(false)} disabled={loading}>
+      <Button onClick={() => close(false)} disabled={loading}>
         {t('cancel')}
       </Button>
       <Button type="dashed" href={document.pdf} download={document.number} disabled={loading}>

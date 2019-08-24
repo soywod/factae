@@ -23,7 +23,7 @@ const styles = {
     color: '#aaaaaa',
   },
   card: {
-    marginBottom: 15,
+    marginTop: 15,
   },
 }
 

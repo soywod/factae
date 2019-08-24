@@ -28,6 +28,9 @@ function ModalPostValidation({form, status, visible, loading, onSubmit: close}) 
 
   const footer = (
     <Button.Group>
+      <Button disabled={loading} onClick={() => close()}>
+        {t('cancel')}
+      </Button>
       <Button type="primary" loading={loading} onClick={submit}>
         {t('confirm')}
       </Button>
@@ -38,8 +41,9 @@ function ModalPostValidation({form, status, visible, loading, onSubmit: close}) 
     <Modal
       title={t('please-confirm-information')}
       visible={visible}
-      closable={false}
       footer={footer}
+      closable={!loading}
+      onCancel={() => !loading && close()}
       bodyStyle={{paddingBottom: 0}}
     >
       <Form noValidate layout="vertical" onSubmit={submit}>
@@ -49,7 +53,7 @@ function ModalPostValidation({form, status, visible, loading, onSubmit: close}) 
               {getFieldDecorator('date', {
                 initialValue: moment(),
                 rules: [{required: true, message: t('field-required')}],
-              })(<DatePicker />)}
+              })(<DatePicker disabled={loading} />)}
             </Form.Item>
 
             {['paid', 'refunded'].includes(status) && (
@@ -58,12 +62,12 @@ function ModalPostValidation({form, status, visible, loading, onSubmit: close}) 
                   {getFieldDecorator('paymentMethod', {
                     initialValue: 'bankTransfert',
                     rules: [{required: true, message: t('field-required')}],
-                  })(<PaymentMethodField />)}
+                  })(<PaymentMethodField disabled={loading} />)}
                 </Form.Item>
                 <Form.Item label={t('nature')}>
                   {getFieldDecorator('nature', {
                     rules: [{required: true, message: t('field-required')}],
-                  })(<NatureField />)}
+                  })(<NatureField disabled={loading} />)}
                 </Form.Item>
               </>
             )}

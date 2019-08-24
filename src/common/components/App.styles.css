@@ -61,6 +61,10 @@ h2 {
   flex-direction: column;
 }
 
+.ant-notification {
+  margin: 0 16px 0 0;
+}
+
 .ant-notification-info {
   background: #1890ff;
 }

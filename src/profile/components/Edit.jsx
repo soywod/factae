@@ -7,7 +7,6 @@ import Input from 'antd/es/input'
 import InputNumber from 'antd/es/input-number'
 import Select from 'antd/es/select'
 
-import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import DatePicker from '../../common/components/DatePicker'
 import Title from '../../common/components/Title'
@@ -132,19 +131,17 @@ function Profile(props) {
 
   return (
     <Container>
-      <Title loading={loading} label="profile" handler={saveProfile} handlerLabel="save" />
-
       <Form noValidate layout="vertical" onSubmit={saveProfile}>
-        {fields.map((props, key) => (
-          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={profile} {...props} />
-        ))}
-
-        <ActionBar>
+        <Title label="profile">
           <Button type="primary" htmlType="submit" disabled={loading}>
             <Icon type={loading ? 'loading' : 'save'} />
             {t('save')}
           </Button>
-        </ActionBar>
+        </Title>
+
+        {fields.map((props, key) => (
+          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={profile} {...props} />
+        ))}
       </Form>
     </Container>
   )

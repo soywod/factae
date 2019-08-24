@@ -154,10 +154,14 @@ function DocumentList(props) {
 
   return (
     <Container>
-      <Title label="documents" handler={createDocument} handlerLabel="new" handlerIcon="plus" />
+      <Title label="documents">
+        <Button type="primary" onClick={createDocument}>
+          <Icon type="plus" />
+          {t('new')}
+        </Button>
+      </Title>
 
       <Table
-        bordered
         pagination={pagination}
         dataSource={dataSource(documents)}
         columns={columns}
