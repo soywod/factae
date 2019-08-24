@@ -20,6 +20,8 @@ import FormCard, {FormCardTitle, validateFields} from '../../common/components/F
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import DatePicker from '../../common/components/DatePicker'
+import NatureField from '../../common/components/NatureField'
+import PaymentMethodField from '../../common/components/PaymentMethodField'
 import {useNotification} from '../../utils/notification'
 import {useClients} from '../../client/hooks'
 import {useDocuments} from '../../document/hooks'
@@ -94,11 +96,6 @@ function EditRecord(props) {
     ])(documents)
   }, [documents])
 
-  const natureDataSource = useMemo(() => {
-    if (!records) return []
-    return pipe([map('nature'), compact, sortedUniq])(records)
-  }, [records])
-
   if (!records || !record || !clients) {
     return null
   }
@@ -136,9 +133,12 @@ function EditRecord(props) {
       },
       {
         name: 'nature',
-        Component: (
-          <AutoComplete dataSource={natureDataSource} size="large" style={{width: '100%'}} />
-        ),
+        Component: <NatureField />,
+        ...requiredRules,
+      },
+      {
+        name: 'paymentMethod',
+        Component: <PaymentMethodField />,
         ...requiredRules,
       },
     ],

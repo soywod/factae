@@ -17,6 +17,8 @@ import FormCard, {FormCardTitle, validateFields} from '../../common/components/F
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
 import EditableTable from '../../common/components/EditableTable'
+import NatureField from '../../common/components/NatureField'
+import PaymentMethodField from '../../common/components/PaymentMethodField'
 import {toEuro} from '../../common/currency'
 import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
@@ -374,6 +376,31 @@ function EditDocument(props) {
     ],
   }
 
+  if (document.type === 'quotation') {
+    mainFields.fields.push({
+      name: 'expiresIn',
+      Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+      ...requiredRules,
+    })
+  } else if (document.type === 'credit') {
+    mainFields.fields.push({name: 'invoiceNumber', ...requiredRules})
+  }
+
+  if (['paid', 'refunded'].includes(document.status)) {
+    mainFields.fields.push(
+      {
+        name: 'nature',
+        Component: <NatureField />,
+        ...requiredRules,
+      },
+      {
+        name: 'paymentMethod',
+        Component: <PaymentMethodField />,
+        ...requiredRules,
+      },
+    )
+  }
+
   mainFields.fields.push({
     name: 'taxRate',
     Component: (
@@ -386,16 +413,6 @@ function EditDocument(props) {
       />
     ),
   })
-
-  if (document.type === 'quotation') {
-    mainFields.fields.push({
-      name: 'expiresIn',
-      Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
-      ...requiredRules,
-    })
-  } else if (document.type === 'credit') {
-    mainFields.fields.push({name: 'invoiceNumber', ...requiredRules})
-  }
 
   const conditionFields = {
     title: <FormCardTitle title="conditions" subtitle="/documents.conditions-subtitle" />,

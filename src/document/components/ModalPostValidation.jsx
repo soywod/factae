@@ -2,16 +2,15 @@ import React, {useEffect} from 'react'
 import {useTranslation} from 'react-i18next'
 import moment from 'moment'
 import Button from 'antd/es/button'
-import AutoComplete from 'antd/es/auto-complete'
 import Col from 'antd/es/col'
 import Form from 'antd/es/form'
 import Modal from 'antd/es/modal'
 import Row from 'antd/es/row'
-import Select from 'antd/es/select'
-import kebabCase from 'lodash/fp/kebabCase'
 
 import {validateFields} from '../../common/components/FormCard'
 import DatePicker from '../../common/components/DatePicker'
+import NatureField from '../../common/components/NatureField'
+import PaymentMethodField from '../../common/components/PaymentMethodField'
 
 function ModalPostValidation({form, status, visible, loading, onSubmit: close}) {
   const {getFieldDecorator} = form
@@ -59,22 +58,12 @@ function ModalPostValidation({form, status, visible, loading, onSubmit: close}) 
                   {getFieldDecorator('paymentMethod', {
                     initialValue: 'bankTransfert',
                     rules: [{required: true, message: t('field-required')}],
-                  })(
-                    <Select size="large">
-                      {['bankTransfert', 'creditCard', 'cash', 'check', 'ewallet'].map(
-                        paymentMethod => (
-                          <Select.Option key={paymentMethod} value={paymentMethod}>
-                            {t(kebabCase(paymentMethod))}
-                          </Select.Option>
-                        ),
-                      )}
-                    </Select>,
-                  )}
+                  })(<PaymentMethodField />)}
                 </Form.Item>
                 <Form.Item label={t('nature')}>
                   {getFieldDecorator('nature', {
                     rules: [{required: true, message: t('field-required')}],
-                  })(<AutoComplete size="large" />)}
+                  })(<NatureField />)}
                 </Form.Item>
               </>
             )}
