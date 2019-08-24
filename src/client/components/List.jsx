@@ -7,6 +7,7 @@ import Input from 'antd/es/input'
 import Table from 'antd/es/table'
 import omit from 'lodash/fp/omit'
 
+import Title from '../../common/components/Title'
 import Container from '../../common/components/Container'
 import {useClients} from '../hooks'
 import $client from '../service'
@@ -76,13 +77,7 @@ function ClientList(props) {
 
   return (
     <Container>
-      <h1 style={{display: 'flex', alignItems: 'center'}}>
-        <span style={{flex: 1}}>{t('clients')}</span>
-        <Button type="primary" onClick={createClient}>
-          <Icon type="plus" />
-          {t('new')}
-        </Button>
-      </h1>
+      <Title label="clients" handler={createClient} handlerLabel="new" handlerIcon="plus" />
 
       <Input.Search
         size="large"

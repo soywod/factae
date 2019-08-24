@@ -9,6 +9,8 @@ import Select from 'antd/es/select'
 
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
+import DatePicker from '../../common/components/DatePicker'
+import Title from '../../common/components/Title'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import {useNotification} from '../../utils/notification'
 import {useProfile} from '../hooks'
@@ -28,7 +30,8 @@ function Profile(props) {
     setLoading(true)
 
     await tryAndNotify(async () => {
-      const nextProfile = await validateFields(props.form)
+      let nextProfile = await validateFields(props.form)
+      nextProfile.activityStartedAt = nextProfile.activityStartedAt.toISOString()
       await $profile.set(nextProfile)
       return t('/profile.updated-successfully')
     })
@@ -67,6 +70,21 @@ function Profile(props) {
             <Select.Option value="service">{t('activity-service')}</Select.Option>
           </Select>
         ),
+        ...requiredRules,
+      },
+      {
+        name: 'declarationPeriod',
+        Component: (
+          <Select size="large">
+            <Select.Option value="monthly">{t('monthly')}</Select.Option>
+            <Select.Option value="quarterly">{t('quarterly')}</Select.Option>
+          </Select>
+        ),
+        ...requiredRules,
+      },
+      {
+        name: 'activityStartedAt',
+        Component: <DatePicker />,
         ...requiredRules,
       },
       {name: 'taxId'},
@@ -114,7 +132,7 @@ function Profile(props) {
 
   return (
     <Container>
-      <h1>{t('profile')}</h1>
+      <Title loading={loading} label="profile" handler={saveProfile} handlerLabel="save" />
 
       <Form noValidate layout="vertical" onSubmit={saveProfile}>
         {fields.map((props, key) => (

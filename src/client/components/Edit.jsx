@@ -7,6 +7,7 @@ import Input from 'antd/es/input'
 import Popconfirm from 'antd/es/popconfirm'
 import find from 'lodash/fp/find'
 
+import Title from '../../common/components/Title'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import ActionBar from '../../common/components/ActionBar'
 import Container from '../../common/components/Container'
@@ -87,7 +88,7 @@ function EditClient(props) {
 
   return (
     <Container>
-      <h1>{t('client')}</h1>
+      <Title label="client" />
 
       <Form noValidate layout="vertical" onSubmit={saveClient}>
         {fields.map((props, key) => (

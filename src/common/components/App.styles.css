@@ -23,13 +23,13 @@ h2 {
 }
 
 #container {
-  padding: 25px;
+  padding: 24px;
   min-height: 100vh;
 }
 
 @media only screen and (max-width: 768px) {
   #container {
-    padding: 15px;
+    padding: 12px;
   }
 }
 

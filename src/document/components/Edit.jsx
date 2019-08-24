@@ -13,9 +13,10 @@ import Select from 'antd/es/select'
 import find from 'lodash/fp/find'
 import omit from 'lodash/fp/omit'
 
+import Container from '../../common/components/Container'
+import Title from '../../common/components/Title'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import ActionBar from '../../common/components/ActionBar'
-import Container from '../../common/components/Container'
 import EditableTable from '../../common/components/EditableTable'
 import NatureField from '../../common/components/NatureField'
 import PaymentMethodField from '../../common/components/PaymentMethodField'
@@ -423,7 +424,7 @@ function EditDocument(props) {
 
   return (
     <Container>
-      <h1>{t('documents')}</h1>
+      <Title loading={loading} label="documents" handler={saveDocument} handlerLabel="save" />
 
       <Form noValidate layout="vertical" onSubmit={saveDocument}>
         {fields.map((props, key) => (
