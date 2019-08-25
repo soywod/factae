@@ -40,7 +40,18 @@ function ModuleThresholdTurnover() {
   const turnover = useMemo(() => {
     if (!profile) return null
     const now = isDemo(profile) ? demoDate : DateTime.local()
-    return getTurnover(invoices, now)
+    const turnover = getTurnover(invoices, now)
+    if (!turnover) return null
+
+    const shouldAdjustTurnover = DateTime.fromISO(profile.createdAt).year === now.year
+    const ratio = profile.previousTurnover / (now.month - 1)
+    if (shouldAdjustTurnover) {
+      range(0, now.month - 1).forEach(month => {
+        turnover[month] += ratio
+      })
+    }
+
+    return turnover
   }, [profile, invoices])
 
   const cumulativeTurnover = useMemo(() => {
@@ -54,6 +65,10 @@ function ModuleThresholdTurnover() {
     if (turnover < highTVA) return [highTVA - turnover, highTVA]
     return [AE - turnover, AE]
   })()
+
+  if (!turnover) {
+    return null
+  }
 
   return (
     <Card bodyStyle={styles.card}>
