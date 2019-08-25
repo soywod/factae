@@ -7,7 +7,7 @@ import fill from 'lodash/fp/fill'
 import isNil from 'lodash/fp/isNil'
 import range from 'lodash/fp/range'
 
-import {toEuro} from '../../common/currency'
+import {toEuro} from '../../utils/currency'
 import {useThresholds} from '../hooks'
 
 const datasetBaseOptions = color => ({
