@@ -16,8 +16,7 @@ import {useNotification} from '../../utils/notification'
 import {useProfile} from '../hooks'
 import $profile from '../service'
 
-function Profile(props) {
-  const {getFieldDecorator} = props.form
+function Profile({form}) {
   const [loading, setLoading] = useState(false)
   const profile = useProfile()
   const tryAndNotify = useNotification()
@@ -30,7 +29,7 @@ function Profile(props) {
     setLoading(true)
 
     await tryAndNotify(async () => {
-      let nextProfile = await validateFields(props.form)
+      let nextProfile = await validateFields(form)
       nextProfile.activityStartedAt = nextProfile.activityStartedAt.toISOString()
       await $profile.set(nextProfile)
       return t('/profile.updated-successfully')
@@ -44,7 +43,7 @@ function Profile(props) {
   }
 
   const contactFields = {
-    title: <FormCardTitle title="personal-informations" />,
+    title: <FormCardTitle title="personal-identity" />,
     fields: [
       {name: 'firstName', Component: <Input size="large" autoFocus />, ...requiredRules},
       {name: 'lastName', ...requiredRules},
@@ -57,11 +56,13 @@ function Profile(props) {
   }
 
   const companyFields = {
-    title: <FormCardTitle title="micro-entreprise" />,
+    title: <FormCardTitle title="enterprise-identity" />,
     fields: [
-      {name: 'tradeName'},
-      {name: 'siret', ...requiredRules},
-      {name: 'apeCode', ...requiredRules},
+      {
+        name: 'activityStartedAt',
+        Component: <DatePicker />,
+        ...requiredRules,
+      },
       {
         name: 'activity',
         Component: (
@@ -72,6 +73,8 @@ function Profile(props) {
         ),
         ...requiredRules,
       },
+      {name: 'siret', ...requiredRules},
+      {name: 'apeCode', ...requiredRules},
       {
         name: 'declarationPeriod',
         Component: (
@@ -82,15 +85,12 @@ function Profile(props) {
         ),
         ...requiredRules,
       },
-      {
-        name: 'activityStartedAt',
-        Component: <DatePicker />,
-        ...requiredRules,
-      },
-      {name: 'taxId'},
+      {name: 'tradeName'},
+      {name: 'taxId', help: t('tax-id-help')},
       {
         name: 'taxRate',
         Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+        help: t('tax-rate-help'),
       },
     ],
   }
@@ -117,7 +117,7 @@ function Profile(props) {
         name: 'documentsTheme',
         Component: (
           <DocumentThemePicker
-            preview={props.form.getFieldValue('documentsTheme') || profile.documentsTheme}
+            preview={form.getFieldValue('documentsTheme') || profile.documentsTheme}
           />
         ),
         ...requiredRules,
@@ -138,7 +138,7 @@ function Profile(props) {
         </Title>
 
         {fields.map((props, key) => (
-          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={profile} {...props} />
+          <FormCard key={key} form={form} model={profile} {...props} />
         ))}
       </Form>
     </Container>

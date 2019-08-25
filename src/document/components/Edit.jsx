@@ -32,8 +32,7 @@ import ModalSender from './ModalSender'
 import ModalPostValidation from './ModalPostValidation'
 
 function EditDocument(props) {
-  const {history, match} = props
-  const {getFieldDecorator} = props.form
+  const {form} = props
   const profile = useProfile()
   const clients = useClients()
   const documents = useDocuments()
@@ -52,9 +51,9 @@ function EditDocument(props) {
 
   useEffect(() => {
     if (documents && !document) {
-      setDocument(find({id: match.params.id}, documents))
+      setDocument(find({id: props.match.params.id}, documents))
     }
-  }, [document, documents, match.params.id])
+  }, [document, documents, props.match.params.id])
 
   function postPreview(showSender) {
     setPreviewVisible(false)
@@ -94,7 +93,7 @@ function EditDocument(props) {
   }
 
   async function buildNextDocument(override = {}) {
-    let fields = await validateFields(props.form)
+    let fields = await validateFields(form)
     if (fields.paymentDeadlineAt) {
       fields.paymentDeadlineAt = fields.paymentDeadlineAt.toISOString()
     }
@@ -205,7 +204,7 @@ function EditDocument(props) {
       async () => {
         setLoading(true)
         await $document.delete(document)
-        history.push('/documents')
+        props.history.push('/documents')
         return t('/documents.deleted-successfully')
       },
       () => setLoading(false),
@@ -479,7 +478,7 @@ function EditDocument(props) {
         </Title>
 
         {fields.map((props, key) => (
-          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={document} {...props} />
+          <FormCard key={key} form={form} model={document} {...props} />
         ))}
 
         <Card
@@ -499,7 +498,7 @@ function EditDocument(props) {
           </Row>
         </Card>
 
-        <FormCard getFieldDecorator={getFieldDecorator} model={document} {...conditionFields} />
+        <FormCard form={form} model={document} {...conditionFields} />
       </Form>
 
       <ModalPreview

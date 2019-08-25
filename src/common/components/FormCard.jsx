@@ -29,7 +29,7 @@ const styles = {
 
 const breakpoints = {xs: 24, sm: 12, md: 8, lg: 6}
 
-function FormCard({getFieldDecorator, model, title, fields}) {
+function FormCard({form, model, title, fields}) {
   const {t} = useTranslation()
 
   return (
@@ -39,7 +39,7 @@ function FormCard({getFieldDecorator, model, title, fields}) {
           ({name, fluid = false, Component = <Input size="large" />, rules = [], help}) => (
             <Col key={name} {...(fluid ? pick('xs', breakpoints) : breakpoints)}>
               <Form.Item label={t(kebabCase(name))} help={help}>
-                {getFieldDecorator(name, {
+                {form.getFieldDecorator(name, {
                   initialValue: name.match(/At/) ? moment(model[name]) : getOr('', name, model),
                   rules,
                 })(Component)}

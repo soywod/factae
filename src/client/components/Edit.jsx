@@ -15,8 +15,7 @@ import {useClients} from '../hooks'
 import $client from '../service'
 
 function EditClient(props) {
-  const {match} = props
-  const {getFieldDecorator} = props.form
+  const {form} = props
   const clients = useClients()
   const [loading, setLoading] = useState(false)
   const [client, setClient] = useState(props.location.state)
@@ -27,9 +26,9 @@ function EditClient(props) {
 
   useEffect(() => {
     if (clients && !client) {
-      setClient(find({id: match.params.id}, clients))
+      setClient(find({id: props.match.params.id}, clients))
     }
-  }, [client, clients, match.params.id])
+  }, [client, clients, props.match.params.id])
 
   async function deleteClient() {
     await tryAndNotify(
@@ -49,7 +48,7 @@ function EditClient(props) {
     setLoading(true)
 
     await tryAndNotify(async () => {
-      let nextClient = await validateFields(props.form)
+      let nextClient = await validateFields(form)
       nextClient.id = client.id
       setClient(nextClient)
       await $client.set(nextClient)
@@ -109,7 +108,7 @@ function EditClient(props) {
         </Title>
 
         {fields.map((props, key) => (
-          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={client} {...props} />
+          <FormCard key={key} form={form} model={client} {...props} />
         ))}
       </Form>
     </Container>

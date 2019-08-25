@@ -27,8 +27,7 @@ import {useRecords} from '../hooks'
 import $record from '../service'
 
 function EditRecord(props) {
-  const {match} = props
-  const {getFieldDecorator} = props.form
+  const {form} = props
   const clients = useClients()
   const records = useRecords()
   const [loading, setLoading] = useState(false)
@@ -39,9 +38,9 @@ function EditRecord(props) {
 
   useEffect(() => {
     if (records && !record) {
-      setRecord(find({id: match.params.id}, records))
+      setRecord(find({id: props.match.params.id}, records))
     }
-  }, [record, records, match.params.id])
+  }, [record, records, props.match.params.id])
 
   async function deleteRecord() {
     await tryAndNotify(
@@ -61,7 +60,7 @@ function EditRecord(props) {
     setLoading(true)
 
     await tryAndNotify(async () => {
-      let nextRecord = await validateFields(props.form)
+      let nextRecord = await validateFields(form)
       nextRecord.id = record.id
       nextRecord.createdAt = nextRecord.createdAt.toISOString()
       setRecord(nextRecord)
@@ -170,7 +169,7 @@ function EditRecord(props) {
         </Title>
 
         {fields.map((props, key) => (
-          <FormCard key={key} getFieldDecorator={getFieldDecorator} model={record} {...props} />
+          <FormCard key={key} form={form} model={record} {...props} />
         ))}
       </Form>
     </Container>
