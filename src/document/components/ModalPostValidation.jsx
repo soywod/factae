@@ -44,12 +44,11 @@ function ModalPostValidation({form, status, visible, loading, onSubmit: close}) 
       footer={footer}
       closable={!loading}
       onCancel={() => !loading && close()}
-      bodyStyle={{paddingBottom: 0}}
     >
       <Form noValidate layout="vertical" onSubmit={submit}>
         <Row gutter={15}>
           <Col xs={24}>
-            <Form.Item label={t(`${status}-at`)}>
+            <Form.Item label={t(`${status}-at`)} help={t(`${status}-at-help`)}>
               {getFieldDecorator('date', {
                 initialValue: moment(),
                 rules: [{required: true, message: t('field-required')}],

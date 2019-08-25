@@ -1,20 +1,18 @@
 import React, {useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
+import AutoComplete from 'antd/es/auto-complete'
 import Button from 'antd/es/button'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import InputNumber from 'antd/es/input-number'
 import Popconfirm from 'antd/es/popconfirm'
-import AutoComplete from 'antd/es/auto-complete'
 import Select from 'antd/es/select'
-import find from 'lodash/fp/find'
-import sortedUniq from 'lodash/fp/sortedUniq'
-import orderBy from 'lodash/fp/orderBy'
-import pipe from 'lodash/fp/pipe'
-import map from 'lodash/fp/map'
-import concat from 'lodash/fp/concat'
 import compact from 'lodash/fp/compact'
-import filter from 'lodash/fp/filter'
+import concat from 'lodash/fp/concat'
+import find from 'lodash/fp/find'
+import map from 'lodash/fp/map'
+import pipe from 'lodash/fp/pipe'
+import sortedUniq from 'lodash/fp/sortedUniq'
 
 import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
@@ -22,9 +20,9 @@ import FormCard, {FormCardTitle, validateFields} from '../../common/components/F
 import DatePicker from '../../common/components/DatePicker'
 import NatureField from '../../common/components/NatureField'
 import PaymentMethodField from '../../common/components/PaymentMethodField'
+import ReferenceField from '../../common/components/ReferenceField'
 import {useNotification} from '../../utils/notification'
 import {useClients} from '../../client/hooks'
-import {useDocuments} from '../../document/hooks'
 import {useRecords} from '../hooks'
 import $record from '../service'
 
@@ -33,7 +31,6 @@ function EditRecord(props) {
   const {getFieldDecorator} = props.form
   const clients = useClients()
   const records = useRecords()
-  const documents = useDocuments()
   const [loading, setLoading] = useState(false)
   const [record, setRecord] = useState(props.location.state)
   const tryAndNotify = useNotification()
@@ -81,21 +78,6 @@ function EditRecord(props) {
     return pipe([map('name'), concat(clientsFromRecords), compact, sortedUniq])(clients)
   }, [clients, records])
 
-  const referenceDataSource = useMemo(() => {
-    if (!documents) return []
-
-    const filterByType = filter(x => x.type !== 'quotation')
-    const filterByStatus = filter(x => !['draft', 'sent'].includes(x.status))
-
-    return pipe([
-      filterByType,
-      filterByStatus,
-      map('number'),
-      compact,
-      orderBy('createdAt', 'desc'),
-    ])(documents)
-  }, [documents])
-
   if (!records || !record || !clients) {
     return null
   }
@@ -126,9 +108,7 @@ function EditRecord(props) {
       },
       {
         name: 'reference',
-        Component: (
-          <AutoComplete dataSource={referenceDataSource} size="large" style={{width: '100%'}} />
-        ),
+        Component: <ReferenceField types={['invoice', 'credit']} />,
         ...requiredRules,
       },
       {
