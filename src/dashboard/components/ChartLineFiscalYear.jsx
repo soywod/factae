@@ -14,7 +14,7 @@ const datasetBaseOptions = color => ({
   backgroundColor: color,
   borderColor: color,
   borderWidth: 4,
-  cubicInterpolationMode: 'monotone',
+  lineTension: 0,
   fill: false,
   pointBackgroundColor: 'transparent',
   pointBorderWidth: 1,

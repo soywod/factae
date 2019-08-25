@@ -14,19 +14,22 @@ const styles = {
     height: '100%',
     minHeight: '100%',
   },
-  flags: {
-    display: 'flex',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    marginBottom: 25,
-  },
   logo: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     height: 63,
     padding: 10,
+  },
+  logout: {
+    marginTop: 30,
+  },
+  lang: {
+    display: 'flex',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    marginBottom: 25,
   },
 }
 
@@ -69,6 +72,10 @@ function Sider(props) {
           <Icon type="dashboard" />
           <span>{t('overview')}</span>
         </Menu.Item>
+        <Menu.Item key="/profile">
+          <Icon type="user" />
+          <span>{t('profile')}</span>
+        </Menu.Item>
         <Menu.Item key="/clients">
           <Icon type="team" />
           <span>{t('clients')}</span>
@@ -81,16 +88,12 @@ function Sider(props) {
           <Icon type="read" />
           <span>{t('records')}</span>
         </Menu.Item>
-        <Menu.Item key="/profile">
-          <Icon type="user" />
-          <span>{t('profile')}</span>
-        </Menu.Item>
-        <Menu.Item key="/logout">
+        <Menu.Item key="/logout" style={styles.logout}>
           <Icon type="logout" />
           <span>{t('logout')}</span>
         </Menu.Item>
       </Menu>
-      <div style={styles.flags}>
+      <div style={styles.lang}>
         <SelectLanguage placement="topCenter" />
       </div>
     </Layout.Sider>
