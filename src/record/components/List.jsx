@@ -11,7 +11,7 @@ import find from 'lodash/fp/find'
 
 import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
-import {toEuro} from '../../common/currency'
+import {toEuro} from '../../utils/currency'
 import {useDocuments} from '../../document/hooks'
 import {useRecords} from '../hooks'
 import $record from '../service'

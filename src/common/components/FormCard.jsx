@@ -35,16 +35,18 @@ function FormCard({getFieldDecorator, model, title, fields}) {
   return (
     <Card title={title} style={styles.card}>
       <Row gutter={15}>
-        {fields.map(({name, fluid = false, Component = <Input size="large" />, rules = []}) => (
-          <Col key={name} {...(fluid ? pick('xs', breakpoints) : breakpoints)}>
-            <Form.Item label={t(kebabCase(name))}>
-              {getFieldDecorator(name, {
-                initialValue: name.match(/At/) ? moment(model[name]) : getOr('', name, model),
-                rules,
-              })(Component)}
-            </Form.Item>
-          </Col>
-        ))}
+        {fields.map(
+          ({name, fluid = false, Component = <Input size="large" />, rules = [], help}) => (
+            <Col key={name} {...(fluid ? pick('xs', breakpoints) : breakpoints)}>
+              <Form.Item label={t(kebabCase(name))} help={help}>
+                {getFieldDecorator(name, {
+                  initialValue: name.match(/At/) ? moment(model[name]) : getOr('', name, model),
+                  rules,
+                })(Component)}
+              </Form.Item>
+            </Col>
+          ),
+        )}
       </Row>
     </Card>
   )

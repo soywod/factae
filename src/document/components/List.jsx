@@ -16,7 +16,7 @@ import pipe from 'lodash/fp/pipe'
 
 import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
-import {toEuro} from '../../common/currency'
+import {toEuro} from '../../utils/currency'
 import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
 import {isProfileValid} from '../../profile/utils'

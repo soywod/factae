@@ -9,6 +9,7 @@ import Select from 'antd/es/select'
 
 import Container from '../../common/components/Container'
 import DatePicker from '../../common/components/DatePicker'
+import DocumentThemePicker from '../../common/components/DocumentThemePicker'
 import Title from '../../common/components/Title'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import {useNotification} from '../../utils/notification'
@@ -109,7 +110,22 @@ function Profile(props) {
     ],
   }
 
-  const fields = [contactFields, companyFields, conditionsFields, bankFields]
+  const preferencesFields = {
+    title: <FormCardTitle title="preferences" />,
+    fields: [
+      {
+        name: 'documentsTheme',
+        Component: (
+          <DocumentThemePicker
+            preview={props.form.getFieldValue('documentsTheme') || profile.documentsTheme}
+          />
+        ),
+        ...requiredRules,
+      },
+    ],
+  }
+
+  const fields = [contactFields, companyFields, conditionsFields, bankFields, preferencesFields]
 
   return (
     <Container>

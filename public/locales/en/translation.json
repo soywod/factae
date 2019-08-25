@@ -132,6 +132,8 @@
   "signed": "Signed",
   "signed-at": "Signed at",
   "step-1": "Complete your profile",
+  "preferences": "Preferences",
+  "documents-theme": "Documents theme",
   "step-2": "Add your first client",
   "step-3": "Create your first document",
   "signed-at-help": "The date the client signed your document",

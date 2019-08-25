@@ -4,7 +4,7 @@ import Card from 'antd/es/card'
 
 import {FormCardTitle} from '../../common/components/FormCard'
 import Link from '../../common/components/Link'
-import {toEuro} from '../../common/currency'
+import {toEuro} from '../../utils/currency'
 import {useThresholds} from '../hooks'
 
 const links = [
