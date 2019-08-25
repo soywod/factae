@@ -3,7 +3,6 @@ import {useTranslation} from 'react-i18next'
 import Button from 'antd/es/button'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
-import Input from 'antd/es/input'
 import Table from 'antd/es/table'
 import omit from 'lodash/fp/omit'
 
@@ -16,7 +15,6 @@ const alphabeticSort = key => (a, b) => a[key].localeCompare(b[key])
 
 function ClientList(props) {
   const clients = useClients()
-  const [search, setSearch] = useState()
   const [pagination, setPagination] = useState({})
   const {t} = useTranslation()
 
@@ -71,9 +69,7 @@ function ClientList(props) {
     props.history.push(`/clients/${client.id}`, client)
   }
 
-  const dataSource = clients
-    .map(client => ({...client, key: client.id}))
-    .filter(client => !search || JSON.stringify(client).indexOf(search) > -1)
+  const dataSource = clients.map(client => ({...client, key: client.id}))
 
   return (
     <Container>
@@ -83,13 +79,6 @@ function ClientList(props) {
           {t('new')}
         </Button>
       </Title>
-
-      <Input.Search
-        size="large"
-        placeholder={t('search')}
-        onSearch={search => setSearch(search.trim())}
-        style={{marginBottom: 16}}
-      />
 
       <Table
         pagination={pagination}
