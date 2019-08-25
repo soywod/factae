@@ -23,6 +23,7 @@ h2 {
 }
 
 #container {
+  position: relative;
   padding: 24px;
   min-height: 100vh;
 }

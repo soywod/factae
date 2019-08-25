@@ -20,6 +20,7 @@ import EditableTable from '../../common/components/EditableTable'
 import DatePicker from '../../common/components/DatePicker'
 import NatureField from '../../common/components/NatureField'
 import PaymentMethodField from '../../common/components/PaymentMethodField'
+import ReferenceField from '../../common/components/ReferenceField'
 import {toEuro} from '../../common/currency'
 import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
@@ -70,10 +71,7 @@ function EditDocument(props) {
     setLoading(true)
 
     await tryAndNotify(async () => {
-      const nextDocument =
-        status === 'sent'
-          ? {...(await buildNextDocumentWithPdf()), ...data, status}
-          : {...document, ...data, status}
+      const nextDocument = {...document, ...data, status}
       setDocument(nextDocument)
       await $document.set(nextDocument)
       return t('/documents.updated-successfully')
@@ -96,6 +94,11 @@ function EditDocument(props) {
   }
 
   async function buildNextDocument(override = {}) {
+    let fields = await validateFields(props.form)
+    if (fields.paymentDeadlineAt) {
+      fields.paymentDeadlineAt = fields.paymentDeadlineAt.toISOString()
+    }
+
     const nextItems = items.filter(item => item.designation && item.unitPrice)
     const totalHT = nextItems.reduce((sum, {amount}) => sum + amount, 0)
     const totalTVA = Math.round(totalHT * document.taxRate) / 100
@@ -103,7 +106,7 @@ function EditDocument(props) {
 
     return {
       ...document,
-      ...(await validateFields(props.form)),
+      ...fields,
       items: nextItems,
       totalHT,
       totalTVA,
@@ -405,7 +408,11 @@ function EditDocument(props) {
     mainFields.fields.push({name: 'paymentDeadlineAt', Component: <DatePicker />, ...requiredRules})
 
     if (document.type === 'credit') {
-      mainFields.fields.push({name: 'invoiceNumber', ...requiredRules})
+      mainFields.fields.push({
+        name: 'invoiceNumber',
+        Component: <ReferenceField types={['invoice']} />,
+        ...requiredRules,
+      })
     }
   }
 
