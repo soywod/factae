@@ -11,6 +11,7 @@ export async function login(email, password) {
 
 export async function register(email, password) {
   const {user} = await auth.createUserWithEmailAndPassword(email, password)
+  const now = DateTime.local()
   await db('users', user.uid).set({
     id: user.uid,
     email: user.email,
@@ -18,9 +19,8 @@ export async function register(email, password) {
     quotationConditions: 'Dispensé d’immatriculation au registre du commerce et des sociétés (RCS)',
     invoiceConditions:
       'En cas de retard de paiement, une pénalité de 3 fois le taux d’intérêt légal sera appliquée, à laquelle s’ajoutera une indemnité forfaitaire pour frais de recouvrement de 40€\nDispensé d’immatriculation au registre du commerce et des sociétés (RCS)',
-    expiresAt: DateTime.local()
-      .plus({days: 30})
-      .toJSDate(),
+    createdAt: now.toISO(),
+    expiresAt: now.plus({days: 30}).toJSDate(),
   })
 }
 
