@@ -32,6 +32,7 @@ function ModuleFiscalYear() {
         status: 'paid',
         totalHT: random(3000, 9000),
         createdAt: `2018-0${month + 1}-01`,
+        paidAt: `2018-0${month + 1}-01`,
       }))
     }
     return filter({type: 'invoice', status: 'paid'}, documents) || null
