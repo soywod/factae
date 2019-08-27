@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next'
 import Select from 'antd/es/select'
 import kebabCase from 'lodash/fp/kebabCase'
 
-const PaymentMethodField = forwardRef((props, ref) => {
+const AutoCompletePaymentMethod = forwardRef((props, ref) => {
   const {t} = useTranslation()
 
   return (
@@ -17,4 +17,4 @@ const PaymentMethodField = forwardRef((props, ref) => {
   )
 })
 
-export default PaymentMethodField
+export default AutoCompletePaymentMethod

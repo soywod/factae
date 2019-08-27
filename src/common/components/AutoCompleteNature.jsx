@@ -7,7 +7,7 @@ import compact from 'lodash/fp/compact'
 
 import {useRecords} from '../../record/hooks'
 
-const NatureField = forwardRef((props, ref) => {
+const AutoCompleteNature = forwardRef((props, ref) => {
   const records = useRecords()
   const natureDataSource = useMemo(() => {
     if (!records) return []
@@ -25,4 +25,4 @@ const NatureField = forwardRef((props, ref) => {
   )
 })
 
-export default NatureField
+export default AutoCompleteNature

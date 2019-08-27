@@ -8,7 +8,7 @@ import pipe from 'lodash/fp/pipe'
 
 import {useDocuments} from '../../document/hooks'
 
-const ReferenceField = forwardRef((props, ref) => {
+const AutoCompleteReference = forwardRef((props, ref) => {
   const documents = useDocuments()
   const referenceDataSource = useMemo(() => {
     if (!documents) return []
@@ -36,4 +36,4 @@ const ReferenceField = forwardRef((props, ref) => {
   )
 })
 
-export default ReferenceField
+export default AutoCompleteReference

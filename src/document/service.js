@@ -5,12 +5,28 @@ import {user$} from '../auth/service'
 
 export const documents$ = new BehaviorSubject(null)
 
+function getUpdatedAt(document) {
+  switch (document.type) {
+    case 'quotation':
+      return document.signedAt || document.sentAt || document.createdAt
+    case 'invoice':
+      return document.paidAt || document.sentAt || document.createdAt
+    case 'credit':
+      return document.refundedAt || document.sentAt || document.createdAt
+    default:
+      return document.createdAt
+  }
+}
+
 export function onDocumentsChanged() {
   return db(`users/${user$.value.uid}/documents`).onSnapshot((query, error) => {
     const documents = []
 
     if (!error) {
-      query.forEach(ref => documents.push({id: ref.id, ...ref.data()}))
+      query.forEach(ref => {
+        const document = ref.data()
+        documents.push({id: ref.id, ...document, updatedAt: getUpdatedAt(document)})
+      })
     }
 
     documents$.next(documents)

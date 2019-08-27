@@ -23,8 +23,8 @@ const map = mapBase.convert({cap: false})
 const isNilOrEmpty = overSome([isNil, isEmpty])
 
 function getMostRecentMonth(invoices) {
-  const lastInvoice = pipe([sortBy('createdAt'), last])(invoices)
-  return DateTime.fromISO(lastInvoice.createdAt).month - 1
+  const lastInvoice = pipe([sortBy('paidAt'), last])(invoices)
+  return DateTime.fromISO(lastInvoice.paidAt).month - 1
 }
 
 export function getTurnover(invoices, now) {
@@ -45,14 +45,14 @@ export function getTurnover(invoices, now) {
     .minus({day: 1})
     .set({hour: 23, minute: 59, second: 59, millisecond: 999})
 
-  function filterCreatedAt(invoice) {
-    if (DateTime.fromISO(invoice.createdAt) < firstDayOfYear) return false
-    if (DateTime.fromISO(invoice.createdAt) > lastDayOfYear) return false
+  function filterByPaidAt(invoice) {
+    if (DateTime.fromISO(invoice.paidAt) < firstDayOfYear) return false
+    if (DateTime.fromISO(invoice.paidAt) > lastDayOfYear) return false
     return true
   }
 
   const mapByMonth = invoice => ({
-    month: DateTime.fromISO(invoice.createdAt).month,
+    month: DateTime.fromISO(invoice.paidAt).month,
     total: invoice.totalHT,
   })
 
@@ -64,7 +64,7 @@ export function getTurnover(invoices, now) {
     index > mostRecentMonth ? undefined : turnover || 0
 
   return pipe([
-    filter(filterCreatedAt),
+    filter(filterByPaidAt),
     map(mapByMonth),
     groupBy('month'),
     mapValues(sumBy('total')),

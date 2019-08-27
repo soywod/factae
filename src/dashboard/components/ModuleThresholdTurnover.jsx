@@ -40,18 +40,7 @@ function ModuleThresholdTurnover() {
   const turnover = useMemo(() => {
     if (!profile) return null
     const now = isDemo(profile) ? demoDate : DateTime.local()
-    const turnover = getTurnover(invoices, now)
-    if (!turnover) return null
-
-    const shouldAdjustTurnover = DateTime.fromISO(profile.createdAt).year === now.year
-    const ratio = profile.previousTurnover / (now.month - 1)
-    if (shouldAdjustTurnover) {
-      range(0, now.month - 1).forEach(month => {
-        turnover[month] += ratio
-      })
-    }
-
-    return turnover
+    return getTurnover(invoices, now)
   }, [profile, invoices])
 
   const cumulativeTurnover = useMemo(() => {

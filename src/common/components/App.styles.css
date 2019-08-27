@@ -45,6 +45,14 @@ h2 {
   }
 }
 
+.ant-upload.ant-upload-drag p.ant-upload-drag-icon .anticon.anticon-check-circle {
+  color: #52c41a;
+}
+
+.ant-btn-group {
+  line-height: 0;
+}
+
 .ant-card-head-title {
   white-space: normal;
 }
