@@ -96,8 +96,18 @@ function EditImportDocument(props) {
 
     await tryAndNotify(async () => {
       const fields = await validateFields(props.form)
-      let nextDocument = {...document, ...fields, pdf, number}
-      nextDocument[`${fields.status}At`] = nextDocument[`${fields.status}At`].toISOString()
+
+      let nextDocument = {
+        ...document,
+        ...fields,
+        [`${fields.status}At`]: fields[`${fields.status}At`].toISOString(),
+      }
+
+      if (pdf) {
+        nextDocument.pdf = pdf
+        nextDocument.number = number
+      }
+
       setDocument(nextDocument)
       await $document.set(nextDocument)
       return t('/documents.updated-successfully')
@@ -187,7 +197,6 @@ function EditImportDocument(props) {
             {pdf && <p className="ant-upload-hint">{number}.pdf</p>}
           </Upload.Dragger>
         ),
-        ...requiredRules,
       },
     ],
   }
