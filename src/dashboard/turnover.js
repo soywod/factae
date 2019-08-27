@@ -15,15 +15,14 @@ export function getTurnover(documents, now, monthShift) {
     .minus({month: monthShift})
     .set({day: 1, hour: 0, minute: 0, second: 0, millisecond: 0})
 
-  function byStatusAndCreatedAt(document) {
-    if (isNil(document.createdAt)) return false
-    if (DateTime.fromISO(document.createdAt) < firstDay) return false
+  function filterByStatusAndDate(document) {
     if (document.type !== 'invoice') return false
     if (document.status !== 'paid') return false
+    if (DateTime.fromISO(document.paidAt) < firstDay) return false
     return true
   }
 
-  return pipe([filter(byStatusAndCreatedAt), sumBy('totalHT')])(documents)
+  return pipe([filter(filterByStatusAndDate), sumBy('totalHT')])(documents)
 }
 
 export function getMonthlyTurnover(documents, now = DateTime.local()) {

@@ -9,8 +9,8 @@ import Row from 'antd/es/row'
 
 import {validateFields} from '../../common/components/FormCard'
 import DatePicker from '../../common/components/DatePicker'
-import NatureField from '../../common/components/NatureField'
-import PaymentMethodField from '../../common/components/PaymentMethodField'
+import AutoCompleteNature from '../../common/components/AutoCompleteNature'
+import AutoCompletePaymentMethod from '../../common/components/AutoCompletePaymentMethod'
 
 function ModalPostValidation({form, status, visible, loading, onSubmit: close}) {
   const {getFieldDecorator} = form
@@ -61,12 +61,12 @@ function ModalPostValidation({form, status, visible, loading, onSubmit: close}) 
                   {getFieldDecorator('paymentMethod', {
                     initialValue: 'bankTransfert',
                     rules: [{required: true, message: t('field-required')}],
-                  })(<PaymentMethodField disabled={loading} />)}
+                  })(<AutoCompletePaymentMethod disabled={loading} />)}
                 </Form.Item>
                 <Form.Item label={t('nature')}>
                   {getFieldDecorator('nature', {
                     rules: [{required: true, message: t('field-required')}],
-                  })(<NatureField disabled={loading} />)}
+                  })(<AutoCompleteNature disabled={loading} />)}
                 </Form.Item>
               </>
             )}

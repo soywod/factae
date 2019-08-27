@@ -1,26 +1,21 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import AutoComplete from 'antd/es/auto-complete'
 import Button from 'antd/es/button'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import InputNumber from 'antd/es/input-number'
 import Popconfirm from 'antd/es/popconfirm'
 import Select from 'antd/es/select'
-import compact from 'lodash/fp/compact'
-import concat from 'lodash/fp/concat'
 import find from 'lodash/fp/find'
-import map from 'lodash/fp/map'
-import pipe from 'lodash/fp/pipe'
-import sortedUniq from 'lodash/fp/sortedUniq'
 
 import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
+import AutoCompleteClients from '../../common/components/AutoCompleteClients'
 import DatePicker from '../../common/components/DatePicker'
-import NatureField from '../../common/components/NatureField'
-import PaymentMethodField from '../../common/components/PaymentMethodField'
-import ReferenceField from '../../common/components/ReferenceField'
+import AutoCompleteNature from '../../common/components/AutoCompleteNature'
+import AutoCompletePaymentMethod from '../../common/components/AutoCompletePaymentMethod'
+import AutoCompleteReference from '../../common/components/AutoCompleteReference'
 import {useNotification} from '../../utils/notification'
 import {useClients} from '../../client/hooks'
 import {useRecords} from '../hooks'
@@ -71,12 +66,6 @@ function EditRecord(props) {
     setLoading(false)
   }
 
-  const clientDataSource = useMemo(() => {
-    if (!clients || !records) return []
-    const clientsFromRecords = map('client', records)
-    return pipe([map('name'), concat(clientsFromRecords), compact, sortedUniq])(clients)
-  }, [clients, records])
-
   if (!records || !record || !clients) {
     return null
   }
@@ -100,24 +89,22 @@ function EditRecord(props) {
       },
       {
         name: 'client',
-        Component: (
-          <AutoComplete dataSource={clientDataSource} size="large" style={{width: '100%'}} />
-        ),
+        Component: <AutoCompleteClients />,
         ...requiredRules,
       },
       {
         name: 'reference',
-        Component: <ReferenceField types={['invoice', 'credit']} />,
+        Component: <AutoCompleteReference types={['invoice', 'credit']} />,
         ...requiredRules,
       },
       {
         name: 'nature',
-        Component: <NatureField />,
+        Component: <AutoCompleteNature />,
         ...requiredRules,
       },
       {
         name: 'paymentMethod',
-        Component: <PaymentMethodField />,
+        Component: <AutoCompletePaymentMethod />,
         ...requiredRules,
       },
     ],

@@ -25,6 +25,7 @@ import {useDocuments} from '../hooks'
 import $document from '../service'
 
 const alphabeticSort = key => (a, b) => a[key].localeCompare(b[key])
+const dateSort = key => (a, b) => DateTime.fromISO(a[key]) - DateTime.fromISO(b[key])
 
 const CustomTag = ({children, ...props}) => (
   <Tag {...props} style={{float: 'right', textTransform: 'lowercase'}}>
@@ -39,6 +40,24 @@ function DocumentList(props) {
   const [pagination, setPagination] = useState({})
   const tryAndNotify = useNotification()
   const {t, i18n} = useTranslation()
+
+  async function importDocument() {
+    await tryAndNotify(() => {
+      if (!isProfileValid(profile)) throw new Error('/profile.error-invalid')
+      if (isEmpty(clients)) throw new Error('/clients.error-empty')
+
+      const now = DateTime.local()
+      const document = {
+        id: $document.generateId(),
+        type: 'invoice',
+        status: 'paid',
+        createdAt: now.toISO(),
+        imported: true,
+      }
+
+      props.history.push(`/documents/${document.id}`, document)
+    })
+  }
 
   async function createDocument() {
     await tryAndNotify(() => {
@@ -75,7 +94,6 @@ function DocumentList(props) {
     {
       title: <strong>{t('type')}</strong>,
       dataIndex: 'type',
-      key: 'type',
       width: '30%',
       sorter: alphabeticSort('type'),
       filters: ['quotation', 'invoice', 'credit'].map(document => ({
@@ -97,7 +115,6 @@ function DocumentList(props) {
     {
       title: <strong>{t('client')}</strong>,
       dataIndex: 'client',
-      key: 'client',
       filters: clients.map(client => ({
         text: client.name,
         value: client.id,
@@ -112,16 +129,15 @@ function DocumentList(props) {
     },
     {
       title: <strong>{t('date')}</strong>,
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      sorter: alphabeticSort('createdAt'),
+      dataIndex: 'updatedAt',
+      sorter: dateSort('updatedAt'),
       width: '20%',
       render: dateISO => {
-        const createdAt = DateTime.fromISO(dateISO, {locale: i18n.language})
+        const date = DateTime.fromISO(dateISO, {locale: i18n.language})
 
         return (
-          <Tooltip title={createdAt.toFormat(t('date-format'))}>
-            {createdAt.toRelative({locale: i18n.language})}
+          <Tooltip title={date.toFormat(t('date-format'))}>
+            {date.toRelative({locale: i18n.language})}
           </Tooltip>
         )
       },
@@ -150,17 +166,23 @@ function DocumentList(props) {
   ]
 
   const dataSource = pipe([
-    orderBy('createdAt', 'desc'),
+    orderBy('updatedAt', 'desc'),
     map(document => ({...document, key: document.id})),
   ])
 
   return (
     <Container>
       <Title label="documents">
-        <Button type="primary" onClick={createDocument}>
-          <Icon type="plus" />
-          {t('new')}
-        </Button>
+        <Button.Group>
+          <Button onClick={importDocument}>
+            <Icon type="import" />
+            {t('import')}
+          </Button>
+          <Button type="primary" onClick={createDocument}>
+            <Icon type="plus" />
+            {t('new')}
+          </Button>
+        </Button.Group>
       </Title>
 
       <Table
