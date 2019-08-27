@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import {withRouter} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
 import Button from 'antd/es/button'
@@ -517,4 +518,4 @@ function EditDefaultDocument(props) {
   )
 }
 
-export default Form.create()(EditDefaultDocument)
+export default withRouter(Form.create()(EditDefaultDocument))

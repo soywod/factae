@@ -8,6 +8,7 @@ import Table from 'antd/es/table'
 import Tag from 'antd/es/tag'
 import Tooltip from 'antd/es/tooltip'
 import find from 'lodash/fp/find'
+import getOr from 'lodash/fp/getOr'
 import isEmpty from 'lodash/fp/isEmpty'
 import map from 'lodash/fp/map'
 import omit from 'lodash/fp/omit'
@@ -115,16 +116,11 @@ function DocumentList(props) {
     {
       title: <strong>{t('client')}</strong>,
       dataIndex: 'client',
-      filters: clients.map(client => ({
-        text: client.name,
-        value: client.id,
-      })),
-      onFilter: (value, record) => record.client === value,
       sorter: alphabeticSort('client'),
       width: '30%',
-      render: id => {
-        const client = find({id}, clients) || {name: ''}
-        return client.name
+      render: (client, document) => {
+        if (document.imported) return client
+        return pipe([find({id: client}), getOr('', 'name')])(clients)
       },
     },
     {
