@@ -12,10 +12,10 @@ function ModuleStepper({hasValidProfile, hasOneClient, hasOneDocument}) {
   const {t} = useTranslation()
 
   const current = (() => {
-    if (hasOneDocument) return 2
-    if (hasOneClient) return 2
-    if (hasValidProfile) return 1
-    return 0
+    if (!hasValidProfile) return 0
+    if (!hasOneClient) return 1
+    if (!hasOneDocument) return 2
+    return 2
   })()
 
   return (
