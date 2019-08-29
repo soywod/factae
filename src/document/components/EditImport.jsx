@@ -142,6 +142,7 @@ function EditImportDocument(props) {
         Component: (
           <Select size="large" onChange={s => setStatus(s)}>
             <Select.Option value="sent">{t('sent')}</Select.Option>
+            {type === 'quotation' && <Select.Option value="signed">{t('signed')}</Select.Option>}
             {type === 'invoice' && <Select.Option value="paid">{t('paid')}</Select.Option>}
             {type === 'credit' && <Select.Option value="refunded">{t('refunded')}</Select.Option>}
           </Select>

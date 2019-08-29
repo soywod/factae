@@ -112,17 +112,15 @@ function EditDefaultDocument(props) {
     let nextDocument = await buildNextDocument({createdAt: now.toISO()})
 
     const prefix = t(nextDocument.type)[0].toUpperCase()
-    const count = documents
-      .map(({id, type, status, createdAt}) => [id, type, status, DateTime.fromISO(createdAt)])
-      .reduce((count, [id, type, status, createdAt]) => {
-        if (nextDocument.id === id) return count
-        if (nextDocument.imported) return count
-        if (createdAt.month !== now.month) return count
-        if (createdAt.year !== now.year) return count
-        if (document.type !== type) return count
-        if (status === 'draft') return count
-        return count + 1
-      }, 1)
+    const count = documents.reduce((count, d) => {
+      if (nextDocument.id === d.id) return count
+      if (nextDocument.type !== d.type) return count
+      if (d.imported) return count
+      if (d.status === 'draft') return count
+      if (DateTime.fromISO(d.createdAt).month !== now.month) return count
+      if (DateTime.fromISO(d.createdAt.year) !== now.year) return count
+      return count + 1
+    }, 1)
 
     nextDocument.number = `${prefix}-${now.toFormat('yyMM')}-${count}`
     const nextClient = find({id: nextDocument.client}, clients)
