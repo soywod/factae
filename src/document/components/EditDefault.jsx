@@ -116,11 +116,12 @@ function EditDefaultDocument(props) {
       .map(({id, type, status, createdAt}) => [id, type, status, DateTime.fromISO(createdAt)])
       .reduce((count, [id, type, status, createdAt]) => {
         if (nextDocument.id === id) return count
-        const matchMonth = createdAt.month === now.month
-        const matchYear = createdAt.year === now.year
-        const matchType = type === document.type
-        const matchStatus = status !== 'draft'
-        return count + Number(matchMonth && matchYear && matchType && matchStatus)
+        if (nextDocument.imported) return count
+        if (createdAt.month !== now.month) return count
+        if (createdAt.year !== now.year) return count
+        if (document.type !== type) return count
+        if (status === 'draft') return count
+        return count + 1
       }, 1)
 
     nextDocument.number = `${prefix}-${now.toFormat('yyMM')}-${count}`
