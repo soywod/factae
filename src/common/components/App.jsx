@@ -23,6 +23,7 @@ import DocumentList from '../../document/components/List'
 import DocumentEdit from '../../document/components/Edit'
 import Dashboard from '../../dashboard/components'
 import CookieConsent from './CookieConsent'
+import Help from './Help'
 import Sider from './Sider'
 
 import 'moment/locale/fr'
@@ -58,6 +59,7 @@ function App() {
               <Route path="/auth" component={Auth} />
               <Route path="/demo" component={Auth.Demo} />
               <PrivateRoute path="/logout" component={Auth.Logout} />
+              <PrivateRoute path="/help" component={Help} />
               <PrivateRoute path="/clients/:id" component={ClientEdit} />
               <PrivateRoute path="/clients" component={ClientList} />
               <PrivateRoute path="/records/:id" component={RecordEdit} />

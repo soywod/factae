@@ -1,5 +1,6 @@
 import {useTranslation} from 'react-i18next'
 import notification from 'antd/es/notification'
+import isString from 'lodash/fp/isString'
 import noop from 'lodash/fp/noop'
 
 import {useProfile} from '../profile/hooks'
@@ -39,7 +40,9 @@ export function useNotification() {
       case 'permission-denied':
         return t(isDemo(profile) ? '/auth.locked-data-demo' : '/auth.subscription-expired')
       default:
-        return t(error.message)
+        if (isString(error.message)) {
+          return t(error.message)
+        }
     }
   }
 

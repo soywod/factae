@@ -21,7 +21,7 @@ const styles = {
     height: 63,
     padding: 10,
   },
-  logout: {
+  bottomNav: {
     marginTop: 30,
   },
   lang: {
@@ -88,7 +88,11 @@ function Sider(props) {
           <Icon type="read" />
           <span>{t('records')}</span>
         </Menu.Item>
-        <Menu.Item key="/logout" style={styles.logout}>
+        <Menu.Item key="/help" style={styles.bottomNav}>
+          <Icon type="mail" />
+          <span>{t('help')}</span>
+        </Menu.Item>
+        <Menu.Item key="/logout">
           <Icon type="logout" />
           <span>{t('logout')}</span>
         </Menu.Item>

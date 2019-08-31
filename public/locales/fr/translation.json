@@ -1,5 +1,6 @@
 {
   "activity": "Type d'activité",
+  "ask-question": "Poser une question",
   "activity-service": "Prestation de service",
   "activity-started-at": "Date de début d'activité",
   "activity-trade": "Commerce ou hébergement",
@@ -69,6 +70,7 @@
   "forgotten-password": "Mot de passe oublié",
   "from": "Expéditeur",
   "general-informations": "Informations générales",
+  "help": "Contact",
   "i-agree": "J'accepte",
   "iban": "IBAN",
   "import": "Importer",
@@ -236,5 +238,13 @@
     "confirm-deletion": "Êtes-vous sûr de vouloir supprimer cet enregistrement ?",
     "deleted-successfully": "Enregistrement supprimé avec succès.",
     "updated-successfully": "Enregistrement modifié avec succès."
+  },
+  "/help": {
+    "question": "Poser une question",
+    "feedback": "Donner un avis",
+    "bug": "Signaler un bug",
+    "feature": "Proposer une fonctionnalité",
+    "other": "Autre",
+    "sent-successfully": "Email envoyé avec succès."
   }
 }
