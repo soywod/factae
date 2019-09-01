@@ -5,8 +5,9 @@ import Icon from 'antd/es/icon'
 import Layout from 'antd/es/layout'
 import Menu from 'antd/es/menu'
 
-import SelectLanguage from './SelectLanguage'
 import {useAuth} from '../../auth/hooks'
+import Link from './Link'
+import SelectLanguage from './SelectLanguage'
 import Logo from './Logo'
 
 const styles = {
@@ -15,6 +16,7 @@ const styles = {
     minHeight: '100%',
   },
   logo: {
+    margin: 'auto',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -59,9 +61,9 @@ function Sider(props) {
 
   return (
     <Layout.Sider breakpoint="md" onCollapse={handleCollapse} style={styles.container}>
-      <div style={styles.logo}>
+      <Link to="/" style={styles.logo}>
         <Logo light="#ffffff" dark="hsla(0, 0%, 100%, .65)" />
-      </div>
+      </Link>
       <Menu
         theme="dark"
         onClick={event => history.push(event.key)}
@@ -88,9 +90,9 @@ function Sider(props) {
           <Icon type="read" />
           <span>{t('records')}</span>
         </Menu.Item>
-        <Menu.Item key="/help" style={styles.bottomNav}>
+        <Menu.Item key="/contact" style={styles.bottomNav}>
           <Icon type="mail" />
-          <span>{t('help')}</span>
+          <span>{t('contact')}</span>
         </Menu.Item>
         <Menu.Item key="/logout">
           <Icon type="logout" />

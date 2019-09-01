@@ -70,7 +70,6 @@
   "forgotten-password": "Forgotten password",
   "from": "Sender",
   "general-informations": "General information",
-  "help": "Contact",
   "i-agree": "I agree",
   "iban": "IBAN",
   "import": "Import",
@@ -239,7 +238,7 @@
     "deleted-successfully": "Record successfully deleted.",
     "updated-successfully": "Record successfully updated."
   },
-  "/help": {
+  "/contact": {
     "question": "Ask a question",
     "feedback": "Give a feedback",
     "bug": "Report a bug",

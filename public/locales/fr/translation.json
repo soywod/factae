@@ -70,7 +70,6 @@
   "forgotten-password": "Mot de passe oublié",
   "from": "Expéditeur",
   "general-informations": "Informations générales",
-  "help": "Contact",
   "i-agree": "J'accepte",
   "iban": "IBAN",
   "import": "Importer",
@@ -239,7 +238,7 @@
     "deleted-successfully": "Enregistrement supprimé avec succès.",
     "updated-successfully": "Enregistrement modifié avec succès."
   },
-  "/help": {
+  "/contact": {
     "question": "Poser une question",
     "feedback": "Donner un avis",
     "bug": "Signaler un bug",

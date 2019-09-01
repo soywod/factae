@@ -15,7 +15,7 @@ import Container from './Container'
 
 const categories = ['question', 'feedback', 'bug', 'feature', 'other']
 
-function Help(props) {
+function Contact(props) {
   const profile = useProfile()
   const [loading, setLoading] = useState(false)
   const tryAndNotify = useNotification()
@@ -43,7 +43,7 @@ function Help(props) {
         })
 
         props.history.push('/')
-        return t('/help.sent-successfully')
+        return t('/contact.sent-successfully')
       },
       () => setLoading(false),
     )
@@ -55,8 +55,8 @@ function Help(props) {
       Component: (
         <Select size="large">
           {categories.map(c => (
-            <Select.Option key={c} value={t('/help.' + c)}>
-              {t('/help.' + c)}
+            <Select.Option key={c} value={t('/contact.' + c)}>
+              {t('/contact.' + c)}
             </Select.Option>
           ))}
         </Select>
@@ -70,7 +70,7 @@ function Help(props) {
   return (
     <Container>
       <Form noValidate layout="vertical" onSubmit={sendMail}>
-        <Title label="help">
+        <Title label="contact">
           <Button type="primary" htmlType="submit" disabled={loading}>
             <Icon type={loading ? 'loading' : 'mail'} />
             {t('send')}
@@ -83,4 +83,4 @@ function Help(props) {
   )
 }
 
-export default Form.create()(Help)
+export default Form.create()(Contact)
