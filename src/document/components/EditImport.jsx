@@ -12,6 +12,8 @@ import Upload from 'antd/es/upload'
 import omit from 'lodash/fp/omit'
 
 import Title from '../../common/components/Title'
+import AutoCompleteNature from '../../common/components/AutoCompleteNature'
+import AutoCompletePaymentMethod from '../../common/components/AutoCompletePaymentMethod'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import DatePicker from '../../common/components/DatePicker'
 import AutoCompleteClients from '../../common/components/AutoCompleteClients'
@@ -152,12 +154,32 @@ function EditImportDocument(props) {
     ],
   }
 
+  const secondaryFields = {
+    title: <FormCardTitle title="complementary-informations" />,
+    fields: [],
+  }
+
   if (status) {
-    mainFields.fields.push({
+    secondaryFields.fields.push({
       name: `${status}At`,
       Component: <DatePicker />,
       ...requiredRules,
     })
+
+    if (status === 'paid') {
+      secondaryFields.fields.push(
+        {
+          name: 'paymentMethod',
+          Component: <AutoCompletePaymentMethod />,
+          ...requiredRules,
+        },
+        {
+          name: 'nature',
+          Component: <AutoCompleteNature />,
+          ...requiredRules,
+        },
+      )
+    }
   }
 
   const totalFields = {
@@ -202,7 +224,7 @@ function EditImportDocument(props) {
     ],
   }
 
-  const fields = [mainFields, totalFields, pdfFields]
+  const fields = [mainFields, secondaryFields, totalFields, pdfFields]
 
   return (
     <Form noValidate layout="vertical" onSubmit={saveDocument}>

@@ -8,8 +8,9 @@ import Input from 'antd/es/input'
 import Row from 'antd/es/row'
 import Typography from 'antd/es/typography'
 import getOr from 'lodash/fp/getOr'
-import pick from 'lodash/fp/pick'
+import isEmpty from 'lodash/fp/isEmpty'
 import kebabCase from 'lodash/fp/kebabCase'
+import pick from 'lodash/fp/pick'
 
 const styles = {
   title: {
@@ -31,6 +32,10 @@ const breakpoints = {xs: 24, sm: 12, md: 8, lg: 6}
 
 function FormCard({form, model, title, fields}) {
   const {t} = useTranslation()
+
+  if (isEmpty(fields)) {
+    return null
+  }
 
   return (
     <Card title={title} style={styles.card}>
