@@ -1,9 +1,10 @@
 import React, {forwardRef, useMemo} from 'react'
 import AutoComplete from 'antd/es/auto-complete'
-import sortedUniq from 'lodash/fp/sortedUniq'
-import pipe from 'lodash/fp/pipe'
-import map from 'lodash/fp/map'
 import compact from 'lodash/fp/compact'
+import map from 'lodash/fp/map'
+import pipe from 'lodash/fp/pipe'
+import sortBy from 'lodash/fp/sortBy'
+import uniq from 'lodash/fp/uniq'
 
 import {useRecords} from '../../record/hooks'
 
@@ -11,7 +12,7 @@ const AutoCompleteNature = forwardRef((props, ref) => {
   const records = useRecords()
   const natureDataSource = useMemo(() => {
     if (!records) return []
-    return pipe([map('nature'), compact, sortedUniq])(records)
+    return pipe([sortBy('nature'), map('nature'), compact, uniq])(records)
   }, [records])
 
   return (

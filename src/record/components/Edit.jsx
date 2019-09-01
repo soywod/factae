@@ -14,7 +14,7 @@ import FormCard, {FormCardTitle, validateFields} from '../../common/components/F
 import AutoCompleteClients from '../../common/components/AutoCompleteClients'
 import DatePicker from '../../common/components/DatePicker'
 import AutoCompleteNature from '../../common/components/AutoCompleteNature'
-import AutoCompletePaymentMethod from '../../common/components/AutoCompletePaymentMethod'
+import SelectPaymentMethod from '../../common/components/SelectPaymentMethod'
 import AutoCompleteReference from '../../common/components/AutoCompleteReference'
 import {useNotification} from '../../utils/notification'
 import {useClients} from '../../client/hooks'
@@ -104,7 +104,7 @@ function EditRecord(props) {
       },
       {
         name: 'paymentMethod',
-        Component: <AutoCompletePaymentMethod />,
+        Component: <SelectPaymentMethod />,
         ...requiredRules,
       },
     ],

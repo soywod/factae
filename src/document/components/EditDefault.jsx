@@ -20,7 +20,7 @@ import FormCard, {FormCardTitle, validateFields} from '../../common/components/F
 import EditableTable from '../../common/components/EditableTable'
 import DatePicker from '../../common/components/DatePicker'
 import AutoCompleteNature from '../../common/components/AutoCompleteNature'
-import AutoCompletePaymentMethod from '../../common/components/AutoCompletePaymentMethod'
+import SelectPaymentMethod from '../../common/components/SelectPaymentMethod'
 import AutoCompleteReference from '../../common/components/AutoCompleteReference'
 import {toEuro} from '../../utils/currency'
 import {useNotification} from '../../utils/notification'
@@ -416,7 +416,7 @@ function EditDefaultDocument(props) {
       },
       {
         name: 'paymentMethod',
-        Component: <AutoCompletePaymentMethod />,
+        Component: <SelectPaymentMethod />,
         ...requiredRules,
       },
     )

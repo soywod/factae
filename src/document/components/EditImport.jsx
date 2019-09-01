@@ -13,7 +13,7 @@ import omit from 'lodash/fp/omit'
 
 import Title from '../../common/components/Title'
 import AutoCompleteNature from '../../common/components/AutoCompleteNature'
-import AutoCompletePaymentMethod from '../../common/components/AutoCompletePaymentMethod'
+import SelectPaymentMethod from '../../common/components/SelectPaymentMethod'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import DatePicker from '../../common/components/DatePicker'
 import AutoCompleteClients from '../../common/components/AutoCompleteClients'
@@ -170,7 +170,7 @@ function EditImportDocument(props) {
       secondaryFields.fields.push(
         {
           name: 'paymentMethod',
-          Component: <AutoCompletePaymentMethod />,
+          Component: <SelectPaymentMethod />,
           ...requiredRules,
         },
         {
