@@ -3,20 +3,22 @@ import {withRouter} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
 import Button from 'antd/es/button'
+import Card from 'antd/es/card'
+import Col from 'antd/es/col'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import InputNumber from 'antd/es/input-number'
 import Popconfirm from 'antd/es/popconfirm'
+import Row from 'antd/es/row'
 import Select from 'antd/es/select'
 import Upload from 'antd/es/upload'
 import omit from 'lodash/fp/omit'
 
 import Title from '../../common/components/Title'
-import AutoCompleteNature from '../../common/components/AutoCompleteNature'
-import SelectPaymentMethod from '../../common/components/SelectPaymentMethod'
+import SwitchStatus from '../../common/components/SwitchStatus'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
-import DatePicker from '../../common/components/DatePicker'
 import AutoCompleteClients from '../../common/components/AutoCompleteClients'
+import {useProfile} from '../../profile/hooks'
 import {useNotification} from '../../utils/notification'
 import $document from '../service'
 
@@ -34,12 +36,16 @@ function EditImportDocument(props) {
   const [document, setDocument] = useState(props.document)
   const [deleteVisible, setDeleteVisible] = useState(false)
   const [type, setType] = useState(document.type)
-  const [status, setStatus] = useState(document.status)
   const [number, setNumber] = useState(document.number)
   const [pdf, setPdf] = useState(document.pdf)
+  const profile = useProfile()
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
   const requiredRules = {rules: [{required: true, message: t('field-required')}]}
+
+  if (!profile) {
+    return null
+  }
 
   async function uploadRequest({file, onSuccess: resolve, onError: reject}) {
     try {
@@ -50,12 +56,6 @@ function EditImportDocument(props) {
     } catch (error) {
       reject(error)
     }
-  }
-
-  function updateType(type) {
-    setType(type)
-    props.form.setFieldsValue({status: null})
-    setStatus(null)
   }
 
   async function deleteDocument() {
@@ -98,12 +98,7 @@ function EditImportDocument(props) {
 
     await tryAndNotify(async () => {
       const fields = await validateFields(props.form)
-
-      let nextDocument = {
-        ...document,
-        ...fields,
-        [`${fields.status}At`]: fields[`${fields.status}At`].toISOString(),
-      }
+      let nextDocument = {...document, ...fields}
 
       if (pdf) {
         nextDocument.pdf = pdf
@@ -124,7 +119,7 @@ function EditImportDocument(props) {
       {
         name: 'type',
         Component: (
-          <Select size="large" autoFocus onChange={updateType}>
+          <Select size="large" autoFocus onChange={nextType => setType(nextType)}>
             {['quotation', 'invoice', 'credit'].map(type => (
               <Select.Option key={type} value={type}>
                 {t(type)}
@@ -139,47 +134,7 @@ function EditImportDocument(props) {
         Component: <AutoCompleteClients />,
         ...requiredRules,
       },
-      {
-        name: 'status',
-        Component: (
-          <Select size="large" onChange={s => setStatus(s)}>
-            <Select.Option value="sent">{t('sent')}</Select.Option>
-            {type === 'quotation' && <Select.Option value="signed">{t('signed')}</Select.Option>}
-            {type === 'invoice' && <Select.Option value="paid">{t('paid')}</Select.Option>}
-            {type === 'credit' && <Select.Option value="refunded">{t('refunded')}</Select.Option>}
-          </Select>
-        ),
-        ...requiredRules,
-      },
     ],
-  }
-
-  const secondaryFields = {
-    title: <FormCardTitle title="complementary-informations" />,
-    fields: [],
-  }
-
-  if (status) {
-    secondaryFields.fields.push({
-      name: `${status}At`,
-      Component: <DatePicker />,
-      ...requiredRules,
-    })
-
-    if (status === 'paid') {
-      secondaryFields.fields.push(
-        {
-          name: 'paymentMethod',
-          Component: <SelectPaymentMethod />,
-          ...requiredRules,
-        },
-        {
-          name: 'nature',
-          Component: <AutoCompleteNature />,
-          ...requiredRules,
-        },
-      )
-    }
   }
 
   const totalFields = {
@@ -224,11 +179,18 @@ function EditImportDocument(props) {
     ],
   }
 
-  const fields = [mainFields, secondaryFields, totalFields, pdfFields]
+  const allStatus = [
+    'sent',
+    ...(type === 'quotation' ? ['signed'] : []),
+    ...(type === 'invoice' ? ['paid'] : []),
+    ...(type === 'credit' ? ['refunded'] : []),
+    'declaredUrssaf',
+    ...(profile.taxId ? ['declaredVat'] : []),
+  ]
 
   return (
     <Form noValidate layout="vertical" onSubmit={saveDocument}>
-      <Title label="documents">
+      <Title label={document.number || t(document.type)}>
         <Button.Group>
           <Popconfirm
             title={t('/documents.confirm-deletion')}
@@ -250,7 +212,7 @@ function EditImportDocument(props) {
           {pdf && (
             <Button disabled={loading} href={pdf} download={number}>
               <Icon type="download" />
-              {t('download')}
+              {t('pdf')}
             </Button>
           )}
           <Button type="primary" htmlType="submit" disabled={loading}>
@@ -260,9 +222,28 @@ function EditImportDocument(props) {
         </Button.Group>
       </Title>
 
-      {fields.map((formProps, key) => (
-        <FormCard key={key} form={props.form} model={document} {...formProps} />
-      ))}
+      <FormCard form={props.form} model={document} {...mainFields} />
+
+      <Card
+        title={<FormCardTitle title="status" subtitle="/documents.status-subtitle" />}
+        style={{marginTop: 15}}
+      >
+        <Row gutter={15}>
+          {allStatus.map(status => (
+            <Col key={status} xs={24} sm={12} md={8} lg={6}>
+              <SwitchStatus
+                name={status}
+                date={document[`${status}At`]}
+                disabled={status !== 'sent' && !document.sentAt}
+                onChange={data => setDocument({...document, ...data})}
+              />
+            </Col>
+          ))}
+        </Row>
+      </Card>
+
+      <FormCard form={props.form} model={document} {...totalFields} />
+      <FormCard form={props.form} model={document} {...pdfFields} />
     </Form>
   )
 }

@@ -17,7 +17,7 @@ export function getTurnover(documents, now, monthShift) {
 
   function filterByStatusAndDate(document) {
     if (document.type !== 'invoice') return false
-    if (document.status !== 'paid') return false
+    if (!document.paidAt) return false
     if (DateTime.fromISO(document.paidAt) < firstDay) return false
     return true
   }
@@ -36,7 +36,8 @@ export function getQuarterlyTurnover(documents, now = DateTime.local()) {
 export function getPendingQuotationsTurnover(documents) {
   function filterByTypeAndStatus(document) {
     if (document.type !== 'quotation') return false
-    if (document.status !== 'sent') return false
+    if (!document.sentAt) return false
+    if (document.signedAt) return false
     return true
   }
 
@@ -46,7 +47,8 @@ export function getPendingQuotationsTurnover(documents) {
 export function getPendingInvoicesTurnover(documents) {
   function filterByTypeAndStatus(document) {
     if (document.type !== 'invoice') return false
-    if (document.status !== 'sent') return false
+    if (!document.sentAt) return false
+    if (document.paidAt) return false
     return true
   }
 

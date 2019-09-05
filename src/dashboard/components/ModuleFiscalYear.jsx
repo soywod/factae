@@ -29,13 +29,12 @@ function ModuleFiscalYear() {
     if (!profile || !documents) return null
     if (isDemo(profile)) {
       return range(0, 9).map(month => ({
-        status: 'paid',
         totalHT: random(3000, 9000),
         createdAt: `2018-0${month + 1}-01`,
         paidAt: `2018-0${month + 1}-01`,
       }))
     }
-    return filter({type: 'invoice', status: 'paid'}, documents) || null
+    return filter(d => d.type === 'invoice' && Boolean(d.paidAt), documents) || null
   }, [profile, documents])
 
   const turnover = useMemo(() => {

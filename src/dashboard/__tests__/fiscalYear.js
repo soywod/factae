@@ -14,12 +14,12 @@ describe('getTurnover', () => {
   })
 
   it('should get turnover', () => {
-    const invoicesA = [{type: 'invoice', status: 'paid', totalHT: 2000, createdAt: '2018-04-01'}]
+    const invoicesA = [{type: 'invoice', paidAt: '2018-04-01', totalHT: 2000}]
     const invoicesB = [
-      {type: 'invoice', status: 'paid', totalHT: 3000, createdAt: '2018-04-01'},
-      {type: 'invoice', status: 'paid', totalHT: 1500, createdAt: '2018-03-01'},
+      {type: 'invoice', paidAt: '2018-04-01', totalHT: 3000},
+      {type: 'invoice', paidAt: '2018-03-01', totalHT: 1500},
     ]
-    const invoicesC = [{type: 'invoice', status: 'paid', totalHT: 200, createdAt: '2018-01-01'}]
+    const invoicesC = [{type: 'invoice', paidAt: '2018-01-01', totalHT: 200}]
 
     const cases = [
       [
@@ -60,17 +60,17 @@ describe('getCumulativeTurnover', () => {
   it('should get cumulative turnover', () => {
     const cases = [
       [
-        [{createdAt: '2018-04-01'}],
+        [{paidAt: '2018-04-01'}],
         [0, 0, 0, 2000, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
         [0, 0, 0, 2000, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
       ],
       [
-        [{createdAt: '2018-04-01'}],
+        [{paidAt: '2018-04-01'}],
         [0, 1000, 0, 2000, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
         [0, 1000, 1000, 3000, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
       ],
       [
-        [{createdAt: '2018-06-01'}],
+        [{paidAt: '2018-06-01'}],
         [0, 1000, 0, 2000, 4000, undefined, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
         [0, 1000, 1000, 3000, 7000, 7000, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
       ],

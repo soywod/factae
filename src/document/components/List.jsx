@@ -29,7 +29,7 @@ const alphabeticSort = key => (a, b) => a[key].localeCompare(b[key])
 const dateSort = key => (a, b) => DateTime.fromISO(a[key]) - DateTime.fromISO(b[key])
 
 const CustomTag = ({children, ...props}) => (
-  <Tag {...props} style={{float: 'right', textTransform: 'lowercase'}}>
+  <Tag {...props} style={{float: 'right', cursor: 'inherit', textTransform: 'lowercase'}}>
     {children}
   </Tag>
 )
@@ -51,7 +51,6 @@ function DocumentList(props) {
       const document = {
         id: $document.generateId(),
         type: 'invoice',
-        status: 'paid',
         createdAt: now.toISO(),
         imported: true,
       }
@@ -69,7 +68,6 @@ function DocumentList(props) {
       const document = {
         id: $document.generateId(),
         type: 'quotation',
-        status: 'draft',
         createdAt: now.toISO(),
         taxRate: profile.taxRate,
         conditions: profile.quotationConditions,
@@ -91,25 +89,38 @@ function DocumentList(props) {
     return null
   }
 
+  function getCustomTag(document) {
+    if (document.declaredUrssafAt || document.declaredVatAt) {
+      return <CustomTag color="red">{t('declared')}</CustomTag>
+    }
+
+    if (document.signedAt) {
+      return <CustomTag color="green">{t('signed')}</CustomTag>
+    }
+
+    if (document.paidAt) {
+      return <CustomTag color="green">{t('paid')}</CustomTag>
+    }
+
+    if (document.refundedAt) {
+      return <CustomTag color="green">{t('refunded')}</CustomTag>
+    }
+
+    if (document.sentAt) {
+      return <CustomTag color="blue">{t('sent')}</CustomTag>
+    }
+  }
+
   const columns = [
     {
-      title: <strong>{t('type')}</strong>,
-      dataIndex: 'type',
+      title: <strong>{t('number')}</strong>,
+      dataIndex: 'number',
       width: '30%',
-      sorter: alphabeticSort('type'),
-      filters: ['quotation', 'invoice', 'credit'].map(document => ({
-        text: t(document),
-        value: document,
-      })),
-      onFilter: (value, record) => record.type.indexOf(value) === 0,
-      render: (_, {type, status}) => (
+      sorter: alphabeticSort('number'),
+      render: (_, d) => (
         <>
-          {t(type)}
-          {status === 'draft' && <CustomTag>{t('draft')}</CustomTag>}
-          {status === 'sent' && <CustomTag color="blue">{t('sent')}</CustomTag>}
-          {status === 'signed' && <CustomTag color="green">{t('signed')}</CustomTag>}
-          {status === 'paid' && <CustomTag color="green">{t('paid')}</CustomTag>}
-          {status === 'refunded' && <CustomTag color="green">{t('refunded')}</CustomTag>}
+          {d.number || <em className="ant-form-explain">{t(d.type)}</em>}
+          {getCustomTag(d)}
         </>
       ),
     },

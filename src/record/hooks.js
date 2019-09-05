@@ -18,15 +18,15 @@ export function useRecords() {
   function buildRecords(nextRecords) {
     if (!nextRecords) return
 
-    const filterByType = filter(x => x.type !== 'quotation')
-    const filterByStatus = filter(x => !['draft', 'sent'].includes(x.status))
-    const mapToRecord = map(x => ({
-      document: x.id,
-      client: x.client,
+    const filterByType = filter(d => d.type === 'invoice')
+    const filterByStatus = filter(d => Boolean(d.paidAt))
+    const mapToRecord = map(d => ({
+      document: d.id,
+      client: d.client,
       type: 'revenue',
-      createdAt: x[`${x.status}At`],
-      reference: x.number,
-      ...pick(['id', 'nature', 'paymentMethod', 'totalHT', 'totalTVA', 'totalTTC'], x),
+      createdAt: d.paidAt || d.refundedAt,
+      reference: d.number,
+      ...pick(['id', 'nature', 'paymentMethod', 'totalHT', 'totalTVA', 'totalTTC'], d),
     }))
 
     setRecords(

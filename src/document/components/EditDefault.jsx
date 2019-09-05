@@ -4,6 +4,7 @@ import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
+import Col from 'antd/es/col'
 import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import Input from 'antd/es/input'
@@ -14,14 +15,12 @@ import Select from 'antd/es/select'
 import find from 'lodash/fp/find'
 import omit from 'lodash/fp/omit'
 
-import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
 import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
 import EditableTable from '../../common/components/EditableTable'
 import DatePicker from '../../common/components/DatePicker'
-import AutoCompleteNature from '../../common/components/AutoCompleteNature'
-import SelectPaymentMethod from '../../common/components/SelectPaymentMethod'
 import AutoCompleteReference from '../../common/components/AutoCompleteReference'
+import SwitchStatus from '../../common/components/SwitchStatus'
 import {toEuro} from '../../utils/currency'
 import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
@@ -30,7 +29,6 @@ import {useDocuments} from '../hooks'
 import $document from '../service'
 import ModalPreview from './ModalPreview'
 import ModalSender from './ModalSender'
-import ModalPostValidation from './ModalPostValidation'
 
 function EditDefaultDocument(props) {
   const profile = useProfile()
@@ -42,8 +40,6 @@ function EditDefaultDocument(props) {
   const [deleteVisible, setDeleteVisible] = useState(false)
   const [senderVisible, setSenderVisible] = useState(false)
   const [previewVisible, setPreviewVisible] = useState(false)
-  const [postValidationVisible, setPostValidationVisible] = useState(false)
-  const [status, setStatus] = useState()
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
   const requiredRules = {rules: [{required: true, message: t('field-required')}]}
@@ -54,35 +50,11 @@ function EditDefaultDocument(props) {
     if (showSender) setSenderVisible(true)
   }
 
-  async function postValidation(data) {
-    if (!data) {
-      props.form.setFieldsValue({status: document.status})
-      return setPostValidationVisible(false)
-    }
-
-    setLoading(true)
-
-    await tryAndNotify(async () => {
-      const nextDocument = {...document, ...data, status}
-      setDocument(nextDocument)
-      await $document.set(nextDocument)
-      return t('/documents.updated-successfully')
-    })
-
-    setPostValidationVisible(false)
-    setLoading(false)
-  }
-
   async function saveType(type) {
     const conditionType = type === 'quotation' ? 'quotation' : 'invoice'
     const conditions = (profile && profile[conditionType + 'Conditions']) || ''
     const nextDocument = await buildNextDocument()
     setDocument({...nextDocument, type, conditions})
-  }
-
-  async function saveStatus(nextStatus) {
-    setStatus(nextStatus)
-    if (nextStatus !== 'draft') setPostValidationVisible(true)
   }
 
   async function buildNextDocument(override = {}) {
@@ -110,20 +82,22 @@ function EditDefaultDocument(props) {
   async function buildNextDocumentWithPdf() {
     const now = DateTime.local()
     let nextDocument = await buildNextDocument({createdAt: now.toISO()})
-
-    const prefix = t(nextDocument.type)[0].toUpperCase()
-    const count = documents.reduce((count, d) => {
-      if (nextDocument.id === d.id) return count
-      if (nextDocument.type !== d.type) return count
-      if (d.imported) return count
-      if (d.status === 'draft') return count
-      if (DateTime.fromISO(d.createdAt).month !== now.month) return count
-      if (DateTime.fromISO(d.createdAt.year) !== now.year) return count
-      return count + 1
-    }, 1)
-
-    nextDocument.number = `${prefix}-${now.toFormat('yyMM')}-${count}`
     const nextClient = find({id: nextDocument.client}, clients)
+
+    if (!nextDocument.number) {
+      const prefix = t(nextDocument.type)[0].toUpperCase()
+      const count = documents.reduce((count, d) => {
+        if (nextDocument.id === d.id) return count
+        if (nextDocument.type !== d.type) return count
+        if (d.imported) return count
+        if (!d.number) return count
+        if (DateTime.fromISO(d.createdAt).month !== now.month) return count
+        if (DateTime.fromISO(d.createdAt).year !== now.year) return count
+        return count + 1
+      }, 1)
+
+      nextDocument.number = `${prefix}-${now.toFormat('yyMM')}-${count}`
+    }
 
     return await $document.generatePdf(profile, nextClient, nextDocument)
   }
@@ -143,7 +117,6 @@ function EditDefaultDocument(props) {
     await tryAndNotify(
       async () => {
         const nextDocument = await buildNextDocument({
-          status: 'sent',
           sentAt: DateTime.local().toISO(),
         })
 
@@ -208,11 +181,20 @@ function EditDefaultDocument(props) {
 
     await tryAndNotify(async () => {
       const nextDocument = omit(
-        ['number', 'pdf', 'conditions', 'sentAt', 'signedAt', 'paidAt', 'refundedAt'],
+        [
+          'number',
+          'pdf',
+          'conditions',
+          'sentAt',
+          'signedAt',
+          'paidAt',
+          'refundedAt',
+          'declaredUrssafAt',
+          'declaredVatAt',
+        ],
         await buildNextDocument({
           id: $document.generateId(),
           createdAt: DateTime.local().toISO(),
-          status: 'draft',
           items,
         }),
       )
@@ -340,54 +322,37 @@ function EditDefaultDocument(props) {
         ),
         ...requiredRules,
       },
-      {
-        name: 'type',
-        Component: (
-          <Select size="large" disabled={document.status !== 'draft'} onChange={saveType}>
-            {['quotation', 'invoice', 'credit'].map(type => (
-              <Select.Option key={type} value={type}>
-                {t(type)}
-              </Select.Option>
-            ))}
-          </Select>
-        ),
-        ...requiredRules,
-      },
-      {
-        name: 'status',
-        Component: (
-          <Select size="large" onChange={saveStatus}>
-            <Select.Option value="draft">{t('draft')}</Select.Option>
-            {['draft', 'sent'].includes(document.status) && (
-              <Select.Option value="sent">{t('sent')}</Select.Option>
-            )}
-            {document.type === 'quotation' && document.status !== 'draft' && (
-              <Select.Option value="signed">{t('signed')}</Select.Option>
-            )}
-            {document.type === 'invoice' && document.status !== 'draft' && (
-              <Select.Option value="paid">{t('paid')}</Select.Option>
-            )}
-            {document.type === 'credit' && document.status !== 'draft' && (
-              <Select.Option value="refunded">{t('refunded')}</Select.Option>
-            )}
-          </Select>
-        ),
-        ...requiredRules,
-      },
-      {
-        name: 'taxRate',
-        Component: (
-          <InputNumber
-            size="large"
-            min={0}
-            step={1}
-            onChange={taxRate => setDocument({...document, taxRate})}
-            style={{width: '100%'}}
-          />
-        ),
-      },
     ],
   }
+
+  if (!document.number) {
+    mainFields.fields.push({
+      name: 'type',
+      Component: (
+        <Select size="large" onChange={saveType}>
+          {['quotation', 'invoice', 'credit'].map(type => (
+            <Select.Option key={type} value={type}>
+              {t(type)}
+            </Select.Option>
+          ))}
+        </Select>
+      ),
+      ...requiredRules,
+    })
+  }
+
+  mainFields.fields.push({
+    name: 'taxRate',
+    Component: (
+      <InputNumber
+        size="large"
+        min={0}
+        step={1}
+        onChange={taxRate => setDocument({...document, taxRate})}
+        style={{width: '100%'}}
+      />
+    ),
+  })
 
   if (document.type === 'quotation') {
     mainFields.fields.push({
@@ -407,32 +372,24 @@ function EditDefaultDocument(props) {
     }
   }
 
-  if (['paid', 'refunded'].includes(document.status)) {
-    mainFields.fields.push(
-      {
-        name: 'nature',
-        Component: <AutoCompleteNature />,
-        ...requiredRules,
-      },
-      {
-        name: 'paymentMethod',
-        Component: <SelectPaymentMethod />,
-        ...requiredRules,
-      },
-    )
-  }
-
   const conditionFields = {
     title: <FormCardTitle title="conditions" subtitle="/documents.conditions-subtitle" />,
     fields: [{name: 'conditions', fluid: true, Component: <Input.TextArea rows={4} />}],
   }
 
-  const fields = [mainFields]
+  const allStatus = [
+    'sent',
+    ...(document.type === 'quotation' ? ['signed'] : []),
+    ...(document.type === 'invoice' ? ['paid'] : []),
+    ...(document.type === 'credit' ? ['refunded'] : []),
+    'declaredUrssaf',
+    ...(profile.taxId ? ['declaredVat'] : []),
+  ]
 
   return (
-    <Container>
+    <>
       <Form noValidate layout="vertical" onSubmit={saveDocument}>
-        <Title label="documents">
+        <Title label={document.number || t(document.type)}>
           <Button.Group>
             <Popconfirm
               title={t('/documents.confirm-deletion')}
@@ -451,15 +408,15 @@ function EditDefaultDocument(props) {
               <Icon type="copy" />
               {t('clone')}
             </Button>
-            {document.status === 'draft' ? (
-              <Button disabled={loading} onClick={previewDocument}>
-                <Icon type="eye" />
-                {t('preview')}
-              </Button>
-            ) : (
+            {document.sentAt ? (
               <Button disabled={loading} href={document.pdf} download={document.number}>
                 <Icon type="download" />
-                {t('download')}
+                {t('pdf')}
+              </Button>
+            ) : (
+              <Button disabled={loading} onClick={previewDocument}>
+                <Icon type="eye" />
+                {t('pdf')}
               </Button>
             )}
             <Button type="primary" htmlType="submit" disabled={loading}>
@@ -469,9 +426,27 @@ function EditDefaultDocument(props) {
           </Button.Group>
         </Title>
 
-        {fields.map((cardProps, key) => (
-          <FormCard key={key} form={props.form} model={document} {...cardProps} />
-        ))}
+        {document.number && (
+          <Card
+            title={<FormCardTitle title="status" subtitle="/documents.status-subtitle" />}
+            style={{marginTop: 15}}
+          >
+            <Row gutter={15}>
+              {allStatus.map(status => (
+                <Col key={status} xs={24} sm={12} md={8} lg={6}>
+                  <SwitchStatus
+                    name={status}
+                    date={document[`${status}At`]}
+                    disabled={status !== 'sent' && !document.sentAt}
+                    onChange={data => setDocument({...document, ...data})}
+                  />
+                </Col>
+              ))}
+            </Row>
+          </Card>
+        )}
+
+        <FormCard form={props.form} model={document} {...mainFields} />
 
         <Card
           title={<FormCardTitle title="designations" />}
@@ -506,14 +481,7 @@ function EditDefaultDocument(props) {
         loading={loading}
         onClose={sendDocument}
       />
-
-      <ModalPostValidation
-        status={status}
-        visible={postValidationVisible}
-        loading={loading}
-        onSubmit={postValidation}
-      />
-    </Container>
+    </>
   )
 }
 
