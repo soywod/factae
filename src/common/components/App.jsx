@@ -29,7 +29,7 @@ import Sider from './Sider'
 import 'moment/locale/fr'
 import 'moment/locale/en-gb'
 
-import './App.styles.css'
+import './App.styles.less'
 
 const locales = {en, fr}
 
