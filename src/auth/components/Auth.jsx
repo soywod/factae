@@ -12,17 +12,13 @@ import Spin from 'antd/es/spin'
 import Loader from '../../common/components/Loader'
 import SelectLanguage from '../../common/components/SelectLanguage'
 import Logo from '../../common/components/Logo'
+import Link from '../../common/components/Link'
 import {notify} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
 import $auth from '../service'
 import {useAuth} from '../hooks'
 
 import background from './background.jpeg'
-
-const {email, password} =
-  window.location.hostname === 'factae.fr'
-    ? {email: 'demo@factae.fr', password: 'factae'}
-    : {email: '', password: ''}
 
 const styles = {
   container: {
@@ -61,7 +57,7 @@ const styles = {
   },
   selectLanguage: {
     position: 'absolute',
-    right: 0,
+    left: 0,
     top: 0,
   },
 }
@@ -69,10 +65,12 @@ const styles = {
 const withHOCs = Auth => Form.create()(withRouter(Auth))
 const Auth = withHOCs(props => {
   const {getFieldDecorator} = props.form
+  const params = new URLSearchParams(props.location.search)
   const [loading, setLoading] = useState(false)
   const user = useAuth()
   const profile = useProfile()
   const {t, i18n} = useTranslation()
+  const defaultEmail = params.get('email') || ''
 
   const doAsyncTask = action => async event => {
     event.preventDefault()
@@ -130,38 +128,45 @@ const Auth = withHOCs(props => {
           <Form onSubmit={doAsyncTask(login)}>
             <Form.Item>
               {getFieldDecorator('email', {
-                initialValue: email,
+                initialValue: defaultEmail,
                 rules: [
                   {type: 'email', message: t('email-invalid')},
                   {required: true, message: t('email-required')},
                 ],
               })(
                 <Input
+                  size="large"
                   prefix={<Icon type="user" style={{color: 'rgba(0, 0, 0, .25)'}} />}
+                  suffix={
+                    <Link to="/demo" style={{display: 'flex'}}>
+                      {t('demo')} <Icon type="arrow-right" style={{marginTop: 5}} />
+                    </Link>
+                  }
                   placeholder={t('email')}
                   autoComplete="email"
-                  autoFocus
+                  autoFocus={!Boolean(defaultEmail)}
                 />,
               )}
             </Form.Item>
             <Form.Item>
               {getFieldDecorator('password', {
-                initialValue: password,
                 rules: [
                   {min: 6, message: t('password-too-short')},
                   {required: true, message: t('password-required')},
                 ],
               })(
                 <Input
+                  size="large"
                   prefix={<Icon type="lock" style={{color: 'rgba(0, 0, 0, .25)'}} />}
                   type="password"
                   placeholder={t('password')}
                   autoComplete="current-password"
+                  autoFocus={Boolean(defaultEmail)}
                 />,
               )}
             </Form.Item>
             <div>
-              <Button block type="primary" htmlType="submit" style={{marginBottom: 8}}>
+              <Button block size="large" type="primary" htmlType="submit" style={{marginBottom: 8}}>
                 {t('sign-in')}
               </Button>
               <Button block type="dashed" onClick={doAsyncTask(register)} style={{marginBottom: 8}}>
