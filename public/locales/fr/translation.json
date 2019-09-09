@@ -192,6 +192,9 @@
   "yes": "Oui",
   "zip": "Code postal",
   "/auth": {
+    "auth/email-already-in-use": "Cette adresse email est déjà prise.",
+    "auth/user-not-found": "Email ou mot de passe incorrect.",
+    "auth/wrong-password": "Email ou mot de passe incorrect.",
     "locked-data-demo": "Les données sont verrouillées en mode démo.",
     "logged-in-successfully": "Bonjour {{name}}. Votre abonnement expire {{date}}.",
     "password-reset-successfully": "Un email vous a été envoyé avec la procédure à suivre.",

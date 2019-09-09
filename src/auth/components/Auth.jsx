@@ -79,7 +79,8 @@ const Auth = withHOCs(props => {
     try {
       await action()
     } catch (error) {
-      if (error.message) notify.error(error.message)
+      if (error.code) notify.error(t('/auth.' + error.code))
+      else if (error.message) notify.error(error.message)
       setLoading(false)
     }
   }
@@ -114,17 +115,17 @@ const Auth = withHOCs(props => {
 
   return (
     <div style={styles.container}>
-      <Spin size="large" spinning={loading || isNull(user) || (user && isNull(profile))}>
-        <Card
-          id="auth"
-          title={
-            <div style={styles.title}>
-              <Logo width={150} />
-              <SelectLanguage style={styles.selectLanguage} />
-              <div style={styles.subtitle}>{t('/auth.tagline')}</div>
-            </div>
-          }
-        >
+      <Card
+        id="auth"
+        title={
+          <div style={styles.title}>
+            <Logo width={150} />
+            <SelectLanguage style={styles.selectLanguage} />
+            <div style={styles.subtitle}>{t('/auth.tagline')}</div>
+          </div>
+        }
+      >
+        <Spin size="large" spinning={loading || isNull(user) || (user && isNull(profile))}>
           <Form onSubmit={doAsyncTask(login)}>
             <Form.Item>
               {getFieldDecorator('email', {
@@ -138,7 +139,7 @@ const Auth = withHOCs(props => {
                   size="large"
                   prefix={<Icon type="user" style={{color: 'rgba(0, 0, 0, .25)'}} />}
                   suffix={
-                    <Link to="/demo" tabindex="-1" style={{display: 'flex'}}>
+                    <Link to="/demo" tabIndex="-1" style={{display: 'flex'}}>
                       {t('demo')} <Icon type="arrow-right" style={{marginTop: 5}} />
                     </Link>
                   }
@@ -177,8 +178,8 @@ const Auth = withHOCs(props => {
               </Button>
             </div>
           </Form>
-        </Card>
-      </Spin>
+        </Spin>
+      </Card>
     </div>
   )
 })

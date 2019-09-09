@@ -192,6 +192,9 @@
   "yes": "Yes",
   "zip": "Zip",
   "/auth": {
+    "auth/email-already-in-use": "The email has already been taken.",
+    "auth/user-not-found": "Invalid credentials.",
+    "auth/wrong-password": "Invalid credentials.",
     "locked-data-demo": "Data are locked in the demo mode.",
     "logged-in-successfully": "Hello {{name}}. Your subscription expires {{date}}.",
     "password-reset-successfully": "An email has been sent to you with the procedure to follow.",
