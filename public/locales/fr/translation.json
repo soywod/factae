@@ -42,7 +42,7 @@
   "cumulative-turnover": "CA cumulé",
   "date": "Date",
   "date-format": "'le' d LLL yyyy 'à' HH'h'mm",
-  "date-format-short": "'le' dd LLLL yyyy",
+  "date-format-short": "'le' d LLLL yyyy",
   "dates": "Dates",
   "declaration-period": "Période de déclaration",
   "declared": "Déclaré",

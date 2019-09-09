@@ -92,14 +92,14 @@ function ModalSender({form, document, visible, loading, onClose: close}) {
               {getFieldDecorator('subject', {
                 initialValue: profile.subject,
                 rules: [{required: true, message: t('field-required')}],
-              })(<Input size="large" />)}
+              })(<Input size="large" autoFocus />)}
             </Form.Item>
           </Col>
           <Col xs={24}>
             <Form.Item label={t('message')}>
               {getFieldDecorator('html', {
                 rules: [{required: true, message: t('field-required')}],
-              })(<Input.TextArea rows={8} autoFocus />)}
+              })(<Input.TextArea rows={8} />)}
             </Form.Item>
           </Col>
         </Row>

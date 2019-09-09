@@ -38,7 +38,7 @@ function Dashboard() {
     <Container>
       <Title label="overview" />
 
-      <Row gutter={15} style={{marginBottom: 15}}>
+      <Row gutter={15} style={{margin: '0 -7.5px 15px -7.5px'}}>
         {showStepper ? (
           <ModuleStepper
             hasValidProfile={hasValidProfile}

@@ -22,7 +22,7 @@ function ModulePendingInvoicesTurnover() {
     return getPendingInvoicesTurnover(documents)
   }, [profile, documents])
 
-  const color = turnover ? {color: '#f5222d'} : {}
+  const color = turnover ? {color: '#f9676e'} : {}
 
   return (
     <Card bodyStyle={styles.card}>
