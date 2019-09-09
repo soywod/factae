@@ -1,4 +1,4 @@
-# [factAE](https://factae.fr)
+# [factAE](https://app.factae.fr)
 
 A simple billing tool for micro-enterprises.
 
