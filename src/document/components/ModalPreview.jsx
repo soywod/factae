@@ -34,15 +34,7 @@ function Preview({document, visible, loading, onClose: close}) {
     >
       <Spin size="large" spinning={loading}>
         <div style={{minHeight: 600}}>
-          {!loading && (
-            <iframe
-              title={t('preview')}
-              frameBorder="1"
-              src={document.pdf}
-              width="100%"
-              height={600}
-            />
-          )}
+          {!loading && <iframe title={t('preview')} src={document.pdf} width="100%" height={600} />}
         </div>
       </Spin>
     </Modal>

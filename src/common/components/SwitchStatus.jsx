@@ -55,7 +55,7 @@ function SwitchStatus(props) {
   )
 
   const help = date ? (
-    <Tooltip title={date.toFormat(t('date-format-short'))}>
+    <Tooltip title={date.toFormat(t('date-format-short'))} placement="bottomLeft">
       <em className="ant-form-explain" style={{cursor: 'default'}}>
         {date.toRelative()}
       </em>

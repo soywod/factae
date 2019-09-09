@@ -40,7 +40,7 @@ function ModuleQuarterlyTurnover() {
     return getQuarterlyTurnover(documents)
   }, [profile, documents])
 
-  const color = turnover ? {color: '#52c41a'} : {}
+  const color = turnover ? {color: '#30c79c'} : {}
 
   return (
     <Card bodyStyle={styles.card}>

@@ -22,7 +22,7 @@ function ModulePendingQuotationsTurnover() {
     return getPendingQuotationsTurnover(documents)
   }, [profile, documents])
 
-  const color = turnover ? {color: '#1890ff'} : {}
+  const color = turnover ? {color: '#1f99ec'} : {}
 
   return (
     <Card bodyStyle={styles.card}>

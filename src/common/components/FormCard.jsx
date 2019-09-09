@@ -21,7 +21,7 @@ const styles = {
     fontSize: '0.9em',
     fontStyle: 'italic',
     marginBottom: 0,
-    color: '#aaaaaa',
+    color: '#bfbfbf',
   },
   card: {
     marginTop: 15,

@@ -26,7 +26,7 @@ const styles = {
     backgroundSize: 'cover',
     background: `url(${background}) no-repeat center center`,
     bottom: 0,
-    padding: '150px 15px 15px 15px',
+    padding: 15,
     display: 'flex',
     height: '100vh',
     justifyContent: 'center',
@@ -138,7 +138,7 @@ const Auth = withHOCs(props => {
                   size="large"
                   prefix={<Icon type="user" style={{color: 'rgba(0, 0, 0, .25)'}} />}
                   suffix={
-                    <Link to="/demo" style={{display: 'flex'}}>
+                    <Link to="/demo" tabindex="-1" style={{display: 'flex'}}>
                       {t('demo')} <Icon type="arrow-right" style={{marginTop: 5}} />
                     </Link>
                   }
