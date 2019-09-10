@@ -82,6 +82,14 @@ iframe {
   border-color: @border-color-base;
 }
 
+.ant-table-wrapper:not(.ant-table-editable) .ant-table {
+  border: 1px solid @border-color-base;
+}
+
+.ant-table-tbody > tr:not(.editable-row):last-of-type > td {
+  border-bottom: none;
+}
+
 .ant-table-footer {
   border-bottom: 1px solid @border-color-base;
 }

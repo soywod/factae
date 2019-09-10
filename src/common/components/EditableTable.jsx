@@ -153,10 +153,12 @@ function EditableTable({onSave: handleSave, dataSource, ...props}) {
   return (
     <Table
       {...props}
+      className="ant-table-editable"
       columns={columns}
       dataSource={dataSource}
       components={components}
       rowClassName={() => 'editable-row'}
+      style={{border: 'none'}}
     />
   )
 }
