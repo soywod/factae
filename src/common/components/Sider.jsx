@@ -7,7 +7,6 @@ import Menu from 'antd/es/menu'
 
 import {useAuth} from '../../auth/hooks'
 import Link from './Link'
-import SelectLanguage from './SelectLanguage'
 import Logo from './Logo'
 
 const styles = {
@@ -26,7 +25,7 @@ const styles = {
   bottomNav: {
     marginTop: 30,
   },
-  lang: {
+  logout: {
     display: 'flex',
     flex: 1,
     justifyContent: 'center',
@@ -52,6 +51,8 @@ function Sider(props) {
       return ['/clients']
     } else if (route.startsWith('/records')) {
       return ['/records']
+    } else if (route.startsWith('/settings')) {
+      return ['/settings/account']
     } else return [route]
   })()
 
@@ -72,35 +73,43 @@ function Sider(props) {
       >
         <Menu.Item key="/">
           <Icon type="dashboard" />
-          <span>{t('overview')}</span>
-        </Menu.Item>
-        <Menu.Item key="/profile">
-          <Icon type="user" />
-          <span>{t('profile')}</span>
+          <span>{t('dashboard')}</span>
         </Menu.Item>
         <Menu.Item key="/clients">
           <Icon type="team" />
           <span>{t('clients')}</span>
         </Menu.Item>
         <Menu.Item key="/documents">
-          <Icon type="form" />
-          <span>{t('documents')}</span>
+          <Icon type="file-text" />
+          <span>{t('quotations-and-invoices')}</span>
         </Menu.Item>
         <Menu.Item key="/records">
           <Icon type="read" />
           <span>{t('records')}</span>
         </Menu.Item>
-        <Menu.Item key="/contact" style={styles.bottomNav}>
-          <Icon type="mail" />
-          <span>{t('contact')}</span>
+
+        <Menu.Item key="/settings/account" style={styles.bottomNav}>
+          <Icon type="setting" />
+          <span>{t('settings')}</span>
         </Menu.Item>
-        <Menu.Item key="/logout">
-          <Icon type="logout" />
-          <span>{t('logout')}</span>
+        <Menu.Item key="/support">
+          <Icon type="question-circle" />
+          <span>{t('support')}</span>
         </Menu.Item>
       </Menu>
-      <div style={styles.lang}>
-        <SelectLanguage placement="topCenter" />
+
+      <div style={styles.logout}>
+        <Menu
+          theme="dark"
+          onClick={event => history.push(event.key)}
+          selectedKeys={selectedKeys}
+          mode="inline"
+        >
+          <Menu.Item key="/logout">
+            <Icon type="logout" />
+            <span>{t('logout')}</span>
+          </Menu.Item>
+        </Menu>
       </div>
     </Layout.Sider>
   )

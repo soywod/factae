@@ -15,7 +15,7 @@ import Container from './Container'
 
 const categories = ['question', 'feedback', 'bug', 'feature', 'other']
 
-function Contact(props) {
+function Support(props) {
   const profile = useProfile()
   const [loading, setLoading] = useState(false)
   const tryAndNotify = useNotification()
@@ -83,4 +83,4 @@ function Contact(props) {
   )
 }
 
-export default Form.create()(Contact)
+export default Form.create()(Support)

@@ -90,6 +90,26 @@ iframe {
   border-bottom: none;
 }
 
+.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab {
+  border-color: @border-color-base;
+  margin-right: 4px;
+  &.ant-tabs-tab-active {
+    border-bottom-color: #ffffff;
+  }
+}
+
+.ant-tabs-bar {
+  border-bottom: 1px solid @border-color-base;
+  margin: 0;
+}
+
+.ant-tabs-content {
+  border: 1px solid @border-color-base;
+  border-top: none;
+  background: #ffffff;
+  padding: 24px;
+}
+
 .ant-table-footer {
   border-bottom: 1px solid @border-color-base;
 }
@@ -169,10 +189,20 @@ iframe {
 }
 
 .stripe-input {
-  height: 42px;
+  flex: 1;
+  height: 40px;
   padding: 12px;
   background: #ffffff;
   border-radius: @border-radius-base;
   border: 1px solid @border-color-light;
-  margin-bottom: 8px;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: #48b9fa;
+    box-shadow: 0 0 0 2px rgba(31, 153, 236, 0.2);
+  }
+}
+
+.ant-form-item-label > label {
+  color: @text-color-secondary;
 }
