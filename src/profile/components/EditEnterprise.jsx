@@ -10,7 +10,7 @@ import {useProfile} from '../hooks'
 
 const styles = {
   title: {
-    fontSize: '1.3em',
+    fontSize: '1.2rem',
     margin: '0 0 15px 0',
   },
 }
