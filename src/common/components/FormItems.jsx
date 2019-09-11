@@ -2,7 +2,9 @@ import React from 'react'
 import {useTranslation} from 'react-i18next'
 import moment from 'moment'
 import Form from 'antd/es/form'
+import Icon from 'antd/es/icon'
 import Input from 'antd/es/input'
+import Tooltip from 'antd/es/tooltip'
 import getOr from 'lodash/fp/getOr'
 import isEmpty from 'lodash/fp/isEmpty'
 import kebabCase from 'lodash/fp/kebabCase'
@@ -14,10 +16,23 @@ function FormItems({form, model, fields}) {
     return null
   }
 
+  function renderLabel(name, help) {
+    return (
+      <span>
+        {t(kebabCase(name))}
+        {help && (
+          <Tooltip title={help}>
+            <Icon type="question-circle-o" style={{marginLeft: 5, color: 'rgba(0, 0, 0, 0.7)'}} />
+          </Tooltip>
+        )}
+      </span>
+    )
+  }
+
   return (
     <>
       {fields.map(({name, Component = <Input size="large" />, rules = [], help}) => (
-        <Form.Item key={name} label={t(kebabCase(name))} help={help}>
+        <Form.Item key={name} label={renderLabel(name, help)}>
           {form.getFieldDecorator(name, {
             initialValue: name.match(/At/) ? moment(model[name]) : getOr('', name, model),
             rules,

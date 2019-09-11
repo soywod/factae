@@ -84,7 +84,7 @@ export async function validateFields(form) {
       if (errors) {
         reject(errors)
       } else {
-        const pickDates = pickBy(x => x.match(/At$/))
+        const pickDates = pickBy((_, key) => key.match(/At$/))
         const toString = mapValues(invoke('toISOString'))
         resolve(pipe([pickDates, toString, defaults(values)])(values))
       }
