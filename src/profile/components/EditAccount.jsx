@@ -52,6 +52,7 @@ function EditAccount({form}) {
           {t('subscription')}
         </Typography.Title>
         <Subscription />
+
         <Divider />
 
         <Typography.Title level={2} style={styles.title}>
@@ -67,12 +68,14 @@ function EditAccount({form}) {
             />,
           )}
         </Form.Item>
+
         <Divider />
 
         <Typography.Title level={2} style={styles.title}>
           {t('edit-password')}
         </Typography.Title>
         <div>TODO</div>
+
         <Divider />
 
         <Typography.Title level={2} style={styles.title}>
