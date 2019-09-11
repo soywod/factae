@@ -7,6 +7,7 @@ import Tabs from 'antd/es/tabs'
 
 import EditAccount from '../../profile/components/EditAccount'
 import EditEnterprise from '../../profile/components/EditEnterprise'
+import EditInvoicing from '../../profile/components/EditInvoicing'
 import {useNotification} from '../../utils/notification'
 import $profile from '../../profile/service'
 import {validateFields} from './FormCard'
@@ -80,7 +81,7 @@ function Settings(props) {
             <EditEnterprise form={props.form} />
           </Tabs.TabPane>
           <Tabs.TabPane tab={t('my-invoicing')} key="invoicing">
-            TODO
+            <EditInvoicing form={props.form} />
           </Tabs.TabPane>
         </Tabs>
       </Form>

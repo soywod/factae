@@ -34,7 +34,7 @@ function FormItems({form, model, fields}) {
       {fields.map(({name, Component = <Input size="large" />, rules = [], help}) => (
         <Form.Item key={name} label={renderLabel(name, help)}>
           {form.getFieldDecorator(name, {
-            initialValue: name.match(/At/) ? moment(model[name]) : getOr('', name, model),
+            initialValue: name.match(/At$/) ? moment(model[name]) : getOr('', name, model),
             rules,
           })(Component)}
         </Form.Item>
