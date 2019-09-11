@@ -36,7 +36,7 @@ function Dashboard() {
 
   return (
     <Container>
-      <Title label="overview" />
+      <Title label="dashboard" />
 
       <Row gutter={15} style={{margin: '0 -7.5px 15px -7.5px'}}>
         {showStepper ? (

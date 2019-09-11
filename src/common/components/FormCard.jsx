@@ -11,6 +11,11 @@ import getOr from 'lodash/fp/getOr'
 import isEmpty from 'lodash/fp/isEmpty'
 import kebabCase from 'lodash/fp/kebabCase'
 import pick from 'lodash/fp/pick'
+import pipe from 'lodash/fp/pipe'
+import mapValues from 'lodash/fp/mapValues'
+import pickBy from 'lodash/fp/pickBy'
+import invoke from 'lodash/fp/invoke'
+import defaults from 'lodash/fp/defaults'
 
 const styles = {
   title: {
@@ -76,8 +81,13 @@ export function FormCardTitle({title, titleData, subtitle, action, style = {}}) 
 export async function validateFields(form) {
   return new Promise((resolve, reject) => {
     form.validateFieldsAndScroll((errors, values) => {
-      if (errors) reject(errors)
-      else resolve(values)
+      if (errors) {
+        reject(errors)
+      } else {
+        const pickDates = pickBy(x => x.match(/At$/))
+        const toString = mapValues(invoke('toISOString'))
+        resolve(pipe([pickDates, toString, defaults(values)])(values))
+      }
     })
   })
 }
