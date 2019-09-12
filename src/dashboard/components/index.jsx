@@ -16,8 +16,6 @@ import ModulePendingQuotationsTurnover from './ModulePendingQuotationsTurnover'
 import ModulePendingInvoicesTurnover from './ModulePendingInvoicesTurnover'
 import ModuleThresholdTurnover from './ModuleThresholdTurnover'
 import ModuleFiscalYear from './ModuleFiscalYear'
-import ModuleThresholds from './ModuleThresholds'
-import ModuleSubscription from './ModuleSubscription'
 import ModuleWelcomeDemo from './ModuleWelcomeDemo'
 
 function Dashboard() {
@@ -68,17 +66,6 @@ function Dashboard() {
           <ModuleFiscalYear />
         </Col>
       </Row>
-      <Row gutter={15} style={{marginBottom: 15}}>
-        <Col sm={24}>
-          <ModuleThresholds />
-        </Col>
-      </Row>
-      <Row gutter={15}>
-        <Col sm={24}>
-          <ModuleSubscription />
-        </Col>
-      </Row>
-
       <ModuleWelcomeDemo />
     </Container>
   )
