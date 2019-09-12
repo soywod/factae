@@ -31,16 +31,13 @@ function ClientList(props) {
   const columns = [
     {
       title: <strong>{t('name')}</strong>,
-      dataIndex: 'name',
       key: 'name',
       width: '40%',
       sorter: alphabeticSort('name'),
     },
     {
       title: <strong>{t('email')}</strong>,
-      dataIndex: 'email',
-      key: 'email',
-      sorter: alphabeticSort('email'),
+      key: 'contacts.0.email',
       width: '30%',
     },
     {

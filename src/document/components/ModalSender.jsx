@@ -8,6 +8,7 @@ import Input from 'antd/es/input'
 import Modal from 'antd/es/modal'
 import Row from 'antd/es/row'
 import find from 'lodash/fp/find'
+import getOr from 'lodash/fp/getOr'
 
 import {validateFields} from '../../common/components/FormCard'
 import {useProfile} from '../../profile/hooks'
@@ -60,6 +61,7 @@ function ModalSender({form, document, visible, loading, onClose: close}) {
   }
 
   const client = find({id: document.client}, clients)
+  const contact = getOr(null, 'contacts.0', client)
 
   return (
     <Modal
@@ -82,9 +84,9 @@ function ModalSender({form, document, visible, loading, onClose: close}) {
           <Col xs={24}>
             <Form.Item label={t('to')}>
               {getFieldDecorator('to', {
-                initialValue: client ? `${client.name} <${client.email}>` : '',
+                initialValue: contact ? `${contact.name} <${contact.email}>` : '',
                 rules: [{required: true, message: t('field-required')}],
-              })(<Input size="large" />)}
+              })(<Input size="large" autoFocus />)}
             </Form.Item>
           </Col>
           <Col xs={24}>
@@ -92,7 +94,7 @@ function ModalSender({form, document, visible, loading, onClose: close}) {
               {getFieldDecorator('subject', {
                 initialValue: profile.subject,
                 rules: [{required: true, message: t('field-required')}],
-              })(<Input size="large" autoFocus />)}
+              })(<Input size="large" />)}
             </Form.Item>
           </Col>
           <Col xs={24}>

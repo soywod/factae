@@ -7,6 +7,7 @@ import isNumber from 'lodash/fp/isNumber'
 import range from 'lodash/fp/range'
 
 const BACK_KEY_CODE = 8
+// const TAB_KEY_CODE = 9
 const ENTER_KEY_CODE = 13
 const DOT_KEY_CODE = 190
 const NUMBER_KEY_CODES = range(48, 58)
@@ -68,8 +69,9 @@ class EditableCell extends React.Component {
     this.form = form
     const {children, dataIndex, record} = this.props
     const {editing} = this.state
+
     return editing ? (
-      <Form.Item style={{margin: 0, padding: 0}}>
+      <Form.Item wrapperCol={{xs: 24}} style={{margin: 0, padding: 0}}>
         {form.getFieldDecorator(dataIndex, {
           initialValue: record[dataIndex],
         })(
@@ -79,7 +81,7 @@ class EditableCell extends React.Component {
               ref={node => (this.input = node)}
               min={0}
               step={1}
-              onKeyDown={this.handleKeyDown}
+              onKeyDown={this.handleNumberKeyDown}
               onBlur={this.save}
               style={{width: '100%', height: 42}}
             />
