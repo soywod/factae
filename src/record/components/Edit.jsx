@@ -6,11 +6,15 @@ import Icon from 'antd/es/icon'
 import InputNumber from 'antd/es/input-number'
 import Popconfirm from 'antd/es/popconfirm'
 import Select from 'antd/es/select'
+import Typography from 'antd/es/typography'
+import Divider from 'antd/es/divider'
+import Card from 'antd/es/card'
 import find from 'lodash/fp/find'
 
+import FormItems from '../../common/components/FormItems'
 import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
-import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
+import {validateFields} from '../../common/components/FormCard'
 import AutoCompleteClients from '../../common/components/AutoCompleteClients'
 import DatePicker from '../../common/components/DatePicker'
 import AutoCompleteNature from '../../common/components/AutoCompleteNature'
@@ -20,6 +24,28 @@ import {useNotification} from '../../utils/notification'
 import {useClients} from '../../client/hooks'
 import {useRecords} from '../hooks'
 import $record from '../service'
+
+const formItemLayout = {
+  labelCol: {
+    xs: {span: 24},
+    sm: {span: 24},
+    md: {span: 24},
+    lg: {span: 5},
+  },
+  wrapperCol: {
+    xs: {span: 24},
+    sm: {span: 24},
+    md: {span: 24},
+    lg: {span: 19},
+  },
+}
+
+const styles = {
+  title: {
+    fontSize: '1.2rem',
+    margin: '0 0 15px 0',
+  },
+}
 
 function EditRecord(props) {
   const {form} = props
@@ -57,7 +83,6 @@ function EditRecord(props) {
     await tryAndNotify(async () => {
       let nextRecord = await validateFields(form)
       nextRecord.id = record.id
-      nextRecord.createdAt = nextRecord.createdAt.toISOString()
       setRecord(nextRecord)
       await $record.set(nextRecord)
       return t('/records.updated-successfully')
@@ -70,70 +95,62 @@ function EditRecord(props) {
     return null
   }
 
-  const mainFields = {
-    title: <FormCardTitle title="general-informations" />,
-    fields: [
-      {name: 'createdAt', Component: <DatePicker autoFocus />, ...requiredRules},
-      {
-        name: 'type',
-        Component: (
-          <Select size="large" style={{width: '100%'}}>
-            {['revenue', 'purchase'].map(type => (
-              <Select.Option key={type} value={type}>
-                {t(type)}
-              </Select.Option>
-            ))}
-          </Select>
-        ),
-        ...requiredRules,
-      },
-      {
-        name: 'client',
-        Component: <AutoCompleteClients />,
-        ...requiredRules,
-      },
-      {
-        name: 'reference',
-        Component: <AutoCompleteReference types={['invoice', 'credit']} />,
-        ...requiredRules,
-      },
-      {
-        name: 'nature',
-        Component: <AutoCompleteNature />,
-        ...requiredRules,
-      },
-      {
-        name: 'paymentMethod',
-        Component: <SelectPaymentMethod />,
-        ...requiredRules,
-      },
-    ],
-  }
+  const mainFields = [
+    {name: 'createdAt', Component: <DatePicker autoFocus />, ...requiredRules},
+    {
+      name: 'type',
+      Component: (
+        <Select size="large" style={{width: '100%'}}>
+          {['revenue', 'purchase'].map(type => (
+            <Select.Option key={type} value={type}>
+              {t(type)}
+            </Select.Option>
+          ))}
+        </Select>
+      ),
+      ...requiredRules,
+    },
+    {
+      name: 'client',
+      Component: <AutoCompleteClients />,
+      ...requiredRules,
+    },
+    {
+      name: 'reference',
+      Component: <AutoCompleteReference types={['invoice', 'credit']} />,
+      ...requiredRules,
+    },
+    {
+      name: 'nature',
+      Component: <AutoCompleteNature />,
+      ...requiredRules,
+    },
+    {
+      name: 'paymentMethod',
+      Component: <SelectPaymentMethod />,
+      ...requiredRules,
+    },
+  ]
 
-  const totalFields = {
-    title: <FormCardTitle title="amounts" />,
-    fields: [
-      {
-        name: 'totalHT',
-        Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
-        ...requiredRules,
-      },
-      {
-        name: 'totalTVA',
-        Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
-      },
-      {
-        name: 'totalTTC',
-        Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
-      },
-    ],
-  }
-
-  const fields = [mainFields, totalFields]
+  const totalFields = [
+    {
+      name: 'totalHT',
+      Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
+      ...requiredRules,
+    },
+    {
+      name: 'totalTVA',
+      Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
+    },
+    {
+      name: 'totalTTC',
+      Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
+    },
+  ]
 
   return (
     <Container>
-      <Form noValidate layout="vertical" onSubmit={saveRecord}>
+      <Form noValidate {...formItemLayout} onSubmit={saveRecord}>
         <Title label="record">
           <Button.Group>
             <Popconfirm
@@ -155,9 +172,19 @@ function EditRecord(props) {
           </Button.Group>
         </Title>
 
-        {fields.map((props, key) => (
-          <FormCard key={key} form={form} model={record} {...props} />
-        ))}
+        <Card>
+          <Typography.Title level={2} style={styles.title}>
+            {t('general-informations')}
+          </Typography.Title>
+          <FormItems form={form} model={record} fields={mainFields} />
+
+          <Divider />
+
+          <Typography.Title level={2} style={styles.title}>
+            {t('amounts')}
+          </Typography.Title>
+          <FormItems form={form} model={record} fields={totalFields} />
+        </Card>
       </Form>
     </Container>
   )
