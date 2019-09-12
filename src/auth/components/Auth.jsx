@@ -71,6 +71,7 @@ const Auth = withHOCs(props => {
   const profile = useProfile()
   const {t, i18n} = useTranslation()
   const defaultEmail = params.get('email') || ''
+  const isFormDirty = !props.form.isFieldsTouched()
 
   const doAsyncTask = action => async event => {
     event.preventDefault()
@@ -167,13 +168,32 @@ const Auth = withHOCs(props => {
               )}
             </Form.Item>
             <div>
-              <Button block size="large" type="primary" htmlType="submit" style={{marginBottom: 8}}>
+              <Button
+                block
+                size="large"
+                type="primary"
+                htmlType="submit"
+                disabled={isFormDirty}
+                style={{marginBottom: 8}}
+              >
                 {t('sign-in')}
               </Button>
-              <Button block type="dashed" onClick={doAsyncTask(register)} style={{marginBottom: 8}}>
+              <Button
+                block
+                type="dashed"
+                onClick={doAsyncTask(register)}
+                disabled={isFormDirty}
+                style={{marginBottom: 8}}
+              >
                 {t('sign-up')}
               </Button>
-              <Button block type="link" to="/reset-password" onClick={doAsyncTask(resetPassword)}>
+              <Button
+                block
+                type="link"
+                to="/reset-password"
+                onClick={doAsyncTask(resetPassword)}
+                disabled={isFormDirty}
+              >
                 {t('forgotten-password')}
               </Button>
             </div>
