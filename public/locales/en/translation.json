@@ -6,6 +6,8 @@
   "threshold-vat-low-help": "Low VAT threshold",
   "threshold-vat-high-help": "High VAT threshold",
   "threshold-me-help": "Micro-enterprise threshold",
+  "client-identity": "Client identity",
+  "contacts": "Contacts",
   "activity-service": "Service delivery",
   "subscribe-now": "Subscribe now",
   "activity-started-at": "Starting date of the activity",
