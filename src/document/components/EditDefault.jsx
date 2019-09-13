@@ -16,11 +16,12 @@ import find from 'lodash/fp/find'
 import omit from 'lodash/fp/omit'
 
 import Title from '../../common/components/Title'
-import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
+import {getFields, validateFields} from '../../common/components/FormCard'
+import FormItems from '../../common/components/FormItems'
 import EditableTable from '../../common/components/EditableTable'
 import DatePicker from '../../common/components/DatePicker'
 import AutoCompleteReference from '../../common/components/AutoCompleteReference'
-import SwitchStatus from '../../common/components/SwitchStatus'
+import SelectStatus from '../../common/components/SelectStatus'
 import {toEuro} from '../../utils/currency'
 import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
@@ -53,16 +54,12 @@ function EditDefaultDocument(props) {
   async function saveType(type) {
     const conditionType = type === 'quotation' ? 'quotation' : 'invoice'
     const conditions = (profile && profile[conditionType + 'Conditions']) || ''
-    const nextDocument = await buildNextDocument()
-    setDocument({...nextDocument, type, conditions})
+    const nextDocument = await buildNextDocument({type, conditions}, getFields)
+    setDocument(nextDocument)
   }
 
-  async function buildNextDocument(override = {}) {
-    let fields = await validateFields(props.form)
-    if (fields.paymentDeadlineAt) {
-      fields.paymentDeadlineAt = fields.paymentDeadlineAt.toISOString()
-    }
-
+  async function buildNextDocument(override = {}, validator = validateFields) {
+    const fields = await validator(props.form)
     const nextItems = items.filter(item => item.designation && item.unitPrice)
     const totalHT = nextItems.reduce((sum, {amount}) => sum + amount, 0)
     const totalTVA = Math.round(totalHT * document.taxRate) / 100
@@ -306,65 +303,45 @@ function EditDefaultDocument(props) {
     },
   ]
 
-  const mainFields = {
-    title: <FormCardTitle title="general-informations" />,
-    fields: [
-      {
-        name: 'client',
-        Component: (
-          <Select size="large" autoFocus>
-            {clients.map(client => (
-              <Select.Option key={client.id} value={client.id}>
-                {client.name}
-              </Select.Option>
-            ))}
-          </Select>
-        ),
-        ...requiredRules,
-      },
-    ],
-  }
-
-  if (!document.number) {
-    mainFields.fields.push({
-      name: 'type',
+  const mainFields = [
+    {
+      name: 'client',
       Component: (
-        <Select size="large" onChange={saveType}>
-          {['quotation', 'invoice', 'credit'].map(type => (
-            <Select.Option key={type} value={type}>
-              {t(type)}
+        <Select size="large">
+          {clients.map(client => (
+            <Select.Option key={client.id} value={client.id}>
+              {client.name}
             </Select.Option>
           ))}
         </Select>
       ),
       ...requiredRules,
-    })
-  }
-
-  mainFields.fields.push({
-    name: 'taxRate',
-    Component: (
-      <InputNumber
-        size="large"
-        min={0}
-        step={1}
-        onChange={taxRate => setDocument({...document, taxRate})}
-        style={{width: '100%'}}
-      />
-    ),
-  })
+    },
+    {
+      name: 'taxRate',
+      Component: (
+        <InputNumber
+          size="large"
+          min={0}
+          step={1}
+          onChange={taxRate => setDocument({...document, taxRate})}
+          style={{width: '100%'}}
+        />
+      ),
+    },
+  ]
 
   if (document.type === 'quotation') {
-    mainFields.fields.push({
+    mainFields.push({
       name: 'expiresIn',
       Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
       ...requiredRules,
     })
   } else {
-    mainFields.fields.push({name: 'paymentDeadlineAt', Component: <DatePicker />, ...requiredRules})
+    mainFields.push({name: 'paymentDeadlineAt', Component: <DatePicker />, ...requiredRules})
 
     if (document.type === 'credit') {
-      mainFields.fields.push({
+      mainFields.push({
         name: 'invoiceNumber',
         Component: <AutoCompleteReference types={['invoice']} />,
         ...requiredRules,
@@ -372,24 +349,27 @@ function EditDefaultDocument(props) {
     }
   }
 
-  const conditionFields = {
-    title: <FormCardTitle title="conditions" subtitle="/documents.conditions-subtitle" />,
-    fields: [{name: 'conditions', fluid: true, Component: <Input.TextArea rows={4} />}],
-  }
+  mainFields.push({
+    name: 'globalDiscount',
+    Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+  })
 
-  const allStatus = [
-    'sent',
-    ...(document.type === 'quotation' ? ['signed'] : []),
-    ...(document.type === 'invoice' ? ['paid'] : []),
-    ...(document.type === 'credit' ? ['refunded'] : []),
-    'declaredUrssaf',
-    ...(profile.taxId ? ['declaredVat'] : []),
+  const conditionFields = [
+    {name: 'conditions', fluid: true, Component: <Input.TextArea rows={6} />},
   ]
+
+  const selectType = (
+    <Select autoFocus value={document.type} onChange={saveType}>
+      <Select.Option value="quotation">{t('quotation')}</Select.Option>
+      <Select.Option value="invoice">{t('invoice')}</Select.Option>
+      <Select.Option value="credit">{t('credit')}</Select.Option>
+    </Select>
+  )
 
   return (
     <>
       <Form noValidate layout="vertical" onSubmit={saveDocument}>
-        <Title label={document.number || t(document.type)}>
+        <Title label={document.number || selectType}>
           <Button.Group>
             <Popconfirm
               title={t('/documents.confirm-deletion')}
@@ -426,46 +406,32 @@ function EditDefaultDocument(props) {
           </Button.Group>
         </Title>
 
-        {document.number && (
-          <Card
-            title={<FormCardTitle title="status" subtitle="/documents.status-subtitle" />}
-            style={{marginTop: 15}}
-          >
-            <Row gutter={15}>
-              {allStatus.map(status => (
-                <Col key={status} xs={24} sm={12} md={8} lg={6}>
-                  <SwitchStatus
-                    name={status}
-                    date={document[`${status}At`]}
-                    disabled={status !== 'sent' && !document.sentAt}
-                    onChange={data => setDocument({...document, ...data})}
-                  />
-                </Col>
-              ))}
-            </Row>
-          </Card>
-        )}
-
-        <FormCard form={props.form} model={document} {...mainFields} />
-
-        <Card
-          title={<FormCardTitle title="designations" />}
-          bodyStyle={{padding: '1px 7.5px 0 7.5px', marginBottom: -1}}
-          style={{marginTop: 15}}
-        >
-          <Row gutter={15}>
-            <EditableTable
-              size="middle"
-              pagination={false}
-              dataSource={items}
-              columns={columns}
-              footer={Footer}
-              onSave={saveItems}
+        <Row gutter={24}>
+          <Col lg={6}>
+            <FormItems form={props.form} model={document} fields={mainFields} />
+            <SelectStatus
+              onChange={setDocument}
+              document={document}
+              required
+              style={{marginTop: 51}}
             />
-          </Row>
-        </Card>
-
-        <FormCard form={props.form} model={document} {...conditionFields} />
+          </Col>
+          <Col lg={18}>
+            <Form.Item label={t('designations')} required>
+              <Card bodyStyle={{padding: 0}}>
+                <EditableTable
+                  size="small"
+                  pagination={false}
+                  dataSource={items}
+                  columns={columns}
+                  footer={Footer}
+                  onSave={saveItems}
+                />
+              </Card>
+            </Form.Item>
+            <FormItems form={props.form} model={document} fields={conditionFields} />
+          </Col>
+        </Row>
       </Form>
 
       <ModalPreview

@@ -25,8 +25,26 @@ code {
 
 h1 {
   font-weight: bold;
-  font-size: 2em;
+  font-size: 2rem;
   margin: 0 0 24px 0;
+
+  .ant-select {
+    width: auto;
+    font-size: 2rem;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    color: @heading-color;
+  }
+
+  .ant-select-selection {
+    background: none;
+    border: none;
+  }
+
+  .ant-select-selection__rendered {
+    margin-left: 0;
+  }
 }
 
 h2 {
@@ -92,8 +110,16 @@ iframe {
   border: 1px solid @border-color-base;
 }
 
+.ant-table-small > .ant-table-content .ant-table-row:last-child td {
+  border-bottom: 1px solid @border-color-light;
+}
+
 .ant-table-wrapper.ant-table-editable .ant-table-small {
-  border-color: @border-color-light;
+  border: none;
+
+  .ant-table-footer {
+    border-bottom: none;
+  }
 }
 
 .ant-table-tbody > tr:not(.editable-row):last-of-type > td {
@@ -132,16 +158,18 @@ iframe {
   background: rgba(@primary-color, .05);
 }
 
-.ant-input,
-.ant-input-number,
-.ant-select-selection,
-.ant-card-head,
-.ant-table-placeholder,
-.ant-modal-header,
-.ant-modal-footer,
-.ant-table-tbody > tr > th,
-.ant-table-tbody > tr > td {
-  border-color: @border-color-light;
+.ant-card {
+  .ant-input,
+  .ant-input-number,
+  .ant-select-selection,
+  .ant-card-head,
+  .ant-table-placeholder,
+  .ant-modal-header,
+  .ant-modal-footer,
+  .ant-table-tbody > tr > th,
+  .ant-table-tbody > tr > td {
+    border-color: @border-color-light;
+  }
 }
 
 .ant-table-pagination.ant-pagination {
@@ -213,6 +241,6 @@ iframe {
   }
 }
 
-.ant-form-item-label > label {
+.ant-card .ant-form-item-label > label {
   color: @text-color-secondary;
 }

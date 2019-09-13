@@ -78,15 +78,23 @@ export function FormCardTitle({title, titleData, subtitle, action, style = {}}) 
   )
 }
 
+function formatValues(values) {
+  const pickDates = pickBy((_, key) => key.match(/At$/))
+  const toString = mapValues(invoke('toISOString'))
+  return pipe([pickDates, toString, defaults(values)])(values)
+}
+
+export function getFields(form) {
+  return formatValues(form.getFieldsValue())
+}
+
 export async function validateFields(form) {
   return new Promise((resolve, reject) => {
     form.validateFieldsAndScroll((errors, values) => {
       if (errors) {
         reject(errors)
       } else {
-        const pickDates = pickBy((_, key) => key.match(/At$/))
-        const toString = mapValues(invoke('toISOString'))
-        resolve(pipe([pickDates, toString, defaults(values)])(values))
+        resolve(formatValues(values))
       }
     })
   })
