@@ -1,12 +1,16 @@
 import React from 'react'
-import {useTranslation} from 'react-i18next'
+
+const styles = {
+  center: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+}
 
 function Title({label, children}) {
-  const {t} = useTranslation()
-
   return (
-    <h1 style={{display: 'flex', alignItems: 'center'}}>
-      <span style={{flex: 1}}>{t(label)}</span>
+    <h1 style={styles.center}>
+      <span style={{...styles.center, flex: 1}}>{label}</span>
       {children}
     </h1>
   )

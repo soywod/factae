@@ -179,7 +179,7 @@ function DocumentList(props) {
 
   return (
     <Container>
-      <Title label="documents">
+      <Title label={t('quotations-and-invoices')}>
         <Button.Group>
           <Button onClick={importDocument}>
             <Icon type="import" />
