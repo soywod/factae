@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {forwardRef, useState} from 'react'
 import {withRouter} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
@@ -14,6 +14,7 @@ import Row from 'antd/es/row'
 import Select from 'antd/es/select'
 import find from 'lodash/fp/find'
 import omit from 'lodash/fp/omit'
+import range from 'lodash/fp/range'
 
 import Title from '../../common/components/Title'
 import {getFields, validateFields} from '../../common/components/FormCard'
@@ -30,6 +31,29 @@ import {useDocuments} from '../hooks'
 import $document from '../service'
 import ModalPreview from './ModalPreview'
 import ModalSender from './ModalSender'
+
+const BACK_KEY_CODE = 8
+const ENTER_KEY_CODE = 13
+const DOT_KEY_CODE = 190
+const NUMBER_KEY_CODES = range(48, 58)
+const KEYPAD_KEY_CODES = range(96, 106)
+const ARROWS_KEY_CODES = range(37, 41)
+const INPUT_NUMBER_VALID_KEY_CODES = [
+  BACK_KEY_CODE,
+  DOT_KEY_CODE,
+  ...ARROWS_KEY_CODES,
+  ...NUMBER_KEY_CODES,
+  ...KEYPAD_KEY_CODES,
+]
+
+function handleInputNumberKeyDown(event) {
+  if (event.keyCode === ENTER_KEY_CODE) {
+    event.stopPropagation()
+    event.currentTarget.blur()
+  } else if (!INPUT_NUMBER_VALID_KEY_CODES.includes(event.keyCode)) {
+    event.preventDefault()
+  }
+}
 
 function EditDefaultDocument(props) {
   const profile = useProfile()
@@ -64,7 +88,7 @@ function EditDefaultDocument(props) {
     const fields = await validator(props.form)
     const nextItems = items.filter(item => item.unitPrice)
     const subtotal = nextItems.reduce((sum, {amount}) => sum + amount, 0)
-    const totalDiscount = -Math.round((subtotal * (discountRate || 0)) / 100)
+    const totalDiscount = -(subtotal * (discountRate || 0)) / 100
     const totalHT = subtotal + totalDiscount
     const totalTVA = Math.round(totalHT * document.taxRate) / 100
     const totalTTC = totalHT + totalTVA
@@ -139,6 +163,7 @@ function EditDefaultDocument(props) {
       {
         key: Date.now(),
         designation: '',
+        unit: 'unit-unit',
         unitPrice: document.rate || profile.rate || 0,
         quantity: 1,
       },
@@ -231,8 +256,8 @@ function EditDefaultDocument(props) {
   }
 
   const Footer = () => {
-    const subtotal = items.reduce((sum, {amount}) => sum + amount, 0)
-    const totalDiscount = -Math.round((subtotal * (discountRate || 0)) / 100)
+    const subtotal = items.reduce((sum, {amount}) => sum + (amount || 0), 0)
+    const totalDiscount = -(subtotal * (discountRate || 0)) / 100
     const totalHT = subtotal + totalDiscount
     const totalTVA = Math.round(totalHT * document.taxRate) / 100
     const totalTTC = totalHT + totalTVA
@@ -241,7 +266,7 @@ function EditDefaultDocument(props) {
       <>
         {discountRate > 0 && (
           <div
-            style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1rem'}}
+            style={{textAlign: 'right', fontStyle: 'italic'}}
             dangerouslySetInnerHTML={{
               __html: t('/documents.total', {
                 title: t('subtotal'),
@@ -251,7 +276,7 @@ function EditDefaultDocument(props) {
           />
         )}
         <div
-          style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1rem'}}
+          style={{textAlign: 'right', fontStyle: 'italic'}}
           dangerouslySetInnerHTML={{
             __html: t('/documents.total', {
               title: t(discountRate > 0 ? 'total-ht-with-discount' : 'total-ht'),
@@ -261,7 +286,7 @@ function EditDefaultDocument(props) {
         />
         {totalTVA > 0 && (
           <div
-            style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1rem'}}
+            style={{textAlign: 'right', fontStyle: 'italic'}}
             dangerouslySetInnerHTML={{
               __html: t('/documents.total', {
                 title: t('total-ttc'),
@@ -278,30 +303,46 @@ function EditDefaultDocument(props) {
     {
       title: <strong style={{marginLeft: 16}}>{t('description')}</strong>,
       dataIndex: 'designation',
-      key: 'designation',
-      editable: true,
       width: '50%',
+      EditField: forwardRef(({save, blur, ...props}, ref) => (
+        <Input ref={ref} onPressEnter={save} {...props} />
+      )),
     },
     {
       title: <strong>{t('quantity')}</strong>,
       dataIndex: 'quantity',
-      key: 'quantity',
-      editable: true,
       width: '10%',
+      EditField: forwardRef(({save, ...props}, ref) => (
+        <InputNumber ref={ref} onKeyDown={handleInputNumberKeyDown} min={0} step={1} {...props} />
+      )),
+    },
+    {
+      title: <strong>{t('unit')}</strong>,
+      dataIndex: 'unit',
+      width: '10%',
+      render: t,
+      EditField: forwardRef(({save, ...props}, ref) => (
+        <Select ref={ref} defaultOpen {...props}>
+          <Select.Option value="unit-hour">{t('unit-hour')}</Select.Option>
+          <Select.Option value="unit-day">{t('unit-day')}</Select.Option>
+          <Select.Option value="unit-delivery">{t('unit-delivery')}</Select.Option>
+          <Select.Option value="unit-unit">{t('unit-unit')}</Select.Option>
+        </Select>
+      )),
     },
     {
       title: <strong>{t('unit-price')}</strong>,
       dataIndex: 'unitPrice',
-      key: 'unitPrice',
-      editable: true,
-      width: '20%',
+      width: '15%',
       render: (_, {unitPrice}) => toEuro(unitPrice),
+      EditField: forwardRef(({save, ...props}, ref) => (
+        <InputNumber ref={ref} onKeyDown={handleInputNumberKeyDown} min={0} step={1} {...props} />
+      )),
     },
     {
       title: <strong>{t('amount')}</strong>,
       dataIndex: 'amount',
-      key: 'amount',
-      width: '20%',
+      width: '15%',
       render: (_, {amount}) => toEuro(amount),
     },
     {
