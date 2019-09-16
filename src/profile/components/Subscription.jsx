@@ -30,7 +30,6 @@ const StripeForm = injectStripe(({stripe}) => {
       const tokenRes = await stripe.createToken({name})
       const token = getOr(null, 'token.id', tokenRes)
       const charge = functions.httpsCallable('charge')
-      console.log(profile, token)
       const {data} = await charge({userId: profile.id, token})
 
       if (!data.success) {

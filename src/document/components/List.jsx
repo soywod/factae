@@ -150,7 +150,7 @@ function DocumentList(props) {
       },
     },
     {
-      title: <strong>{t('total-without-taxes')}</strong>,
+      title: <strong>{t('total-ht')}</strong>,
       dataIndex: 'total',
       key: 'total',
       sorter: (a, b) => a.totalHT - b.totalHT,
