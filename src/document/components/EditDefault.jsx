@@ -41,6 +41,8 @@ function EditDefaultDocument(props) {
   const [deleteVisible, setDeleteVisible] = useState(false)
   const [senderVisible, setSenderVisible] = useState(false)
   const [previewVisible, setPreviewVisible] = useState(false)
+  const [discountRate, setDiscountRate] = useState(document.discountRate || 0)
+
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
   const requiredRules = {rules: [{required: true, message: t('field-required')}]}
@@ -60,8 +62,10 @@ function EditDefaultDocument(props) {
 
   async function buildNextDocument(override = {}, validator = validateFields) {
     const fields = await validator(props.form)
-    const nextItems = items.filter(item => item.designation && item.unitPrice)
-    const totalHT = nextItems.reduce((sum, {amount}) => sum + amount, 0)
+    const nextItems = items.filter(item => item.unitPrice)
+    const subtotal = nextItems.reduce((sum, {amount}) => sum + amount, 0)
+    const totalDiscount = -Math.round((subtotal * (discountRate || 0)) / 100)
+    const totalHT = subtotal + totalDiscount
     const totalTVA = Math.round(totalHT * document.taxRate) / 100
     const totalTTC = totalHT + totalTVA
 
@@ -69,6 +73,8 @@ function EditDefaultDocument(props) {
       ...document,
       ...fields,
       items: nextItems,
+      subtotal,
+      totalDiscount,
       totalHT,
       totalTVA,
       totalTTC,
@@ -225,17 +231,30 @@ function EditDefaultDocument(props) {
   }
 
   const Footer = () => {
-    const totalHT = items.reduce((total, {amount = 0}) => total + amount, 0)
+    const subtotal = items.reduce((sum, {amount}) => sum + amount, 0)
+    const totalDiscount = -Math.round((subtotal * (discountRate || 0)) / 100)
+    const totalHT = subtotal + totalDiscount
     const totalTVA = Math.round(totalHT * document.taxRate) / 100
     const totalTTC = totalHT + totalTVA
 
     return (
       <>
+        {discountRate > 0 && (
+          <div
+            style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1rem'}}
+            dangerouslySetInnerHTML={{
+              __html: t('/documents.total', {
+                title: t('subtotal'),
+                value: toEuro(subtotal),
+              }),
+            }}
+          />
+        )}
         <div
           style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1rem'}}
           dangerouslySetInnerHTML={{
             __html: t('/documents.total', {
-              title: t('total-without-taxes'),
+              title: t(discountRate > 0 ? 'total-ht-with-discount' : 'total-ht'),
               value: toEuro(totalHT),
             }),
           }}
@@ -245,7 +264,7 @@ function EditDefaultDocument(props) {
             style={{textAlign: 'right', fontStyle: 'italic', fontSize: '1rem'}}
             dangerouslySetInnerHTML={{
               __html: t('/documents.total', {
-                title: t('total-with-taxes'),
+                title: t('total-ttc'),
                 value: toEuro(totalTTC),
               }),
             }}
@@ -305,6 +324,10 @@ function EditDefaultDocument(props) {
 
   const mainFields = [
     {
+      name: 'entitled',
+      Component: <Input size="large" autoFocus={Boolean(document.number)} />,
+    },
+    {
       name: 'client',
       Component: (
         <Select size="large">
@@ -350,8 +373,16 @@ function EditDefaultDocument(props) {
   }
 
   mainFields.push({
-    name: 'globalDiscount',
-    Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+    name: 'discountRate',
+    Component: (
+      <InputNumber
+        size="large"
+        min={0}
+        step={1}
+        onChange={setDiscountRate}
+        style={{width: '100%'}}
+      />
+    ),
   })
 
   const conditionFields = [
