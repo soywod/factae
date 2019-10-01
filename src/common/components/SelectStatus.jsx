@@ -19,7 +19,6 @@ import {validateFields} from './FormCard'
 
 function getStatusFromDocument(document) {
   if (document.cancelledAt) return 'cancelled'
-  if (document.declaredUrssafAt) return 'declared'
   if (document.type === 'quotation' && document.signedAt) return 'signed'
   if (document.type === 'invoice' && document.paidAt) return 'paid'
   if (document.type === 'credit' && document.refundedAt) return 'refunded'

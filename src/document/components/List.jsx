@@ -90,10 +90,6 @@ function DocumentList(props) {
   }
 
   function getCustomTag(document) {
-    if (document.declaredUrssafAt || document.declaredVatAt) {
-      return <CustomTag color="red">{t('declared')}</CustomTag>
-    }
-
     if (document.signedAt) {
       return <CustomTag color="green">{t('signed')}</CustomTag>
     }
