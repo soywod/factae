@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next'
 import {BrowserRouter as Router, Route, Redirect, Switch} from 'react-router-dom'
 import moment from 'moment'
 import Layout from 'antd/es/layout'
-import AntdProvider from 'antd/es/locale-provider'
+import AntdProvider from 'antd/es/config-provider'
 import en from 'antd/es/locale-provider/en_GB'
 import fr from 'antd/es/locale-provider/fr_FR'
 
