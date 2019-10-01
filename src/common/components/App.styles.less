@@ -1,26 +1,28 @@
 @import '~antd/dist/antd.less';
 
 @primary-color: lighten(#094269, 30%);
-@success-color: darken(#54D6B1, 10%);
+@success-color: darken(#54d6b1, 10%);
 @error-color: #f9676e;
 @link-color: @primary-color;
 @text-color-secondary: darken(@border-color-base, 10%);
 @border-color-light: #f0f2f5;
 @border-radius-base: 0;
 
-.ant-menu-dark, .ant-menu-dark .ant-menu-sub {
+.ant-menu-dark,
+.ant-menu-dark .ant-menu-sub {
   background: #001529;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 h1 {
@@ -71,7 +73,7 @@ iframe {
 #auth {
   margin-top: 150px;
   width: 450px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, .25);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
 
   @media (max-width: 900px) {
     margin-top: 0;
@@ -106,7 +108,7 @@ iframe {
   border-color: @border-color-base;
 }
 
-.ant-table-wrapper:not(.ant-table-editable) .ant-table {
+.ant-table-wrapper:not(.ant-table-editable):not(.ant-table-no-border) .ant-table {
   border: 1px solid @border-color-base;
 }
 
@@ -155,7 +157,7 @@ iframe {
 }
 
 .ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td {
-  background: rgba(@primary-color, .05);
+  background: rgba(@primary-color, 0.05);
 }
 
 .ant-card {
@@ -182,7 +184,7 @@ iframe {
 }
 
 .ant-notification {
-  margin: 0 16px 0 0;
+  margin: 0 24px 0 0;
 }
 
 .ant-notification-info {
@@ -202,6 +204,10 @@ iframe {
 .ant-notification-notice-close:hover,
 .anticon.ant-notification-notice-icon {
   color: #ffffff;
+}
+
+.ant-notification-notice {
+  margin-bottom: 24px;
 }
 
 .editable-cell {
@@ -241,6 +247,7 @@ iframe {
   }
 }
 
-.ant-card .ant-form-item-label > label {
+.ant-card .ant-form-item-label > label,
+.ant-tabs .ant-form-item-label > label {
   color: @text-color-secondary;
 }

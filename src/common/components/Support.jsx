@@ -70,7 +70,7 @@ function Support(props) {
   return (
     <Container>
       <Form noValidate layout="vertical" onSubmit={sendMail}>
-        <Title label="contact">
+        <Title label={t('need-help')}>
           <Button type="primary" htmlType="submit" disabled={loading}>
             <Icon type={loading ? 'loading' : 'mail'} />
             {t('send')}

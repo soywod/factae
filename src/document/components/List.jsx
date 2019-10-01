@@ -42,22 +42,22 @@ function DocumentList(props) {
   const tryAndNotify = useNotification()
   const {t, i18n} = useTranslation()
 
-  async function importDocument() {
-    await tryAndNotify(() => {
-      if (!isProfileValid(profile)) throw new Error('/profile.error-invalid')
-      if (isEmpty(clients)) throw new Error('/clients.error-empty')
+  // async function importDocument() {
+  //   await tryAndNotify(() => {
+  //     if (!isProfileValid(profile)) throw new Error('/profile.error-invalid')
+  //     if (isEmpty(clients)) throw new Error('/clients.error-empty')
 
-      const now = DateTime.local()
-      const document = {
-        id: $document.generateId(),
-        type: 'invoice',
-        createdAt: now.toISO(),
-        imported: true,
-      }
+  //     const now = DateTime.local()
+  //     const document = {
+  //       id: $document.generateId(),
+  //       type: 'invoice',
+  //       createdAt: now.toISO(),
+  //       imported: true,
+  //     }
 
-      props.history.push(`/documents/${document.id}`, document)
-    })
-  }
+  //     props.history.push(`/documents/${document.id}`, document)
+  //   })
+  // }
 
   async function createDocument() {
     await tryAndNotify(() => {
@@ -181,10 +181,6 @@ function DocumentList(props) {
     <Container>
       <Title label={t('quotations-and-invoices')}>
         <Button.Group>
-          <Button onClick={importDocument}>
-            <Icon type="import" />
-            {t('import')}
-          </Button>
           <Button type="primary" onClick={createDocument}>
             <Icon type="plus" />
             {t('new')}

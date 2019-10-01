@@ -8,10 +8,13 @@ import Table from 'antd/es/table'
 import Tag from 'antd/es/tag'
 import Tooltip from 'antd/es/tooltip'
 import find from 'lodash/fp/find'
+import getOr from 'lodash/fp/getOr'
+import pipe from 'lodash/fp/pipe'
 
 import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
 import {toEuro} from '../../utils/currency'
+import {useClients} from '../../client/hooks'
 import {useDocuments} from '../../document/hooks'
 import {useRecords} from '../hooks'
 import $record from '../service'
@@ -26,6 +29,7 @@ const CustomTag = ({children, ...props}) => (
 
 function RecordList(props) {
   const records = useRecords()
+  const clients = useClients()
   const documents = useDocuments()
   const [pagination, setPagination] = useState({})
   const {t, i18n} = useTranslation()
@@ -36,7 +40,7 @@ function RecordList(props) {
     }
   }, [records])
 
-  if (!records || !documents) {
+  if (!clients || !records || !documents) {
     return null
   }
 
@@ -47,6 +51,7 @@ function RecordList(props) {
       key: 'client',
       sorter: alphabeticSort('client'),
       width: '25%',
+      render: client => pipe([find({id: client}), getOr(client, 'name')])(clients),
     },
     {
       title: <strong>{t('nature')}</strong>,
@@ -132,7 +137,7 @@ function RecordList(props) {
 
   return (
     <Container>
-      <Title label="records">
+      <Title label={t('records')}>
         <Button type="primary" onClick={createRecord}>
           <Icon type="plus" />
           {t('new')}

@@ -74,14 +74,14 @@ function EditAccount({form}) {
         <Typography.Title level={2} style={styles.title}>
           {t('edit-password')}
         </Typography.Title>
-        <div>TODO</div>
+        <div>{t('soon')}</div>
 
         <Divider />
 
         <Typography.Title level={2} style={styles.title}>
           {t('delete-account')}
         </Typography.Title>
-        <div>TODO</div>
+        <div>{t('soon')}</div>
       </Col>
     </Row>
   )

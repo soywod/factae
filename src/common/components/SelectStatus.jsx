@@ -91,9 +91,6 @@ function SelectStatus(props) {
           {['sent', 'refunded'].includes(defaultStatus) && document.type === 'credit' && (
             <Select.Option value="refunded">{t('refunded')}</Select.Option>
           )}
-          {['paid', 'refunded', 'declared'].includes(defaultStatus) && (
-            <Select.Option value="declared">{t('declared')}</Select.Option>
-          )}
           {defaultStatus !== 'draft' && (
             <Select.Option value="cancelled">{t('cancelled')}</Select.Option>
           )}
