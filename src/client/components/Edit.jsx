@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {forwardRef, useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import Button from 'antd/es/button'
 import Card from 'antd/es/card'
@@ -8,7 +8,6 @@ import Icon from 'antd/es/icon'
 import Input from 'antd/es/input'
 import Popconfirm from 'antd/es/popconfirm'
 import Row from 'antd/es/row'
-import Typography from 'antd/es/typography'
 import find from 'lodash/fp/find'
 
 import EditableTable from '../../common/components/EditableTable'
@@ -19,28 +18,6 @@ import Container from '../../common/components/Container'
 import {useNotification} from '../../utils/notification'
 import {useClients} from '../hooks'
 import $client from '../service'
-
-const formItemLayout = {
-  labelCol: {
-    xs: {span: 24},
-    sm: {span: 24},
-    md: {span: 24},
-    lg: {span: 5},
-  },
-  wrapperCol: {
-    xs: {span: 24},
-    sm: {span: 24},
-    md: {span: 24},
-    lg: {span: 19},
-  },
-}
-
-const styles = {
-  title: {
-    fontSize: '1.2rem',
-    margin: '0 0 15px 0',
-  },
-}
 
 function EditClient(props) {
   const {form} = props
@@ -65,22 +42,28 @@ function EditClient(props) {
       title: <strong style={{marginLeft: 16}}>{t('name')}</strong>,
       dataIndex: 'name',
       key: 'name',
-      editable: true,
       width: '34%',
+      EditField: forwardRef(({save, blur, ...props}, ref) => (
+        <Input ref={ref} onPressEnter={save} {...props} />
+      )),
     },
     {
       title: <strong>{t('email')}</strong>,
       dataIndex: 'email',
       key: 'email',
-      editable: true,
       width: '33%',
+      EditField: forwardRef(({save, blur, ...props}, ref) => (
+        <Input ref={ref} onPressEnter={save} {...props} />
+      )),
     },
     {
       title: <strong>{t('phone')}</strong>,
       dataIndex: 'phone',
       key: 'phone',
-      editable: true,
       width: '33%',
+      EditField: forwardRef(({save, blur, ...props}, ref) => (
+        <Input ref={ref} onPressEnter={save} {...props} />
+      )),
     },
     {
       title: (
@@ -171,8 +154,8 @@ function EditClient(props) {
 
   return (
     <Container>
-      <Form noValidate {...formItemLayout} onSubmit={saveClient}>
-        <Title label="client">
+      <Form noValidate layout="vertical" onSubmit={saveClient}>
+        <Title label={t('client')}>
           <Button.Group>
             <Popconfirm
               title={t('/clients.confirm-deletion')}
@@ -192,29 +175,25 @@ function EditClient(props) {
           </Button.Group>
         </Title>
 
-        <Card>
-          <Row gutter={24}>
-            <Col xs={24} sm={24} md={24} lg={12}>
-              <Typography.Title level={2} style={styles.title}>
-                {t('client-identity')}
-              </Typography.Title>
-              <FormItems form={form} model={client} fields={companyFields} />
-            </Col>
-            <Col xs={24} sm={24} md={24} lg={12}>
-              <Typography.Title level={2} style={styles.title}>
-                {t('contacts')}
-              </Typography.Title>
-              <EditableTable
-                size="small"
-                pagination={false}
-                bodyStyle={{margin: 0}}
-                dataSource={contacts}
-                columns={columns}
-                onSave={saveContacts}
-              />
-            </Col>
-          </Row>
-        </Card>
+        <Row gutter={24}>
+          <Col lg={6}>
+            <FormItems form={props.form} model={client} fields={companyFields} />
+          </Col>
+          <Col lg={18}>
+            <Form.Item label={t('contacts')} required>
+              <Card bodyStyle={{padding: 0}}>
+                <EditableTable
+                  size="small"
+                  pagination={false}
+                  bodyStyle={{margin: 0}}
+                  dataSource={contacts}
+                  columns={columns}
+                  onSave={saveContacts}
+                />
+              </Card>
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </Container>
   )

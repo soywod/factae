@@ -68,7 +68,7 @@ function ClientList(props) {
 
   return (
     <Container>
-      <Title label="clients">
+      <Title label={t('clients')}>
         <Button type="primary" onClick={createClient}>
           <Icon type="plus" />
           {t('new')}

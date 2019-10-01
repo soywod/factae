@@ -151,7 +151,7 @@ function EditRecord(props) {
   return (
     <Container>
       <Form noValidate {...formItemLayout} onSubmit={saveRecord}>
-        <Title label="record">
+        <Title label={t('record')}>
           <Button.Group>
             <Popconfirm
               title={t('/records.confirm-deletion')}

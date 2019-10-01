@@ -66,7 +66,6 @@ function EditDefaultDocument(props) {
   const [senderVisible, setSenderVisible] = useState(false)
   const [previewVisible, setPreviewVisible] = useState(false)
   const [discountRate, setDiscountRate] = useState(document.discountRate || 0)
-
   const tryAndNotify = useNotification()
   const {t} = useTranslation()
   const requiredRules = {rules: [{required: true, message: t('field-required')}]}

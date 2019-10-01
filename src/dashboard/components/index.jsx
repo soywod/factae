@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import Col from 'antd/es/col'
 import Row from 'antd/es/row'
 import isEmpty from 'lodash/fp/isEmpty'
@@ -16,12 +17,14 @@ import ModulePendingQuotationsTurnover from './ModulePendingQuotationsTurnover'
 import ModulePendingInvoicesTurnover from './ModulePendingInvoicesTurnover'
 import ModuleThresholdTurnover from './ModuleThresholdTurnover'
 import ModuleFiscalYear from './ModuleFiscalYear'
+import ModuleDeclaration from './ModuleDeclaration'
 import ModuleWelcomeDemo from './ModuleWelcomeDemo'
 
 function Dashboard() {
   const profile = useProfile()
   const clients = useClients()
   const documents = useDocuments()
+  const {t} = useTranslation()
 
   if (!profile || !clients || !documents) {
     return null
@@ -34,7 +37,7 @@ function Dashboard() {
 
   return (
     <Container>
-      <Title label="dashboard" />
+      <Title label={t('dashboard')} />
 
       <Row gutter={15} style={{margin: '0 -7.5px 15px -7.5px'}}>
         {showStepper ? (
@@ -64,6 +67,11 @@ function Dashboard() {
       <Row gutter={15} style={{marginBottom: 15}}>
         <Col sm={24}>
           <ModuleFiscalYear />
+        </Col>
+      </Row>
+      <Row gutter={15} style={{marginBottom: 15}}>
+        <Col sm={24}>
+          <ModuleDeclaration />
         </Col>
       </Row>
       <ModuleWelcomeDemo />

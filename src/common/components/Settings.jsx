@@ -61,7 +61,7 @@ function Settings(props) {
   return (
     <Container>
       <Form noValidate {...formItemLayout} onSubmit={saveProfile}>
-        <Title label="settings">
+        <Title label={t('settings')}>
           <Button type="primary" htmlType="submit" disabled={loading}>
             <Icon type={loading ? 'loading' : 'save'} />
             {t('save')}
