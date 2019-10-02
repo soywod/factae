@@ -2,15 +2,11 @@ import React from 'react'
 import {useTranslation} from 'react-i18next'
 import Col from 'antd/es/col'
 import Row from 'antd/es/row'
-import isEmpty from 'lodash/fp/isEmpty'
 
+import {useOnboarding} from '../../utils/onboarding'
 import {useProfile} from '../../profile/hooks'
-import {useClients} from '../../client/hooks'
-import {useDocuments} from '../../document/hooks'
-import {isProfileValid} from '../../profile/utils'
 import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
-import ModuleStepper from './ModuleStepper'
 import ModuleMonthlyTurnover from './ModuleMonthlyTurnover'
 import ModuleQuarterlyTurnover from './ModuleQuarterlyTurnover'
 import ModulePendingQuotationsTurnover from './ModulePendingQuotationsTurnover'
@@ -20,49 +16,38 @@ import ModuleFiscalYear from './ModuleFiscalYear'
 import ModuleDeclaration from './ModuleDeclaration'
 import ModuleWelcomeDemo from './ModuleWelcomeDemo'
 
-function Dashboard() {
+function Dashboard(props) {
   const profile = useProfile()
-  const clients = useClients()
-  const documents = useDocuments()
+  const onboarding = useOnboarding()
   const {t} = useTranslation()
 
-  if (!profile || !clients || !documents) {
+  if (!onboarding || !profile) {
     return null
   }
 
-  const hasValidProfile = isProfileValid(profile)
-  const hasOneClient = !isEmpty(clients)
-  const hasOneDocument = !isEmpty(documents)
-  const showStepper = !hasValidProfile || !hasOneClient || !hasOneDocument
+  if (!onboarding.isDone) {
+    props.history.replace('/settings/account')
+    return null
+  }
 
   return (
     <Container>
       <Title label={t('dashboard')} />
 
       <Row gutter={15} style={{margin: '0 -7.5px 15px -7.5px'}}>
-        {showStepper ? (
-          <ModuleStepper
-            hasValidProfile={hasValidProfile}
-            hasOneClient={hasOneClient}
-            hasOneDocument={hasOneDocument}
-          />
-        ) : (
-          <>
-            <Col xs={24} sm={12} lg={12} xl={6}>
-              {profile.declarationPeriod === 'monthly' && <ModuleMonthlyTurnover />}
-              {profile.declarationPeriod === 'quarterly' && <ModuleQuarterlyTurnover />}
-            </Col>
-            <Col xs={24} sm={12} lg={12} xl={6}>
-              <ModulePendingQuotationsTurnover />
-            </Col>
-            <Col xs={24} sm={12} lg={12} xl={6}>
-              <ModulePendingInvoicesTurnover />
-            </Col>
-            <Col xs={24} sm={12} lg={12} xl={6}>
-              <ModuleThresholdTurnover />
-            </Col>
-          </>
-        )}
+        <Col xs={24} sm={12} lg={12} xl={6}>
+          {profile.declarationPeriod === 'monthly' && <ModuleMonthlyTurnover />}
+          {profile.declarationPeriod === 'quarterly' && <ModuleQuarterlyTurnover />}
+        </Col>
+        <Col xs={24} sm={12} lg={12} xl={6}>
+          <ModulePendingQuotationsTurnover />
+        </Col>
+        <Col xs={24} sm={12} lg={12} xl={6}>
+          <ModulePendingInvoicesTurnover />
+        </Col>
+        <Col xs={24} sm={12} lg={12} xl={6}>
+          <ModuleThresholdTurnover />
+        </Col>
       </Row>
       <Row gutter={15} style={{marginBottom: 15}}>
         <Col sm={24}>

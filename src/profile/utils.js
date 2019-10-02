@@ -1,10 +1,9 @@
-export function isProfileValid(profile) {
+export function isAccountProfileValid(profile) {
+  return profile.firstName && profile.lastName && profile.address && profile.zip && profile.city
+}
+
+export function isEnterpriseProfileValid(profile) {
   return (
-    profile.firstName &&
-    profile.lastName &&
-    profile.address &&
-    profile.zip &&
-    profile.city &&
     profile.siret &&
     profile.apeCode &&
     profile.activity &&
@@ -13,4 +12,4 @@ export function isProfileValid(profile) {
   )
 }
 
-export default {isProfileValid}
+export default {isAccountProfileValid, isEnterpriseProfileValid}

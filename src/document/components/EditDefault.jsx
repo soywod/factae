@@ -302,7 +302,7 @@ function EditDefaultDocument(props) {
     {
       title: <strong style={{marginLeft: 16}}>{t('description')}</strong>,
       dataIndex: 'designation',
-      width: '50%',
+      width: '45%',
       EditField: forwardRef(({save, blur, ...props}, ref) => (
         <Input ref={ref} onPressEnter={save} {...props} />
       )),
@@ -318,7 +318,7 @@ function EditDefaultDocument(props) {
     {
       title: <strong>{t('unit')}</strong>,
       dataIndex: 'unit',
-      width: '10%',
+      width: '15%',
       render: t,
       EditField: forwardRef(({save, ...props}, ref) => (
         <Select ref={ref} defaultOpen {...props}>
@@ -462,12 +462,12 @@ function EditDefaultDocument(props) {
             {document.sentAt ? (
               <Button disabled={loading} href={document.pdf} download={document.number}>
                 <Icon type="download" />
-                {t('pdf')}
+                {t('download')}
               </Button>
             ) : (
               <Button disabled={loading} onClick={previewDocument}>
-                <Icon type="eye" />
-                {t('pdf')}
+                <Icon type="download" />
+                {t('download')}
               </Button>
             )}
             <Button type="primary" htmlType="submit" disabled={loading}>

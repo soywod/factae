@@ -234,7 +234,7 @@
     "password-reset-successfully": "Un email vous a été envoyé avec la procédure à suivre.",
     "registered-successfully": "Compte créé avec succès. Vous bénéficiez de 30 jours d'essai gratuits.",
     "subscription-expired": "Votre abonnement a expiré.",
-    "tagline": "L'outil comptable dédié aux micro-entrepreneurs."
+    "tagline": "L'outil de facturation dédié aux micro-entrepreneurs."
   },
   "/dashboard": {
     "current-declaration": "Correspond à la liste des factures à prendre en compte lors de votre prochaine déclaration.",

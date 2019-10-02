@@ -5,6 +5,7 @@ import Icon from 'antd/es/icon'
 import Layout from 'antd/es/layout'
 import Menu from 'antd/es/menu'
 
+import {useOnboarding} from '../../utils/onboarding'
 import {useAuth} from '../../auth/hooks'
 import Link from './Link'
 import Logo from './Logo'
@@ -38,9 +39,10 @@ function Sider(props) {
   const {history} = props
   const route = history.location.pathname
   const user = useAuth()
+  const onboarding = useOnboarding()
   const {t} = useTranslation()
 
-  if (!user || route === '/logout') {
+  if (!user || !onboarding || route === '/logout') {
     return null
   }
 
@@ -60,6 +62,20 @@ function Sider(props) {
     props.onCollapse(collapsed ? 80 : 200)
   }
 
+  const mainMenu = []
+
+  if (onboarding.isProfileValid) {
+    mainMenu.push()
+  }
+
+  if (onboarding.hasOneClient) {
+    mainMenu.push()
+  }
+
+  if (onboarding.hasOneDocument) {
+    mainMenu.shift()
+  }
+
   return (
     <Layout.Sider breakpoint="md" onCollapse={handleCollapse} style={styles.container}>
       <Link to="/" style={styles.logo}>
@@ -71,19 +87,19 @@ function Sider(props) {
         selectedKeys={selectedKeys}
         mode="inline"
       >
-        <Menu.Item key="/">
+        <Menu.Item key="/" disabled={!onboarding.isDone}>
           <Icon type="dashboard" />
           <span>{t('dashboard')}</span>
         </Menu.Item>
-        <Menu.Item key="/clients">
+        <Menu.Item key="/clients" disabled={!onboarding.hasValidProfile}>
           <Icon type="team" />
           <span>{t('clients')}</span>
         </Menu.Item>
-        <Menu.Item key="/documents">
+        <Menu.Item key="/documents" disabled={!onboarding.hasOneClient}>
           <Icon type="file-text" />
           <span>{t('quotations-and-invoices')}</span>
         </Menu.Item>
-        <Menu.Item key="/records">
+        <Menu.Item key="/records" disabled={!onboarding.isDone}>
           <Icon type="read" />
           <span>{t('records')}</span>
         </Menu.Item>

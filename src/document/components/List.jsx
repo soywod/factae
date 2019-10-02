@@ -18,9 +18,9 @@ import pipe from 'lodash/fp/pipe'
 import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
 import {toEuro} from '../../utils/currency'
+import {useOnboarding} from '../../utils/onboarding'
 import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
-import {isProfileValid} from '../../profile/utils'
 import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
 import $document from '../service'
@@ -40,6 +40,7 @@ function DocumentList(props) {
   const documents = useDocuments()
   const [pagination, setPagination] = useState({})
   const tryAndNotify = useNotification()
+  const onboarding = useOnboarding()
   const {t, i18n} = useTranslation()
 
   // async function importDocument() {
@@ -59,9 +60,19 @@ function DocumentList(props) {
   //   })
   // }
 
+  useEffect(() => {
+    if (documents) {
+      setPagination({...pagination, total: documents.length})
+    }
+  }, [documents])
+
+  if (!onboarding || !profile || !clients || !documents) {
+    return null
+  }
+
   async function createDocument() {
     await tryAndNotify(() => {
-      if (!isProfileValid(profile)) throw new Error('/profile.error-invalid')
+      if (!onboarding.hasValidProfile) throw new Error('/profile.error-invalid')
       if (isEmpty(clients)) throw new Error('/clients.error-empty')
 
       const now = DateTime.local()
@@ -77,16 +88,6 @@ function DocumentList(props) {
 
       props.history.push(`/documents/${document.id}`, document)
     })
-  }
-
-  useEffect(() => {
-    if (documents) {
-      setPagination({...pagination, total: documents.length})
-    }
-  }, [documents])
-
-  if (!profile || !clients || !documents) {
-    return null
   }
 
   function getCustomTag(document) {

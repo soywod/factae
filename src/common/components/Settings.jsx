@@ -5,6 +5,7 @@ import Form from 'antd/es/form'
 import Icon from 'antd/es/icon'
 import Tabs from 'antd/es/tabs'
 
+import {useOnboarding} from '../../utils/onboarding'
 import EditAccount from '../../profile/components/EditAccount'
 import EditEnterprise from '../../profile/components/EditEnterprise'
 import EditInvoicing from '../../profile/components/EditInvoicing'
@@ -34,7 +35,16 @@ function Settings(props) {
   const [activeKey, setActiveKey] = useState(defaultActiveKey)
   const [loading, setLoading] = useState(false)
   const tryAndNotify = useNotification()
+  const onboarding = useOnboarding()
   const {t} = useTranslation()
+
+  useEffect(() => {
+    setActiveKey(props.match.params.tab)
+  }, [props.match.params.tab])
+
+  if (!onboarding) {
+    return null
+  }
 
   function changeTab(tab) {
     props.history.push(`/settings/${tab}`)
@@ -54,9 +64,29 @@ function Settings(props) {
     setLoading(false)
   }
 
-  useEffect(() => {
-    setActiveKey(props.match.params.tab)
-  }, [props.match.params.tab])
+  function getTab(section) {
+    if (onboarding.isDone) {
+      return t('my-' + section)
+    }
+
+    let icon = (
+      <Icon className="success" theme="filled" type="check-circle" style={{marginRight: 8}} />
+    )
+
+    if (
+      (section === 'account' && !onboarding.hasValidAccountProfile) ||
+      (section === 'enterprise' && !onboarding.hasValidEnterpriseProfile)
+    ) {
+      icon = <Icon className="error" theme="filled" type="close-circle" style={{marginRight: 8}} />
+    }
+
+    return (
+      <>
+        {icon}
+        {t(`my-${section}`)}
+      </>
+    )
+  }
 
   return (
     <Container>
@@ -74,13 +104,13 @@ function Settings(props) {
           activeKey={activeKey}
           onChange={changeTab}
         >
-          <Tabs.TabPane tab={t('my-account')} key="account">
+          <Tabs.TabPane tab={getTab('account')} key="account">
             <EditAccount form={props.form} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab={t('my-enterprise')} key="enterprise">
+          <Tabs.TabPane tab={getTab('enterprise')} key="enterprise">
             <EditEnterprise form={props.form} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab={t('my-invoicing')} key="invoicing">
+          <Tabs.TabPane tab={getTab('invoicing')} key="invoicing">
             <EditInvoicing form={props.form} />
           </Tabs.TabPane>
         </Tabs>
