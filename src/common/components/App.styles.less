@@ -259,3 +259,89 @@ iframe {
 .ant-tabs .ant-form-item-label > label {
   color: @text-color-secondary;
 }
+
+// -- New style with Ant Design variables --
+
+.ant-sider {
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+}
+
+.ant-sider-burger {
+  display: none;
+  font-size: @heading-3-size;
+  color: @black;
+
+  &:hover,
+  &:focus {
+    color: @black;
+  }
+
+  @media (max-width: @screen-xs-max) {
+    display: inline-block;
+    position: fixed;
+    right: 0;
+    top: 0;
+    padding: @padding-sm;
+    height: auto;
+    z-index: 3;
+    color: @black;
+  }
+}
+
+.ant-sider-logo {
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: @padding-sm 0 !important;
+  margin: @padding-lg 0;
+
+  @media (max-width: @screen-sm-max) {
+    padding: @padding-xs !important;
+    margin: @padding-sm 0;
+  }
+}
+
+.ant-layout-sider-container {
+  height: 100vh;
+  left: 0;
+  position: fixed;
+}
+
+.ant-layout-sider {
+  .set-width(200px);
+  overflow: hidden;
+  z-index: 2;
+
+  @media (max-width: @screen-sm-max) {
+    .set-width(@menu-collapsed-width);
+  }
+
+  @media (max-width: @screen-xs-max) {
+    &.ant-layout-sider-off {
+      .set-width(0);
+    }
+  }
+
+  .set-width(@width) {
+    width: @width !important;
+    max-width: @width !important;
+    min-width: @width !important;
+    flex: 0 0 @width !important;
+  }
+}
+
+.ant-layout-content {
+  margin-left: 200px;
+
+  @media (max-width: @screen-sm-max) {
+    margin-left: @menu-collapsed-width;
+  }
+
+  @media (max-width: @screen-xs-max) {
+    margin-left: 0;
+  }
+}

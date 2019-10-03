@@ -2,10 +2,12 @@ import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {BrowserRouter as Router, Route, Redirect, Switch} from 'react-router-dom'
 import moment from 'moment'
-import Layout from 'antd/es/layout'
-import AntdProvider from 'antd/es/config-provider'
-import en from 'antd/es/locale-provider/en_GB'
-import fr from 'antd/es/locale-provider/fr_FR'
+import AntdProvider from 'antd/lib/config-provider'
+import Button from 'antd/lib/button'
+import Icon from 'antd/lib/icon'
+import Layout from 'antd/lib/layout'
+import en from 'antd/lib/locale-provider/en_GB'
+import fr from 'antd/lib/locale-provider/fr_FR'
 
 import {useAuthService} from '../../auth/hooks'
 import {useProfileService} from '../../profile/hooks'
@@ -34,7 +36,7 @@ import './App.styles.less'
 const locales = {en, fr}
 
 function App() {
-  const [width, setWidth] = useState(200)
+  const [siderVisible, setSiderVisible] = useState(false)
   const {i18n} = useTranslation()
 
   useAuthService()
@@ -51,10 +53,20 @@ function App() {
     <AntdProvider locale={locales[i18n.language]}>
       <Layout>
         <Router>
-          <Layout.Sider style={{height: '100vh', left: 0, overflow: 'auto', position: 'fixed'}}>
-            <Sider onCollapse={setWidth} />
+          <Button
+            className="ant-sider-burger"
+            type="link"
+            size="large"
+            onClick={() => setSiderVisible(!siderVisible)}
+          >
+            <Icon type="menu" />
+          </Button>
+          <Layout.Sider
+            className={`ant-layout-sider-container ant-layout-sider-${siderVisible ? 'on' : 'off'}`}
+          >
+            <Sider />
           </Layout.Sider>
-          <Layout style={{marginLeft: width, zIndex: 1}}>
+          <Layout className="ant-layout-content">
             <Switch>
               <Route path="/auth" component={Auth} />
               <Route path="/demo" component={Auth.Demo} />

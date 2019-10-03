@@ -1,9 +1,9 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
-import Icon from 'antd/es/icon'
-import Layout from 'antd/es/layout'
-import Menu from 'antd/es/menu'
+import Icon from 'antd/lib/icon'
+import Layout from 'antd/lib/layout'
+import Menu from 'antd/lib/menu'
 
 import {useOnboarding} from '../../utils/onboarding'
 import {useAuth} from '../../auth/hooks'
@@ -11,18 +11,6 @@ import Link from './Link'
 import Logo from './Logo'
 
 const styles = {
-  container: {
-    height: '100%',
-    minHeight: '100%',
-  },
-  logo: {
-    margin: 'auto',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 63,
-    padding: 10,
-  },
   bottomNav: {
     marginTop: 30,
   },
@@ -58,10 +46,6 @@ function Sider(props) {
     } else return [route]
   })()
 
-  function handleCollapse(collapsed) {
-    props.onCollapse(collapsed ? 80 : 200)
-  }
-
   const mainMenu = []
 
   if (onboarding.isProfileValid) {
@@ -77,8 +61,8 @@ function Sider(props) {
   }
 
   return (
-    <Layout.Sider breakpoint="md" onCollapse={handleCollapse} style={styles.container}>
-      <Link to="/" style={styles.logo}>
+    <Layout.Sider className="ant-sider" breakpoint="md">
+      <Link to="/" className="ant-sider-logo">
         <Logo light="#ffffff" dark="hsla(0, 0%, 100%, .65)" />
       </Link>
       <Menu
