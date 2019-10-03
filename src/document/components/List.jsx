@@ -15,7 +15,6 @@ import omit from 'lodash/fp/omit'
 import orderBy from 'lodash/fp/orderBy'
 import pipe from 'lodash/fp/pipe'
 
-import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
 import {toEuro} from '../../utils/currency'
 import {useOnboarding} from '../../utils/onboarding'
@@ -175,7 +174,7 @@ function DocumentList(props) {
   ])
 
   return (
-    <Container>
+    <>
       <Title label={t('quotations-and-invoices')}>
         <Button.Group>
           <Button type="primary" onClick={createDocument}>
@@ -195,7 +194,7 @@ function DocumentList(props) {
         })}
         bodyStyle={{background: '#ffffff', cursor: 'pointer'}}
       />
-    </Container>
+    </>
   )
 }
 

@@ -12,7 +12,6 @@ import Card from 'antd/es/card'
 import find from 'lodash/fp/find'
 
 import FormItems from '../../common/components/FormItems'
-import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
 import {validateFields} from '../../common/components/FormCard'
 import AutoCompleteClients from '../../common/components/AutoCompleteClients'
@@ -149,44 +148,42 @@ function EditRecord(props) {
   ]
 
   return (
-    <Container>
-      <Form noValidate {...formItemLayout} onSubmit={saveRecord}>
-        <Title label={t('record')}>
-          <Button.Group>
-            <Popconfirm
-              title={t('/records.confirm-deletion')}
-              onConfirm={deleteRecord}
-              okText={t('yes')}
-              cancelText={t('no')}
-            >
-              <Button type="danger" disabled={loading}>
-                <Icon type="delete" />
-                {t('delete')}
-              </Button>
-            </Popconfirm>
-
-            <Button type="primary" htmlType="submit" disabled={loading}>
-              <Icon type={loading ? 'loading' : 'save'} />
-              {t('save')}
+    <Form noValidate {...formItemLayout} onSubmit={saveRecord}>
+      <Title label={t('record')}>
+        <Button.Group>
+          <Popconfirm
+            title={t('/records.confirm-deletion')}
+            onConfirm={deleteRecord}
+            okText={t('yes')}
+            cancelText={t('no')}
+          >
+            <Button type="danger" disabled={loading}>
+              <Icon type="delete" />
+              {t('delete')}
             </Button>
-          </Button.Group>
-        </Title>
+          </Popconfirm>
 
-        <Card>
-          <Typography.Title level={2} style={styles.title}>
-            {t('general-informations')}
-          </Typography.Title>
-          <FormItems form={form} model={record} fields={mainFields} />
+          <Button type="primary" htmlType="submit" disabled={loading}>
+            <Icon type={loading ? 'loading' : 'save'} />
+            {t('save')}
+          </Button>
+        </Button.Group>
+      </Title>
 
-          <Divider />
+      <Card>
+        <Typography.Title level={2} style={styles.title}>
+          {t('general-informations')}
+        </Typography.Title>
+        <FormItems form={form} model={record} fields={mainFields} />
 
-          <Typography.Title level={2} style={styles.title}>
-            {t('amounts')}
-          </Typography.Title>
-          <FormItems form={form} model={record} fields={totalFields} />
-        </Card>
-      </Form>
-    </Container>
+        <Divider />
+
+        <Typography.Title level={2} style={styles.title}>
+          {t('amounts')}
+        </Typography.Title>
+        <FormItems form={form} model={record} fields={totalFields} />
+      </Card>
+    </Form>
   )
 }
 

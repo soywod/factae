@@ -5,7 +5,6 @@ import Row from 'antd/es/row'
 
 import {useOnboarding} from '../../utils/onboarding'
 import {useProfile} from '../../profile/hooks'
-import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
 import ModuleMonthlyTurnover from './ModuleMonthlyTurnover'
 import ModuleQuarterlyTurnover from './ModuleQuarterlyTurnover'
@@ -31,7 +30,7 @@ function Dashboard(props) {
   }
 
   return (
-    <Container>
+    <>
       <Title label={t('dashboard')} />
 
       <Row gutter={15} style={{margin: '0 -7.5px 15px -7.5px'}}>
@@ -60,7 +59,7 @@ function Dashboard(props) {
         </Col>
       </Row>
       <ModuleWelcomeDemo />
-    </Container>
+    </>
   )
 }
 

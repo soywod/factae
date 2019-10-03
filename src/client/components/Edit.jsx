@@ -14,7 +14,6 @@ import EditableTable from '../../common/components/EditableTable'
 import Title from '../../common/components/Title'
 import {validateFields} from '../../common/components/FormCard'
 import FormItems from '../../common/components/FormItems'
-import Container from '../../common/components/Container'
 import {useNotification} from '../../utils/notification'
 import {useClients} from '../hooks'
 import $client from '../service'
@@ -153,49 +152,47 @@ function EditClient(props) {
   ]
 
   return (
-    <Container>
-      <Form noValidate layout="vertical" onSubmit={saveClient}>
-        <Title label={t('client')}>
-          <Button.Group>
-            <Popconfirm
-              title={t('/clients.confirm-deletion')}
-              onConfirm={deleteClient}
-              okText={t('yes')}
-              cancelText={t('no')}
-            >
-              <Button type="danger" disabled={loading}>
-                <Icon type="delete" />
-                {t('delete')}
-              </Button>
-            </Popconfirm>
-            <Button type="primary" htmlType="submit" disabled={loading}>
-              <Icon type={loading ? 'loading' : 'save'} />
-              {t('save')}
+    <Form noValidate layout="vertical" onSubmit={saveClient}>
+      <Title label={t('client')}>
+        <Button.Group>
+          <Popconfirm
+            title={t('/clients.confirm-deletion')}
+            onConfirm={deleteClient}
+            okText={t('yes')}
+            cancelText={t('no')}
+          >
+            <Button type="danger" disabled={loading}>
+              <Icon type="delete" />
+              {t('delete')}
             </Button>
-          </Button.Group>
-        </Title>
+          </Popconfirm>
+          <Button type="primary" htmlType="submit" disabled={loading}>
+            <Icon type={loading ? 'loading' : 'save'} />
+            {t('save')}
+          </Button>
+        </Button.Group>
+      </Title>
 
-        <Row gutter={24}>
-          <Col lg={6}>
-            <FormItems form={props.form} model={client} fields={companyFields} />
-          </Col>
-          <Col lg={18}>
-            <Form.Item label={t('contacts')} required>
-              <Card bodyStyle={{padding: 0}}>
-                <EditableTable
-                  size="small"
-                  pagination={false}
-                  bodyStyle={{margin: 0}}
-                  dataSource={contacts}
-                  columns={columns}
-                  onSave={saveContacts}
-                />
-              </Card>
-            </Form.Item>
-          </Col>
-        </Row>
-      </Form>
-    </Container>
+      <Row gutter={24}>
+        <Col lg={6}>
+          <FormItems form={props.form} model={client} fields={companyFields} />
+        </Col>
+        <Col lg={18}>
+          <Form.Item label={t('contacts')} required>
+            <Card bodyStyle={{padding: 0}}>
+              <EditableTable
+                size="small"
+                pagination={false}
+                bodyStyle={{margin: 0}}
+                dataSource={contacts}
+                columns={columns}
+                onSave={saveContacts}
+              />
+            </Card>
+          </Form.Item>
+        </Col>
+      </Row>
+    </Form>
   )
 }
 

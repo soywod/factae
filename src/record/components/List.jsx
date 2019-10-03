@@ -11,7 +11,6 @@ import find from 'lodash/fp/find'
 import getOr from 'lodash/fp/getOr'
 import pipe from 'lodash/fp/pipe'
 
-import Container from '../../common/components/Container'
 import Title from '../../common/components/Title'
 import {toEuro} from '../../utils/currency'
 import {useClients} from '../../client/hooks'
@@ -136,7 +135,7 @@ function RecordList(props) {
   const dataSource = records.map(record => ({...record, key: record.id}))
 
   return (
-    <Container>
+    <>
       <Title label={t('records')}>
         <Button type="primary" onClick={createRecord}>
           <Icon type="plus" />
@@ -162,7 +161,7 @@ function RecordList(props) {
         })}
         bodyStyle={{background: '#ffffff', cursor: 'pointer'}}
       />
-    </Container>
+    </>
   )
 }
 

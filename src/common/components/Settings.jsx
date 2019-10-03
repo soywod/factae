@@ -12,7 +12,6 @@ import EditInvoicing from '../../profile/components/EditInvoicing'
 import {useNotification} from '../../utils/notification'
 import $profile from '../../profile/service'
 import {validateFields} from './FormCard'
-import Container from './Container'
 import Title from './Title'
 
 const formItemLayout = {
@@ -89,33 +88,31 @@ function Settings(props) {
   }
 
   return (
-    <Container>
-      <Form noValidate {...formItemLayout} onSubmit={saveProfile}>
-        <Title label={t('settings')}>
-          <Button type="primary" htmlType="submit" disabled={loading}>
-            <Icon type={loading ? 'loading' : 'save'} />
-            {t('save')}
-          </Button>
-        </Title>
+    <Form noValidate {...formItemLayout} onSubmit={saveProfile}>
+      <Title label={t('settings')}>
+        <Button type="primary" htmlType="submit" disabled={loading}>
+          <Icon type={loading ? 'loading' : 'save'} />
+          {t('save')}
+        </Button>
+      </Title>
 
-        <Tabs
-          type="card"
-          defaultActiveKey={defaultActiveKey}
-          activeKey={activeKey}
-          onChange={changeTab}
-        >
-          <Tabs.TabPane tab={getTab('account')} key="account">
-            <EditAccount form={props.form} />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab={getTab('enterprise')} key="enterprise">
-            <EditEnterprise form={props.form} />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab={getTab('invoicing')} key="invoicing">
-            <EditInvoicing form={props.form} />
-          </Tabs.TabPane>
-        </Tabs>
-      </Form>
-    </Container>
+      <Tabs
+        type="card"
+        defaultActiveKey={defaultActiveKey}
+        activeKey={activeKey}
+        onChange={changeTab}
+      >
+        <Tabs.TabPane tab={getTab('account')} key="account">
+          <EditAccount form={props.form} />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={getTab('enterprise')} key="enterprise">
+          <EditEnterprise form={props.form} />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={getTab('invoicing')} key="invoicing">
+          <EditInvoicing form={props.form} />
+        </Tabs.TabPane>
+      </Tabs>
+    </Form>
   )
 }
 

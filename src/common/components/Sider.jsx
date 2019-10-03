@@ -2,7 +2,6 @@ import React from 'react'
 import {withRouter} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
 import Icon from 'antd/lib/icon'
-import Layout from 'antd/lib/layout'
 import Menu from 'antd/lib/menu'
 
 import {useOnboarding} from '../../utils/onboarding'
@@ -61,8 +60,8 @@ function Sider(props) {
   }
 
   return (
-    <Layout.Sider className="ant-sider" breakpoint="md">
-      <Link to="/" className="ant-sider-logo">
+    <>
+      <Link to="/" className="ant-layout-sider-logo">
         <Logo light="#ffffff" dark="hsla(0, 0%, 100%, .65)" />
       </Link>
       <Menu
@@ -111,7 +110,7 @@ function Sider(props) {
           </Menu.Item>
         </Menu>
       </div>
-    </Layout.Sider>
+    </>
   )
 }
 

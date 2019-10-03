@@ -7,7 +7,6 @@ import Table from 'antd/es/table'
 import omit from 'lodash/fp/omit'
 
 import Title from '../../common/components/Title'
-import Container from '../../common/components/Container'
 import {useClients} from '../hooks'
 import $client from '../service'
 
@@ -67,7 +66,7 @@ function ClientList(props) {
   const dataSource = clients.map(client => ({...client, key: client.id}))
 
   return (
-    <Container>
+    <>
       <Title label={t('clients')}>
         <Button type="primary" onClick={createClient}>
           <Icon type="plus" />
@@ -85,7 +84,7 @@ function ClientList(props) {
         })}
         bodyStyle={{background: '#ffffff', cursor: 'pointer'}}
       />
-    </Container>
+    </>
   )
 }
 

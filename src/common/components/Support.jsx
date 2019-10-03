@@ -11,7 +11,6 @@ import $document from '../../document/service'
 import {useProfile} from '../../profile/hooks'
 import Title from './Title'
 import FormCard, {validateFields} from './FormCard'
-import Container from './Container'
 
 const categories = ['question', 'feedback', 'bug', 'feature', 'other']
 
@@ -68,18 +67,16 @@ function Support(props) {
   ]
 
   return (
-    <Container>
-      <Form noValidate layout="vertical" onSubmit={sendMail}>
-        <Title label={t('need-help')}>
-          <Button type="primary" htmlType="submit" disabled={loading}>
-            <Icon type={loading ? 'loading' : 'mail'} />
-            {t('send')}
-          </Button>
-        </Title>
+    <Form noValidate layout="vertical" onSubmit={sendMail}>
+      <Title label={t('need-help')}>
+        <Button type="primary" htmlType="submit" disabled={loading}>
+          <Icon type={loading ? 'loading' : 'mail'} />
+          {t('send')}
+        </Button>
+      </Title>
 
-        <FormCard form={props.form} model={{}} fields={fields} />
-      </Form>
-    </Container>
+      <FormCard form={props.form} model={{}} fields={fields} />
+    </Form>
   )
 }
 

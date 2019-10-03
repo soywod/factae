@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import find from 'lodash/fp/find'
 
-import Container from '../../common/components/Container'
 import {useDocuments} from '../hooks'
 import EditDefault from './EditDefault'
 import EditImport from './EditImport'
@@ -22,11 +21,7 @@ function EditDocument(props) {
 
   const EditComponent = document.imported ? EditImport : EditDefault
 
-  return (
-    <Container>
-      <EditComponent document={document} />
-    </Container>
-  )
+  return <EditComponent document={document} />
 }
 
 export default EditDocument

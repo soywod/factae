@@ -30,12 +30,7 @@ const styles = {
     display: 'flex',
     height: '100vh',
     justifyContent: 'center',
-    left: 0,
-    position: 'fixed',
-    right: 0,
-    top: 0,
     width: '100%',
-    zIndex: 1,
   },
   card: {
     maxWidth: 450,
@@ -58,6 +53,11 @@ const styles = {
   selectLanguage: {
     position: 'absolute',
     left: 0,
+    top: 0,
+  },
+  demo: {
+    position: 'absolute',
+    right: 0,
     top: 0,
   },
 }
@@ -123,6 +123,9 @@ const Auth = withHOCs(props => {
             <Logo width={150} />
             <SelectLanguage style={styles.selectLanguage} />
             <div style={styles.subtitle}>{t('/auth.tagline')}</div>
+            <Link to="/demo" tabIndex="-1" style={styles.demo}>
+              {t('demo')} <Icon type="arrow-right" style={{marginTop: 5}} />
+            </Link>
           </div>
         }
       >
@@ -139,11 +142,6 @@ const Auth = withHOCs(props => {
                 <Input
                   size="large"
                   prefix={<Icon type="user" style={{color: 'rgba(0, 0, 0, .25)'}} />}
-                  suffix={
-                    <Link to="/demo" tabIndex="-1" style={{display: 'flex'}}>
-                      {t('demo')} <Icon type="arrow-right" style={{marginTop: 5}} />
-                    </Link>
-                  }
                   placeholder={t('email')}
                   autoComplete="email"
                   autoFocus={!Boolean(defaultEmail)}

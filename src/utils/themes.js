@@ -18,5 +18,5 @@ export function useThemes() {
 }
 
 export function getThemeUrl(theme) {
-  return `https://github.com/factae/functions/blob/master/functions/themes/${theme}/preview.pdf`
+  return `https://raw.githubusercontent.com/factae/functions/master/functions/themes/${theme}/preview.pdf`
 }

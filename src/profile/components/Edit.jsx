@@ -7,7 +7,6 @@ import Input from 'antd/es/input'
 import InputNumber from 'antd/es/input-number'
 import Select from 'antd/es/select'
 
-import Container from '../../common/components/Container'
 import DatePicker from '../../common/components/DatePicker'
 import DocumentThemePicker from '../../common/components/DocumentThemePicker'
 import Title from '../../common/components/Title'
@@ -128,20 +127,18 @@ function Profile({form}) {
   const fields = [contactFields, companyFields, conditionsFields, bankFields, preferencesFields]
 
   return (
-    <Container>
-      <Form noValidate layout="vertical" onSubmit={saveProfile}>
-        <Title label="profile">
-          <Button type="primary" htmlType="submit" disabled={loading}>
-            <Icon type={loading ? 'loading' : 'save'} />
-            {t('save')}
-          </Button>
-        </Title>
+    <Form noValidate layout="vertical" onSubmit={saveProfile}>
+      <Title label="profile">
+        <Button type="primary" htmlType="submit" disabled={loading}>
+          <Icon type={loading ? 'loading' : 'save'} />
+          {t('save')}
+        </Button>
+      </Title>
 
-        {fields.map((props, key) => (
-          <FormCard key={key} form={form} model={profile} {...props} />
-        ))}
-      </Form>
-    </Container>
+      {fields.map((props, key) => (
+        <FormCard key={key} form={form} model={profile} {...props} />
+      ))}
+    </Form>
   )
 }
 
