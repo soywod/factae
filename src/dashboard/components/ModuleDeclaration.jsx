@@ -95,6 +95,7 @@ function ModuleDeclaration(props) {
   ]
 
   const dataSource = documents.filter(d => {
+    if (d.imported) return false
     if (d.type !== 'invoice') return false
     return d.paidAt && !d[`declared${upperFirst(type)}At`]
   })

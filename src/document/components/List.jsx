@@ -42,23 +42,6 @@ function DocumentList(props) {
   const onboarding = useOnboarding()
   const {t, i18n} = useTranslation()
 
-  // async function importDocument() {
-  //   await tryAndNotify(() => {
-  //     if (!isProfileValid(profile)) throw new Error('/profile.error-invalid')
-  //     if (isEmpty(clients)) throw new Error('/clients.error-empty')
-
-  //     const now = DateTime.local()
-  //     const document = {
-  //       id: $document.generateId(),
-  //       type: 'invoice',
-  //       createdAt: now.toISO(),
-  //       imported: true,
-  //     }
-
-  //     props.history.push(`/documents/${document.id}`, document)
-  //   })
-  // }
-
   useEffect(() => {
     if (documents) {
       setPagination({...pagination, total: documents.length})
@@ -67,6 +50,23 @@ function DocumentList(props) {
 
   if (!onboarding || !profile || !clients || !documents) {
     return null
+  }
+
+  async function importDocument() {
+    await tryAndNotify(() => {
+      if (!onboarding.hasValidProfile) throw new Error('/profile.error-invalid')
+      if (isEmpty(clients)) throw new Error('/clients.error-empty')
+
+      const now = DateTime.local()
+      const document = {
+        id: $document.generateId(),
+        type: 'invoice',
+        createdAt: now.toISO(),
+        imported: true,
+      }
+
+      props.history.push(`/documents/${document.id}`, document)
+    })
   }
 
   async function createDocument() {
@@ -177,6 +177,10 @@ function DocumentList(props) {
     <>
       <Title label={t('quotations-and-invoices')}>
         <Button.Group>
+          <Button type="dashed" onClick={importDocument}>
+            <Icon type="import" />
+            {t('import')}
+          </Button>
           <Button type="primary" onClick={createDocument}>
             <Icon type="plus" />
             {t('new')}
