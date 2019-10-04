@@ -1,22 +1,21 @@
 import React, {useState} from 'react'
 import {withRouter} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
-import {DateTime} from 'luxon'
-import Button from 'antd/es/button'
-import Card from 'antd/es/card'
-import Col from 'antd/es/col'
-import Form from 'antd/es/form'
-import Icon from 'antd/es/icon'
-import InputNumber from 'antd/es/input-number'
-import Popconfirm from 'antd/es/popconfirm'
-import Row from 'antd/es/row'
-import Select from 'antd/es/select'
-import Upload from 'antd/es/upload'
-import omit from 'lodash/fp/omit'
+import Button from 'antd/lib/button'
+import Col from 'antd/lib/col'
+import Form from 'antd/lib/form'
+import Icon from 'antd/lib/icon'
+import InputNumber from 'antd/lib/input-number'
+import Popconfirm from 'antd/lib/popconfirm'
+import Row from 'antd/lib/row'
+import Upload from 'antd/lib/upload'
 
 import Title from '../../common/components/Title'
-import SwitchStatus from '../../common/components/SwitchStatus'
-import FormCard, {FormCardTitle, validateFields} from '../../common/components/FormCard'
+import DatePicker from '../../common/components/DatePicker'
+import SelectPaymentMethod from '../../common/components/SelectPaymentMethod'
+import AutoCompleteNature from '../../common/components/AutoCompleteNature'
+import FormItems from '../../common/components/FormItems'
+import {validateFields} from '../../common/components/FormCard'
 import AutoCompleteClients from '../../common/components/AutoCompleteClients'
 import {useProfile} from '../../profile/hooks'
 import {useNotification} from '../../utils/notification'
@@ -35,7 +34,6 @@ function EditImportDocument(props) {
   const [loading, setLoading] = useState(false)
   const [document, setDocument] = useState(props.document)
   const [deleteVisible, setDeleteVisible] = useState(false)
-  const [type, setType] = useState(document.type)
   const [number, setNumber] = useState(document.number)
   const [pdf, setPdf] = useState(document.pdf)
   const profile = useProfile()
@@ -72,25 +70,6 @@ function EditImportDocument(props) {
     )
   }
 
-  async function cloneDocument() {
-    setLoading(true)
-
-    await tryAndNotify(async () => {
-      const nextDocument = {
-        ...omit(['number', 'pdf'], document),
-        id: $document.generateId(),
-        createdAt: DateTime.local().toISO(),
-        imported: true,
-      }
-      await $document.set(nextDocument)
-      props.history.push('/documents')
-      props.history.replace(`/documents/${nextDocument.id}`, nextDocument)
-      return t('/documents.cloned-successfully')
-    })
-
-    setLoading(false)
-  }
-
   async function saveDocument(event) {
     event.preventDefault()
     if (loading) return
@@ -113,84 +92,64 @@ function EditImportDocument(props) {
     setLoading(false)
   }
 
-  const mainFields = {
-    title: <FormCardTitle title="general-informations" />,
-    fields: [
-      {
-        name: 'type',
-        Component: (
-          <Select size="large" autoFocus onChange={nextType => setType(nextType)}>
-            {['quotation', 'invoice', 'credit'].map(type => (
-              <Select.Option key={type} value={type}>
-                {t(type)}
-              </Select.Option>
-            ))}
-          </Select>
-        ),
-        ...requiredRules,
-      },
-      {
-        name: 'client',
-        Component: <AutoCompleteClients />,
-        ...requiredRules,
-      },
-    ],
-  }
+  const mainFields = [
+    {
+      name: 'client',
+      Component: <AutoCompleteClients />,
+      ...requiredRules,
+    },
+    {
+      name: 'paidAt',
+      Component: <DatePicker />,
+      ...requiredRules,
+    },
+    {
+      name: 'paymentMethod',
+      Component: <SelectPaymentMethod />,
+      ...requiredRules,
+    },
+    {
+      name: 'nature',
+      Component: <AutoCompleteNature />,
+      ...requiredRules,
+    },
+    {
+      name: 'totalHT',
+      Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
+      ...requiredRules,
+    },
+    {
+      name: 'totalTVA',
+      Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
+    },
+    {
+      name: 'totalTTC',
+      Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
+    },
+  ]
 
-  const totalFields = {
-    title: <FormCardTitle title="amounts" />,
-    fields: [
-      {
-        name: 'totalHT',
-        Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
-        ...requiredRules,
-      },
-      {
-        name: 'totalTVA',
-        Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
-      },
-      {
-        name: 'totalTTC',
-        Component: <InputNumber size="large" step={1} style={{width: '100%'}} />,
-      },
-    ],
-  }
-
-  const pdfFields = {
-    title: <FormCardTitle title="document" />,
-    fields: [
-      {
-        name: 'pdf',
-        fluid: true,
-        Component: (
-          <Upload.Dragger
-            accept="application/pdf"
-            customRequest={uploadRequest}
-            showUploadList={false}
-          >
-            <p className="ant-upload-drag-icon">
-              <Icon type={pdf ? 'check-circle' : 'file-pdf'} />
-            </p>
-            <p className="ant-upload-text">{t('upload-text')}</p>
-            {pdf && <p className="ant-upload-hint">{number}.pdf</p>}
-          </Upload.Dragger>
-        ),
-      },
-    ],
-  }
-
-  const allStatus = [
-    'sent',
-    ...(type === 'quotation' ? ['signed'] : []),
-    ...(type === 'invoice' ? ['paid'] : []),
-    ...(type === 'credit' ? ['refunded'] : []),
-    'declaredUrssaf',
-    ...(profile.taxId ? ['declaredVat'] : []),
+  const pdfFields = [
+    {
+      name: 'pdf',
+      Component: (
+        <Upload.Dragger
+          accept="application/pdf"
+          customRequest={uploadRequest}
+          showUploadList={false}
+        >
+          <p className="ant-upload-drag-icon">
+            <Icon type={pdf ? 'check-circle' : 'file-pdf'} />
+          </p>
+          <p className="ant-upload-text">{t('upload-text')}</p>
+          <p className="ant-upload-hint">{pdf ? number + '.pdf' : t('upload-hint')}</p>
+        </Upload.Dragger>
+      ),
+    },
   ]
 
   return (
     <Form noValidate layout="vertical" onSubmit={saveDocument}>
-      <Title label={document.number || t(document.type)}>
+      <Title label={t('import-existing-invoice')}>
         <Button.Group>
           <Popconfirm
             title={t('/documents.confirm-deletion')}
@@ -205,14 +164,10 @@ function EditImportDocument(props) {
               {t('delete')}
             </Button>
           </Popconfirm>
-          <Button type="dashed" disabled={loading} onClick={cloneDocument}>
-            <Icon type="copy" />
-            {t('clone')}
-          </Button>
           {pdf && (
             <Button disabled={loading} href={pdf} download={number}>
               <Icon type="download" />
-              {t('pdf')}
+              {t('download')}
             </Button>
           )}
           <Button type="primary" htmlType="submit" disabled={loading}>
@@ -222,28 +177,14 @@ function EditImportDocument(props) {
         </Button.Group>
       </Title>
 
-      <FormCard form={props.form} model={document} {...mainFields} />
-
-      <Card
-        title={<FormCardTitle title="status" subtitle="/documents.status-subtitle" />}
-        style={{marginTop: 15}}
-      >
-        <Row gutter={15}>
-          {allStatus.map(status => (
-            <Col key={status} xs={24} sm={12} md={8} lg={6}>
-              <SwitchStatus
-                name={status}
-                date={document[`${status}At`]}
-                disabled={status !== 'sent' && !document.sentAt}
-                onChange={data => setDocument({...document, ...data})}
-              />
-            </Col>
-          ))}
-        </Row>
-      </Card>
-
-      <FormCard form={props.form} model={document} {...totalFields} />
-      <FormCard form={props.form} model={document} {...pdfFields} />
+      <Row gutter={24}>
+        <Col lg={6}>
+          <FormItems form={props.form} model={document} fields={mainFields} />
+        </Col>
+        <Col lg={18}>
+          <FormItems form={props.form} model={document} fields={pdfFields} />
+        </Col>
+      </Row>
     </Form>
   )
 }

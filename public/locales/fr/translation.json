@@ -1,5 +1,6 @@
 {
   "activity": "Type d'activité",
+  "import-existing-invoice": "Importer une facture existante",
   "activity-service": "Prestation de service",
   "activity-started-at": "Date de début d'activité",
   "activity-trade": "Commerce ou hébergement",
@@ -218,7 +219,8 @@
   "upload": "Télécharger",
   "upload-hint": "Le document doit être un fichier .pdf",
   "upload-pdf": "Document PDF",
-  "upload-text": "Cliquez ou glissez le document dans cette zone pour le télécharger",
+  "upload-text": "Glissez la facture dans cette zone",
+  "generate-pdf": "Générer PDF",
   "urssaf": "URSSAF",
   "useful-links": "Liens utiles",
   "validation": "Confirmation",

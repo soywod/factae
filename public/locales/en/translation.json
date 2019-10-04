@@ -1,6 +1,8 @@
 {
   "activity": "Type of activity",
+  "import-existing-invoice": "Import an existing invoice",
   "activity-service": "Service delivery",
+  "generate-pdf": "Generate PDF",
   "activity-started-at": "Starting date of the activity",
   "activity-trade": "Trade or accommodation",
   "address": "Address",

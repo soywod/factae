@@ -466,8 +466,8 @@ function EditDefaultDocument(props) {
               </Button>
             ) : (
               <Button disabled={loading} onClick={previewDocument}>
-                <Icon type="download" />
-                {t('download')}
+                <Icon type="file-pdf" />
+                {t('generate-pdf')}
               </Button>
             )}
             <Button type="primary" htmlType="submit" disabled={loading}>
