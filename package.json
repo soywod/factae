@@ -72,7 +72,6 @@
     "chart.js": "^2.8.0",
     "firebase": "^6.2.2",
     "i18next": "^17.0.11",
-    "i18next-browser-languagedetector": "^3.0.3",
     "i18next-xhr-backend": "^3.1.1",
     "lodash": "^4.17.11",
     "luxon": "^1.17.2",
