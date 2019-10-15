@@ -2,16 +2,17 @@ import React, {forwardRef, useState} from 'react'
 import {withRouter} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
-import Button from 'antd/es/button'
-import Card from 'antd/es/card'
-import Col from 'antd/es/col'
-import Form from 'antd/es/form'
-import Icon from 'antd/es/icon'
-import Input from 'antd/es/input'
-import InputNumber from 'antd/es/input-number'
-import Popconfirm from 'antd/es/popconfirm'
-import Row from 'antd/es/row'
-import Select from 'antd/es/select'
+import Alert from 'antd/lib/alert'
+import Button from 'antd/lib/button'
+import Card from 'antd/lib/card'
+import Col from 'antd/lib/col'
+import Form from 'antd/lib/form'
+import Icon from 'antd/lib/icon'
+import Input from 'antd/lib/input'
+import InputNumber from 'antd/lib/input-number'
+import Popconfirm from 'antd/lib/popconfirm'
+import Row from 'antd/lib/row'
+import Select from 'antd/lib/select'
 import find from 'lodash/fp/find'
 import omit from 'lodash/fp/omit'
 import range from 'lodash/fp/range'
@@ -123,6 +124,7 @@ function EditDefaultDocument(props) {
       }, 1)
 
       nextDocument.number = `${prefix}-${now.toFormat('yyMM')}-${count}`
+      nextDocument.edited = false
     }
 
     return await $document.generatePdf(profile, nextClient, nextDocument)
@@ -241,7 +243,7 @@ function EditDefaultDocument(props) {
     setLoading(true)
 
     await tryAndNotify(async () => {
-      const nextDocument = await buildNextDocument()
+      const nextDocument = await buildNextDocument({edited: true})
       setDocument(nextDocument)
       await $document.set(nextDocument)
       return t('/documents.updated-successfully')
@@ -298,45 +300,66 @@ function EditDefaultDocument(props) {
     )
   }
 
+  const readOnly = document.type !== 'quotation' && document.sentAt
   const columns = [
     {
-      title: <strong style={{marginLeft: 16}}>{t('description')}</strong>,
+      title: <strong style={{marginLeft: readOnly ? 0 : 16}}>{t('description')}</strong>,
       dataIndex: 'designation',
       width: '45%',
-      EditField: forwardRef(({save, blur, ...props}, ref) => (
-        <Input ref={ref} onPressEnter={save} {...props} />
-      )),
+      EditField: readOnly
+        ? null
+        : forwardRef(({save, blur, ...props}, ref) => (
+            <Input ref={ref} onPressEnter={save} {...props} />
+          )),
     },
     {
       title: <strong>{t('quantity')}</strong>,
       dataIndex: 'quantity',
       width: '10%',
-      EditField: forwardRef(({save, ...props}, ref) => (
-        <InputNumber ref={ref} onKeyDown={handleInputNumberKeyDown} min={0} step={1} {...props} />
-      )),
+      EditField: readOnly
+        ? null
+        : forwardRef(({save, ...props}, ref) => (
+            <InputNumber
+              ref={ref}
+              onKeyDown={handleInputNumberKeyDown}
+              min={0}
+              step={1}
+              {...props}
+            />
+          )),
     },
     {
       title: <strong>{t('unit')}</strong>,
       dataIndex: 'unit',
       width: '15%',
       render: t,
-      EditField: forwardRef(({save, ...props}, ref) => (
-        <Select ref={ref} defaultOpen {...props}>
-          <Select.Option value="unit-hour">{t('unit-hour')}</Select.Option>
-          <Select.Option value="unit-day">{t('unit-day')}</Select.Option>
-          <Select.Option value="unit-delivery">{t('unit-delivery')}</Select.Option>
-          <Select.Option value="unit-unit">{t('unit-unit')}</Select.Option>
-        </Select>
-      )),
+      EditField: readOnly
+        ? null
+        : forwardRef(({save, ...props}, ref) => (
+            <Select ref={ref} defaultOpen {...props}>
+              <Select.Option value="unit-hour">{t('unit-hour')}</Select.Option>
+              <Select.Option value="unit-day">{t('unit-day')}</Select.Option>
+              <Select.Option value="unit-delivery">{t('unit-delivery')}</Select.Option>
+              <Select.Option value="unit-unit">{t('unit-unit')}</Select.Option>
+            </Select>
+          )),
     },
     {
       title: <strong>{t('unit-price')}</strong>,
       dataIndex: 'unitPrice',
       width: '15%',
       render: (_, {unitPrice}) => toEuro(unitPrice),
-      EditField: forwardRef(({save, ...props}, ref) => (
-        <InputNumber ref={ref} onKeyDown={handleInputNumberKeyDown} min={0} step={1} {...props} />
-      )),
+      EditField: readOnly
+        ? null
+        : forwardRef(({save, ...props}, ref) => (
+            <InputNumber
+              ref={ref}
+              onKeyDown={handleInputNumberKeyDown}
+              min={0}
+              step={1}
+              {...props}
+            />
+          )),
     },
     {
       title: <strong>{t('amount')}</strong>,
@@ -344,7 +367,10 @@ function EditDefaultDocument(props) {
       width: '15%',
       render: (_, {amount}) => toEuro(amount),
     },
-    {
+  ]
+
+  if (!readOnly) {
+    columns.push({
       title: (
         <Button type="primary" shape="circle" onClick={addItem}>
           <Icon type="plus" />
@@ -359,18 +385,18 @@ function EditDefaultDocument(props) {
           <Icon type="minus" />
         </Button>
       ),
-    },
-  ]
+    })
+  }
 
   const mainFields = [
     {
       name: 'entitled',
-      Component: <Input size="large" autoFocus={Boolean(document.number)} />,
+      Component: <Input size="large" autoFocus={Boolean(document.number)} disabled={readOnly} />,
     },
     {
       name: 'client',
       Component: (
-        <Select size="large">
+        <Select size="large" disabled={readOnly}>
           {clients.map(client => (
             <Select.Option key={client.id} value={client.id}>
               {client.name}
@@ -380,7 +406,10 @@ function EditDefaultDocument(props) {
       ),
       ...requiredRules,
     },
-    {
+  ]
+
+  if (profile.taxId) {
+    mainFields.push({
       name: 'taxRate',
       Component: (
         <InputNumber
@@ -388,25 +417,32 @@ function EditDefaultDocument(props) {
           min={0}
           step={1}
           onChange={taxRate => setDocument({...document, taxRate})}
+          disabled={readOnly}
           style={{width: '100%'}}
         />
       ),
-    },
-  ]
+    })
+  }
 
   if (document.type === 'quotation') {
     mainFields.push({
       name: 'expiresIn',
-      Component: <InputNumber size="large" min={0} step={1} style={{width: '100%'}} />,
+      Component: (
+        <InputNumber size="large" min={0} step={1} disabled={readOnly} style={{width: '100%'}} />
+      ),
       ...requiredRules,
     })
   } else {
-    mainFields.push({name: 'paymentDeadlineAt', Component: <DatePicker />, ...requiredRules})
+    mainFields.push({
+      name: 'paymentDeadlineAt',
+      Component: <DatePicker disabled={readOnly} />,
+      ...requiredRules,
+    })
 
     if (document.type === 'credit') {
       mainFields.push({
         name: 'invoiceNumber',
-        Component: <AutoCompleteReference types={['invoice']} />,
+        Component: <AutoCompleteReference disabled={readOnly} types={['invoice']} />,
         ...requiredRules,
       })
     }
@@ -420,17 +456,18 @@ function EditDefaultDocument(props) {
         min={0}
         step={1}
         onChange={setDiscountRate}
+        disabled={readOnly}
         style={{width: '100%'}}
       />
     ),
   })
 
   const conditionFields = [
-    {name: 'conditions', fluid: true, Component: <Input.TextArea rows={6} />},
+    {name: 'conditions', fluid: true, Component: <Input.TextArea disabled={readOnly} rows={6} />},
   ]
 
   const selectType = (
-    <Select autoFocus value={document.type} onChange={saveType}>
+    <Select autoFocus value={document.type} onChange={saveType} disabled={readOnly}>
       <Select.Option value="quotation">{t('quotation')}</Select.Option>
       <Select.Option value="invoice">{t('invoice')}</Select.Option>
       <Select.Option value="credit">{t('credit')}</Select.Option>
@@ -440,37 +477,73 @@ function EditDefaultDocument(props) {
   return (
     <>
       <Form noValidate layout="vertical" onSubmit={saveDocument}>
+        {!document.pdf && (
+          <Alert
+            message={t('warning')}
+            description={
+              <div style={{display: 'flex', alignItems: 'center'}}>
+                <span style={{display: 'flex', flexDirection: 'column', flex: 1}}>
+                  <span>{t('/documents.warning-draft-1')}</span>
+                  <span>{t('/documents.warning-draft-2')}</span>
+                </span>
+                <span>
+                  <Button type="dashed" onClick={previewDocument} disabled={loading}>
+                    <Icon type="check" />
+                    {t('confirm')}
+                  </Button>
+                </span>
+              </div>
+            }
+            type="warning"
+            showIcon
+            style={{marginBottom: 24}}
+          />
+        )}
+
         <Title label={document.number || selectType}>
           <Button.Group>
-            <Popconfirm
-              title={t('/documents.confirm-deletion')}
-              onConfirm={deleteDocument}
-              okText={t('yes')}
-              cancelText={t('no')}
-              visible={deleteVisible && !loading}
-              onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
+            {!document.number && (
+              <Popconfirm
+                title={t('/documents.confirm-deletion')}
+                onConfirm={deleteDocument}
+                okText={t('yes')}
+                cancelText={t('no')}
+                visible={deleteVisible && !loading}
+                onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
+              >
+                <Button type="danger" disabled={loading}>
+                  <Icon type="delete" />
+                  {t('delete')}
+                </Button>
+              </Popconfirm>
+            )}
+            <Button
+              type="dashed"
+              disabled={loading}
+              onClick={cloneDocument}
+              style={{marginLeft: 4}}
             >
-              <Button type="danger" disabled={loading}>
-                <Icon type="delete" />
-                {t('delete')}
-              </Button>
-            </Popconfirm>
-            <Button type="dashed" disabled={loading} onClick={cloneDocument}>
               <Icon type="copy" />
               {t('clone')}
             </Button>
-            {document.sentAt ? (
-              <Button disabled={loading} href={document.pdf} download={document.number}>
+            {(document.sentAt || (document.pdf && !document.edited)) && (
+              <Button
+                disabled={loading}
+                href={document.pdf}
+                download={document.number}
+                style={{marginLeft: 4}}
+              >
                 <Icon type="download" />
                 {t('download')}
               </Button>
-            ) : (
-              <Button disabled={loading} onClick={previewDocument}>
-                <Icon type="file-pdf" />
-                {t('generate-pdf')}
+            )}
+            {!document.sentAt && document.edited && document.pdf && (
+              <Button disabled={loading} onClick={previewDocument} style={{marginLeft: 4}}>
+                <Icon type="download" />
+                {t('download')}
               </Button>
             )}
-            <Button type="primary" htmlType="submit" disabled={loading}>
+            <Button type="primary" htmlType="submit" disabled={loading} style={{marginLeft: 4}}>
               <Icon type={loading ? 'loading' : 'save'} />
               {t('save')}
             </Button>
@@ -479,13 +552,8 @@ function EditDefaultDocument(props) {
 
         <Row gutter={24}>
           <Col lg={6}>
+            {document.pdf && <SelectStatus onChange={setDocument} document={document} required />}
             <FormItems form={props.form} model={document} fields={mainFields} />
-            <SelectStatus
-              onChange={setDocument}
-              document={document}
-              required
-              style={{marginTop: 51}}
-            />
           </Col>
           <Col lg={18}>
             <Form.Item label={t('designations')} required>
