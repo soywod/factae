@@ -103,7 +103,7 @@ function DocumentList(props) {
     }
 
     if (document.refundedAt) {
-      return <CustomTag color="green">{t('refunded')}</CustomTag>
+      return <CustomTag color="orange">{t('refunded')}</CustomTag>
     }
 
     if (document.sentAt) {

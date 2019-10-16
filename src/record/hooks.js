@@ -18,16 +18,23 @@ export function useRecords() {
   function buildRecords(nextRecords) {
     if (!nextRecords) return
 
-    const filterByType = filter(d => d.type === 'invoice')
-    const filterByStatus = filter(d => Boolean(d.paidAt))
-    const mapToRecord = map(d => ({
-      document: d.id,
-      client: d.client,
-      type: 'revenue',
-      createdAt: d.paidAt || d.refundedAt,
-      reference: d.number,
-      ...pick(['id', 'nature', 'paymentMethod', 'totalHT', 'totalTVA', 'totalTTC'], d),
-    }))
+    const filterByType = filter(d => ['invoice', 'credit'].includes(d.type))
+    const filterByStatus = filter(d => d.paidAt || d.refundedAt)
+    const mapToRecord = map(d => {
+      const sign = d.type === 'invoice' ? 1 : -1
+
+      return {
+        document: d.id,
+        client: d.client,
+        type: 'revenue',
+        createdAt: d.paidAt || d.refundedAt,
+        reference: d.number,
+        ...pick(['id', 'nature', 'paymentMethod', 'totalHT', 'totalTVA', 'totalTTC'], d),
+        totalHT: d.totalHT * sign,
+        totalTVA: d.totalTVA * sign,
+        totalTTC: d.totalTTC * sign,
+      }
+    })
 
     setRecords(
       pipe([

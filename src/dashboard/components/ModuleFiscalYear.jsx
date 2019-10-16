@@ -10,6 +10,8 @@ import Menu from 'antd/es/menu'
 import Modal from 'antd/es/modal'
 import Icon from 'antd/es/icon'
 import filter from 'lodash/fp/filter'
+import map from 'lodash/fp/map'
+import pipe from 'lodash/fp/pipe'
 import random from 'lodash/fp/random'
 import range from 'lodash/fp/range'
 
@@ -52,8 +54,26 @@ function ModuleFiscalYear() {
         paidAt: `2018-0${month + 1}-01`,
       }))
     }
-    return filter(d => d.type === 'invoice' && Boolean(d.paidAt), documents) || null
+
+    function filterByType(document) {
+      if (document.type === 'invoice' && document.paidAt) return true
+      if (document.type === 'credit' && document.refundedAt) return true
+      return false
+    }
+
+    function adjustTotal(document) {
+      const totalHT = (() => {
+        if (document.type === 'credit') return -document.totalHT
+        return document.totalHT
+      })()
+
+      return {...document, totalHT}
+    }
+
+    return pipe([filter(filterByType), map(adjustTotal)])(documents)
   }, [profile, documents])
+
+  console.log(invoices)
 
   const turnover = useMemo(() => {
     if (!profile) return null

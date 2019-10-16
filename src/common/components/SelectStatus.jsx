@@ -36,7 +36,8 @@ function SelectStatus(props) {
   const {t, i18n} = useTranslation()
   const date = props.date ? DateTime.fromISO(props.date, {locale: i18n.language}) : null
 
-  async function submitConfirm() {
+  async function submitConfirm(event) {
+    if (event) event.preventDefault()
     setLoading(true)
     const {date: nextDate, ...fields} = await validateFields(form)
     await handleStatusChange({[`${status}At`]: nextDate.toISOString(), ...fields})
@@ -114,7 +115,7 @@ function SelectStatus(props) {
         closable={!loading}
         onCancel={() => !loading && closeConfirm()}
       >
-        <Form noValidate layout="vertical">
+        <Form noValidate layout="vertical" onSubmit={submitConfirm}>
           <Row gutter={15}>
             <Col xs={24}>
               <Form.Item label={t(kebabCase(`${status}-at`))}>
