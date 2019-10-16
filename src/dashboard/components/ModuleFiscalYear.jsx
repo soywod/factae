@@ -73,8 +73,6 @@ function ModuleFiscalYear() {
     return pipe([filter(filterByType), map(adjustTotal)])(documents)
   }, [profile, documents])
 
-  console.log(invoices)
-
   const turnover = useMemo(() => {
     if (!profile) return null
     const now = isDemo(profile) ? demoDate : DateTime.local()

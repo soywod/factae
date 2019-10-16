@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
 import moment from 'moment'
@@ -38,11 +38,17 @@ function SelectStatus(props) {
 
   async function submitConfirm(event) {
     if (event) event.preventDefault()
+    if (loading) return
     setLoading(true)
-    const {date: nextDate, ...fields} = await validateFields(form)
-    await handleStatusChange({[`${status}At`]: nextDate.toISOString(), ...fields})
-    setLoading(false)
-    closeConfirm()
+
+    try {
+      const {date: nextDate, ...fields} = await validateFields(form)
+      await handleStatusChange({[`${status}At`]: nextDate.toISOString(), ...fields})
+      setLoading(false)
+      closeConfirm()
+    } catch (e) {
+      setLoading(false)
+    }
   }
 
   function closeConfirm() {
@@ -55,6 +61,7 @@ function SelectStatus(props) {
 
     if (status !== 'draft') {
       setConfirmVisible(true)
+      form.resetFields()
     }
   }
 
@@ -108,42 +115,45 @@ function SelectStatus(props) {
         </Select>
       </Form.Item>
 
-      <Modal
-        title={t('please-confirm-information')}
-        visible={confirmVisible}
-        footer={footer}
-        closable={!loading}
-        onCancel={() => !loading && closeConfirm()}
-      >
-        <Form noValidate layout="vertical" onSubmit={submitConfirm}>
-          <Row gutter={15}>
-            <Col xs={24}>
-              <Form.Item label={t(kebabCase(`${status}-at`))}>
-                {getFieldDecorator('date', {
-                  initialValue: moment(),
-                  rules: [{required: true, message: t('field-required')}],
-                })(<DatePicker disabled={loading} />)}
-              </Form.Item>
+      {confirmVisible && (
+        <Modal
+          title={t('please-confirm-information')}
+          visible={confirmVisible}
+          destroyOnClose
+          footer={footer}
+          closable={!loading}
+          onCancel={() => !loading && closeConfirm()}
+        >
+          <Form noValidate layout="vertical" onSubmit={submitConfirm}>
+            <Row gutter={15}>
+              <Col xs={24}>
+                <Form.Item label={t(kebabCase(`${status}-at`))}>
+                  {getFieldDecorator('date', {
+                    initialValue: moment(),
+                    rules: [{required: true, message: t('field-required')}],
+                  })(<DatePicker disabled={loading} />)}
+                </Form.Item>
 
-              {['paid', 'refunded'].includes(status) && (
-                <>
-                  <Form.Item label={t('payment-method')}>
-                    {getFieldDecorator('paymentMethod', {
-                      initialValue: 'bankTransfert',
-                      rules: [{required: true, message: t('field-required')}],
-                    })(<SelectPaymentMethod disabled={loading} />)}
-                  </Form.Item>
-                  <Form.Item label={t('nature')}>
-                    {getFieldDecorator('nature', {
-                      rules: [{required: true, message: t('field-required')}],
-                    })(<AutoCompleteNature disabled={loading} />)}
-                  </Form.Item>
-                </>
-              )}
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
+                {['paid', 'refunded'].includes(status) && (
+                  <>
+                    <Form.Item label={t('payment-method')}>
+                      {getFieldDecorator('paymentMethod', {
+                        initialValue: 'bankTransfert',
+                        rules: [{required: true, message: t('field-required')}],
+                      })(<SelectPaymentMethod disabled={loading} />)}
+                    </Form.Item>
+                    <Form.Item label={t('nature')}>
+                      {getFieldDecorator('nature', {
+                        rules: [{required: true, message: t('field-required')}],
+                      })(<AutoCompleteNature disabled={loading} />)}
+                    </Form.Item>
+                  </>
+                )}
+              </Col>
+            </Row>
+          </Form>
+        </Modal>
+      )}
     </>
   )
 }
