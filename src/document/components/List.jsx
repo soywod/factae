@@ -90,6 +90,10 @@ function DocumentList(props) {
   }
 
   function getCustomTag(document) {
+    if (document.cancelledAt) {
+      return <CustomTag color="red">{t('cancelled')}</CustomTag>
+    }
+
     if (document.signedAt) {
       return <CustomTag color="green">{t('signed')}</CustomTag>
     }

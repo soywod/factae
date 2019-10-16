@@ -106,28 +106,63 @@ function EditDefaultDocument(props) {
     }
   }
 
+  function generateNumber(nextDocument, now = DateTime.local()) {
+    const prefix = t(nextDocument.type)[0].toUpperCase()
+    const count = documents.reduce((count, d) => {
+      if (nextDocument.id === d.id) return count
+      if (nextDocument.type !== d.type) return count
+      if (d.imported) return count
+      if (!d.number) return count
+      if (DateTime.fromISO(d.createdAt).month !== now.month) return count
+      if (DateTime.fromISO(d.createdAt).year !== now.year) return count
+      return count + 1
+    }, 1)
+
+    return `${prefix}-${now.toFormat('yyMM')}-${count}`
+  }
+
   async function buildNextDocumentWithPdf() {
     const now = DateTime.local()
-    let nextDocument = await buildNextDocument({createdAt: now.toISO()})
+    const nextDocument = await buildNextDocument({createdAt: now.toISO(), edited: false})
     const nextClient = find({id: nextDocument.client}, clients)
 
-    if (!nextDocument.number) {
-      const prefix = t(nextDocument.type)[0].toUpperCase()
-      const count = documents.reduce((count, d) => {
-        if (nextDocument.id === d.id) return count
-        if (nextDocument.type !== d.type) return count
-        if (d.imported) return count
-        if (!d.number) return count
-        if (DateTime.fromISO(d.createdAt).month !== now.month) return count
-        if (DateTime.fromISO(d.createdAt).year !== now.year) return count
-        return count + 1
-      }, 1)
+    return $document.generatePdf(profile, nextClient, nextDocument)
+  }
 
-      nextDocument.number = `${prefix}-${now.toFormat('yyMM')}-${count}`
-      nextDocument.edited = false
-    }
+  async function handleChangeStatus(nextFields) {
+    setLoading(true)
 
-    return await $document.generatePdf(profile, nextClient, nextDocument)
+    await tryAndNotify(async () => {
+      let nextDocument = await buildNextDocument(nextFields)
+      const nextClient = find({id: document.client}, clients)
+
+      if (nextFields.sentAt) {
+        nextDocument = await $document.generatePdf(profile, nextClient, nextDocument)
+      }
+
+      await $document.set(nextDocument)
+      setDocument(nextDocument)
+      return t('/documents.updated-successfully')
+    })
+
+    setLoading(false)
+  }
+
+  async function confirmDocument() {
+    setLoading(true)
+
+    await tryAndNotify(async () => {
+      const nextDocument = await buildNextDocument({
+        number: generateNumber(document),
+        edited: true,
+      })
+
+      await $document.set(nextDocument)
+      setDocument(nextDocument)
+      return t('/documents.validated-successfully')
+    })
+
+    setLoading(false)
   }
 
   async function previewDocument() {
@@ -478,7 +513,7 @@ function EditDefaultDocument(props) {
   return (
     <>
       <Form noValidate layout="vertical" onSubmit={saveDocument}>
-        {!document.pdf && (
+        {!document.number && (
           <Alert
             message={t('warning')}
             description={
@@ -488,8 +523,8 @@ function EditDefaultDocument(props) {
                   <span>{t('/documents.warning-draft-2')}</span>
                 </span>
                 <span>
-                  <Button type="dashed" onClick={previewDocument} disabled={loading}>
-                    <Icon type="check" />
+                  <Button type="dashed" onClick={confirmDocument} disabled={loading}>
+                    <Icon type="lock" />
                     {t('confirm')}
                   </Button>
                 </span>
@@ -527,49 +562,75 @@ function EditDefaultDocument(props) {
               <Icon type="copy" />
               {t('clone')}
             </Button>
-            {(document.sentAt || (document.pdf && !document.edited)) && (
-              <Button
-                disabled={loading}
-                href={document.pdf}
-                download={document.number}
-                style={{marginLeft: 4}}
-              >
-                <Icon type="download" />
-                {t('download')}
-              </Button>
-            )}
-            {!document.sentAt && document.edited && document.pdf && (
+            {!document.sentAt && document.number && (
               <Button disabled={loading} onClick={previewDocument} style={{marginLeft: 4}}>
-                <Icon type="download" />
-                {t('download')}
+                <Icon type="eye" />
+                {t('preview')}
               </Button>
             )}
-            <Button type="primary" htmlType="submit" disabled={loading} style={{marginLeft: 4}}>
-              <Icon type={loading ? 'loading' : 'save'} />
-              {t('save')}
-            </Button>
+            {!document.sentAt && (
+              <Button type="primary" htmlType="submit" disabled={loading} style={{marginLeft: 4}}>
+                <Icon type={loading ? 'loading' : 'save'} />
+                {t('save')}
+              </Button>
+            )}
           </Button.Group>
         </Title>
 
         <Row gutter={24}>
           <Col lg={6}>
-            {document.pdf && <SelectStatus onChange={setDocument} document={document} required />}
-            <FormItems form={props.form} model={document} fields={mainFields} />
+            {document.number && (
+              <SelectStatus onChange={handleChangeStatus} document={document} required />
+            )}
+            {!document.sentAt && (
+              <FormItems form={props.form} model={document} fields={mainFields} />
+            )}
           </Col>
           <Col lg={18}>
-            <Form.Item label={t('designations')} required>
-              <Card bodyStyle={{padding: 0}}>
-                <EditableTable
-                  size="small"
-                  pagination={false}
-                  dataSource={items}
-                  columns={columns}
-                  footer={Footer}
-                  onSave={saveItems}
-                />
-              </Card>
-            </Form.Item>
-            <FormItems form={props.form} model={document} fields={conditionFields} />
+            {document.sentAt && document.pdf ? (
+              <Form.Item label={t('pdf')}>
+                <div
+                  style={{
+                    position: 'relative',
+                    paddingTop: 'calc(100vh - 192px)',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <iframe
+                    title={document.number}
+                    src={document.pdf}
+                    width="100%"
+                    height={600}
+                    scrolling="no"
+                    allowFullScreen
+                    style={{
+                      border: 'none',
+                      height: '100%',
+                      left: 0,
+                      position: 'absolute',
+                      top: 0,
+                      width: '100%',
+                    }}
+                  />
+                </div>
+              </Form.Item>
+            ) : (
+              <>
+                <Form.Item label={t('designations')} required>
+                  <Card bodyStyle={{padding: 0}}>
+                    <EditableTable
+                      size="small"
+                      pagination={false}
+                      dataSource={items}
+                      columns={columns}
+                      footer={Footer}
+                      onSave={saveItems}
+                    />
+                  </Card>
+                </Form.Item>
+                <FormItems form={props.form} model={document} fields={conditionFields} />
+              </>
+            )}
           </Col>
         </Row>
       </Form>

@@ -32,12 +32,15 @@ function SelectStatus(props) {
   const defaultStatus = getStatusFromDocument(document)
   const [status, setStatus] = useState(defaultStatus)
   const [confirmVisible, setConfirmVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
   const {t, i18n} = useTranslation()
   const date = props.date ? DateTime.fromISO(props.date, {locale: i18n.language}) : null
 
   async function submitConfirm() {
+    setLoading(true)
     const {date: nextDate, ...fields} = await validateFields(form)
-    handleStatusChange({...document, [`${status}At`]: nextDate.toISOString(), ...fields})
+    await handleStatusChange({[`${status}At`]: nextDate.toISOString(), ...fields})
+    setLoading(false)
     closeConfirm()
   }
 
@@ -56,8 +59,16 @@ function SelectStatus(props) {
 
   const footer = (
     <Button.Group>
-      <Button onClick={closeConfirm}>{t('cancel')}</Button>
-      <Button type="primary" htmlType="submit" onClick={submitConfirm} style={{marginLeft: 4}}>
+      <Button onClick={closeConfirm} disabled={loading}>
+        {t('cancel')}
+      </Button>
+      <Button
+        type="primary"
+        htmlType="submit"
+        onClick={submitConfirm}
+        loading={loading}
+        style={{marginLeft: 4}}
+      >
         {t('confirm')}
       </Button>
     </Button.Group>
@@ -100,7 +111,8 @@ function SelectStatus(props) {
         title={t('please-confirm-information')}
         visible={confirmVisible}
         footer={footer}
-        onCancel={closeConfirm}
+        closable={!loading}
+        onCancel={() => !loading && closeConfirm()}
       >
         <Form noValidate layout="vertical">
           <Row gutter={15}>
@@ -109,7 +121,7 @@ function SelectStatus(props) {
                 {getFieldDecorator('date', {
                   initialValue: moment(),
                   rules: [{required: true, message: t('field-required')}],
-                })(<DatePicker />)}
+                })(<DatePicker disabled={loading} />)}
               </Form.Item>
 
               {['paid', 'refunded'].includes(status) && (
@@ -118,12 +130,12 @@ function SelectStatus(props) {
                     {getFieldDecorator('paymentMethod', {
                       initialValue: 'bankTransfert',
                       rules: [{required: true, message: t('field-required')}],
-                    })(<SelectPaymentMethod />)}
+                    })(<SelectPaymentMethod disabled={loading} />)}
                   </Form.Item>
                   <Form.Item label={t('nature')}>
                     {getFieldDecorator('nature', {
                       rules: [{required: true, message: t('field-required')}],
-                    })(<AutoCompleteNature />)}
+                    })(<AutoCompleteNature disabled={loading} />)}
                   </Form.Item>
                 </>
               )}

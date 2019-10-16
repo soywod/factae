@@ -35,8 +35,7 @@ function Preview({document, visible, loading, onClose: close}) {
       title={t('preview')}
       visible={visible}
       footer={footer}
-      closable={!loading}
-      onCancel={() => !loading && close(false)}
+      onCancel={() => close(false)}
       width={600}
     >
       <Spin size="large" spinning={loading}>

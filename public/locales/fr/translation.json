@@ -137,7 +137,7 @@
   "please-confirm-information": "Veuillez confirmer les informations ci-dessous :",
   "preferences": "Préférences",
   "presend": "Préparer pour l'envoi",
-  "preview": "Aperçu",
+  "preview": "Prévisualiser",
   "pricing": "Tarification (%)",
   "profile": "Profil",
   "purchase": "Achat",
@@ -268,7 +268,8 @@
     "sent-successfully": "Document envoyé avec succès.",
     "status-subtitle": "Correspond aux différents statuts que peut prendre votre document.",
     "total": "{{title}} : <strong>{{value}}</strong>",
-    "updated-successfully": "Document mis à jour avec succès.",
+    "updated-successfully": "Document modifié avec succès.",
+    "validated-successfully": "Document validé avec succès.",
     "warning-draft-1": "Votre document ne possède pas encore de numéro car il est en mode brouillon.",
     "warning-draft-2": "Appuyer sur “Valider” génèrera le numéro définitif de votre document, et vous permettra de le télécharger en PDF."
   },
@@ -277,14 +278,14 @@
     "created-successfully": "Client créé avec succès.",
     "deleted-successfully": "Client supprimé avec succès.",
     "error-empty": "Vous devez d'abord ajouter un client.",
-    "updated-successfully": "Client mis à jour avec succès."
+    "updated-successfully": "Client modifié avec succès."
   },
   "/profile": {
     "bank-subtitle": "Ces informations s'afficheront sur vos documents, pour faciliter le paiement de vos clients.",
     "conditions-subtitle": "Correspond aux mentions légales et conditions (de paiement, de livraison, d'exécution etc) qui s'afficheront par défaut sur vos devis et factures.",
     "error-invalid": "Vous devez d'abord compléter votre profil.",
     "pricing-subtitle": "Correspond au taux horaire / journalier / forfaitaire qui s'affichera par défaut sur vos devis.",
-    "updated-successfully": "Profil mis à jour avec succès.",
+    "updated-successfully": "Profil modifié avec succès.",
     "subscription-expires-in": "Votre abonnement expire {{date}} ({{diff}}).",
     "subscription-expired": "Votre abonnement a expiré."
   },
