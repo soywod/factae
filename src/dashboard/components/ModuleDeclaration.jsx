@@ -124,7 +124,13 @@ function ModuleDeclaration(props) {
       <Button onClick={() => setConfirmVisible(false)} disabled={loading}>
         {t('cancel')}
       </Button>
-      <Button type="primary" htmlType="submit" onClick={declareDocuments} disabled={loading}>
+      <Button
+        type="primary"
+        htmlType="submit"
+        onClick={declareDocuments}
+        disabled={loading}
+        style={{marginLeft: 4}}
+      >
         {loading && <Icon type="loading" />}
         {t('confirm')}
       </Button>

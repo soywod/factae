@@ -256,6 +256,8 @@ function EditDefaultDocument(props) {
     return null
   }
 
+  const readOnly = Boolean(document.sentAt)
+
   const Footer = () => {
     const subtotal = items.reduce((sum, {amount}) => sum + (amount || 0), 0)
     const totalDiscount = -(subtotal * (discountRate || 0)) / 100
@@ -300,7 +302,6 @@ function EditDefaultDocument(props) {
     )
   }
 
-  const readOnly = document.type !== 'quotation' && document.sentAt
   const columns = [
     {
       title: <strong style={{marginLeft: readOnly ? 0 : 16}}>{t('description')}</strong>,

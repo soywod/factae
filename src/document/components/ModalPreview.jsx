@@ -9,7 +9,7 @@ function Preview({document, visible, loading, onClose: close}) {
   const {t} = useTranslation()
 
   const footer = (
-    <>
+    <Button.Group>
       <Button onClick={() => close(false)} disabled={loading}>
         {t('cancel')}
       </Button>
@@ -27,7 +27,7 @@ function Preview({document, visible, loading, onClose: close}) {
         <Icon type={loading ? 'loading' : 'mail'} />
         {t('send')}
       </Button>
-    </>
+    </Button.Group>
   )
 
   return (

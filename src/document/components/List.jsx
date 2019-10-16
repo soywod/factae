@@ -181,7 +181,7 @@ function DocumentList(props) {
             <Icon type="import" />
             {t('import')}
           </Button>
-          <Button type="primary" onClick={createDocument}>
+          <Button type="primary" onClick={createDocument} style={{marginLeft: 4}}>
             <Icon type="plus" />
             {t('new')}
           </Button>

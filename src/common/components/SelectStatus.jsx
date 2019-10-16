@@ -57,7 +57,7 @@ function SelectStatus(props) {
   const footer = (
     <Button.Group>
       <Button onClick={closeConfirm}>{t('cancel')}</Button>
-      <Button type="primary" htmlType="submit" onClick={submitConfirm}>
+      <Button type="primary" htmlType="submit" onClick={submitConfirm} style={{marginLeft: 4}}>
         {t('confirm')}
       </Button>
     </Button.Group>

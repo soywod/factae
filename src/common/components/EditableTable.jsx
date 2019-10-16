@@ -1,6 +1,6 @@
 import React from 'react'
-import Form from 'antd/es/form'
-import Table from 'antd/es/table'
+import Form from 'antd/lib/form'
+import Table from 'antd/lib/table'
 
 const EditableContext = React.createContext()
 

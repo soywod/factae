@@ -49,7 +49,13 @@ function ModalSender({form, document, visible, loading, onClose: close}) {
       <Button onClick={() => close()} disabled={loading}>
         {t('cancel')}
       </Button>
-      <Button htmlType="submit" type="primary" onClick={submit} disabled={loading}>
+      <Button
+        htmlType="submit"
+        type="primary"
+        onClick={submit}
+        disabled={loading}
+        style={{marginLeft: 4}}
+      >
         <Icon type={loading ? 'loading' : 'mail'} />
         {t('send')}
       </Button>

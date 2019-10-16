@@ -166,7 +166,7 @@ function EditClient(props) {
               {t('delete')}
             </Button>
           </Popconfirm>
-          <Button type="primary" htmlType="submit" disabled={loading}>
+          <Button type="primary" htmlType="submit" disabled={loading} style={{marginLeft: 4}}>
             <Icon type={loading ? 'loading' : 'save'} />
             {t('save')}
           </Button>

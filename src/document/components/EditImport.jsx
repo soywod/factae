@@ -159,18 +159,18 @@ function EditImportDocument(props) {
             visible={deleteVisible && !loading}
             onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
           >
-            <Button type="danger" disabled={loading}>
+            <Button type="danger" disabled={loading} style={{marginLeft: 4}}>
               <Icon type="delete" />
               {t('delete')}
             </Button>
           </Popconfirm>
           {pdf && (
-            <Button disabled={loading} href={pdf} download={number}>
+            <Button disabled={loading} href={pdf} download={number} style={{marginLeft: 4}}>
               <Icon type="download" />
               {t('download')}
             </Button>
           )}
-          <Button type="primary" htmlType="submit" disabled={loading}>
+          <Button type="primary" htmlType="submit" disabled={loading} style={{marginLeft: 4}}>
             <Icon type={loading ? 'loading' : 'save'} />
             {t('save')}
           </Button>
