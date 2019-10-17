@@ -9,15 +9,15 @@ import Col from 'antd/lib/col'
 import Form from 'antd/lib/form'
 import Icon from 'antd/lib/icon'
 import Input from 'antd/lib/input'
-import InputNumber from 'antd/lib/input-number'
 import Popconfirm from 'antd/lib/popconfirm'
 import Row from 'antd/lib/row'
 import Select from 'antd/lib/select'
 import find from 'lodash/fp/find'
 import omit from 'lodash/fp/omit'
-import range from 'lodash/fp/range'
 
 import Title from '../../common/components/Title'
+import StatusTag from '../../common/components/StatusTag'
+import InputNumber from '../../common/components/InputNumber'
 import {getFields, validateFields} from '../../common/components/FormCard'
 import FormItems from '../../common/components/FormItems'
 import EditableTable from '../../common/components/EditableTable'
@@ -32,29 +32,6 @@ import {useDocuments} from '../hooks'
 import $document from '../service'
 import ModalPreview from './ModalPreview'
 import ModalSender from './ModalSender'
-
-const BACK_KEY_CODE = 8
-const ENTER_KEY_CODE = 13
-const DOT_KEY_CODE = 190
-const NUMBER_KEY_CODES = range(48, 58)
-const KEYPAD_KEY_CODES = range(96, 106)
-const ARROWS_KEY_CODES = range(37, 41)
-const INPUT_NUMBER_VALID_KEY_CODES = [
-  BACK_KEY_CODE,
-  DOT_KEY_CODE,
-  ...ARROWS_KEY_CODES,
-  ...NUMBER_KEY_CODES,
-  ...KEYPAD_KEY_CODES,
-]
-
-function handleInputNumberKeyDown(event) {
-  if (event.keyCode === ENTER_KEY_CODE) {
-    event.stopPropagation()
-    event.currentTarget.blur()
-  } else if (!INPUT_NUMBER_VALID_KEY_CODES.includes(event.keyCode)) {
-    event.preventDefault()
-  }
-}
 
 function EditDefaultDocument(props) {
   const profile = useProfile()
@@ -355,13 +332,7 @@ function EditDefaultDocument(props) {
       EditField: readOnly
         ? null
         : forwardRef(({save, ...props}, ref) => (
-            <InputNumber
-              ref={ref}
-              onKeyDown={handleInputNumberKeyDown}
-              min={0}
-              step={1}
-              {...props}
-            />
+            <InputNumber ref={ref} min={0} step={1} blurOnEnter {...props} />
           )),
     },
     {
@@ -388,13 +359,7 @@ function EditDefaultDocument(props) {
       EditField: readOnly
         ? null
         : forwardRef(({save, ...props}, ref) => (
-            <InputNumber
-              ref={ref}
-              onKeyDown={handleInputNumberKeyDown}
-              min={0}
-              step={1}
-              {...props}
-            />
+            <InputNumber ref={ref} min={0} step={1} blurOnEnter {...props} />
           )),
     },
     {
@@ -425,10 +390,6 @@ function EditDefaultDocument(props) {
   }
 
   const mainFields = [
-    {
-      name: 'entitled',
-      Component: <Input size="large" autoFocus={Boolean(document.number)} disabled={readOnly} />,
-    },
     {
       name: 'client',
       Component: (
@@ -502,6 +463,13 @@ function EditDefaultDocument(props) {
     {name: 'conditions', fluid: true, Component: <Input.TextArea disabled={readOnly} rows={6} />},
   ]
 
+  const entitledFields = [
+    {
+      name: 'entitled',
+      Component: <Input size="large" disabled={readOnly} />,
+    },
+  ]
+
   const selectType = (
     <Select autoFocus value={document.type} onChange={saveType} disabled={readOnly}>
       <Select.Option value="quotation">{t('quotation')}</Select.Option>
@@ -513,11 +481,64 @@ function EditDefaultDocument(props) {
   return (
     <>
       <Form noValidate layout="vertical" onSubmit={saveDocument}>
+        <Title
+          label={
+            <>
+              {document.number || selectType} {document.number && <StatusTag document={document} />}
+            </>
+          }
+        >
+          <Button.Group>
+            <Button type="link" disabled={loading} onClick={cloneDocument} style={{marginLeft: 4}}>
+              {t('clone')}
+            </Button>
+            {!document.sentAt && document.number && (
+              <Button
+                type="link"
+                disabled={loading}
+                onClick={previewDocument}
+                style={{marginLeft: 4}}
+              >
+                {t('preview')}
+              </Button>
+            )}
+            {!document.number && (
+              <Popconfirm
+                title={t('/documents.confirm-deletion')}
+                onConfirm={deleteDocument}
+                okText={t('yes')}
+                cancelText={t('no')}
+                visible={deleteVisible && !loading}
+                onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
+              >
+                <Button type="danger" disabled={loading}>
+                  <Icon type="delete" />
+                  {t('delete')}
+                </Button>
+              </Popconfirm>
+            )}
+            {document.number && (
+              <SelectStatus
+                document={document}
+                disabled={loading}
+                onChange={handleChangeStatus}
+                style={{marginLeft: 4}}
+              />
+            )}
+            {!document.sentAt && (
+              <Button type="primary" htmlType="submit" disabled={loading} style={{marginLeft: 4}}>
+                <Icon type={loading ? 'loading' : 'save'} />
+                {t('save')}
+              </Button>
+            )}
+          </Button.Group>
+        </Title>
+
         {!document.number && (
           <Alert
             message={t('warning')}
             description={
-              <div style={{display: 'flex', alignItems: 'center'}}>
+              <div style={{display: 'flex', alignItems: 'flex-end'}}>
                 <span style={{display: 'flex', flexDirection: 'column', flex: 1}}>
                   <span>{t('/documents.warning-draft-1')}</span>
                   <span>{t('/documents.warning-draft-2')}</span>
@@ -536,58 +557,9 @@ function EditDefaultDocument(props) {
           />
         )}
 
-        <Title label={document.number || selectType}>
-          <Button.Group>
-            {!document.number && (
-              <Popconfirm
-                title={t('/documents.confirm-deletion')}
-                onConfirm={deleteDocument}
-                okText={t('yes')}
-                cancelText={t('no')}
-                visible={deleteVisible && !loading}
-                onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
-              >
-                <Button type="danger" disabled={loading}>
-                  <Icon type="delete" />
-                  {t('delete')}
-                </Button>
-              </Popconfirm>
-            )}
-            <Button
-              type="dashed"
-              disabled={loading}
-              onClick={cloneDocument}
-              style={{marginLeft: 4}}
-            >
-              <Icon type="copy" />
-              {t('clone')}
-            </Button>
-            {!document.sentAt && document.number && (
-              <Button disabled={loading} onClick={previewDocument} style={{marginLeft: 4}}>
-                <Icon type="eye" />
-                {t('preview')}
-              </Button>
-            )}
-            {!document.sentAt && (
-              <Button type="primary" htmlType="submit" disabled={loading} style={{marginLeft: 4}}>
-                <Icon type={loading ? 'loading' : 'save'} />
-                {t('save')}
-              </Button>
-            )}
-          </Button.Group>
-        </Title>
-
         <Row gutter={24}>
-          <Col lg={6}>
-            {document.number && (
-              <SelectStatus onChange={handleChangeStatus} document={document} required />
-            )}
-            {!document.sentAt && (
-              <FormItems form={props.form} model={document} fields={mainFields} />
-            )}
-          </Col>
-          <Col lg={18}>
-            {document.sentAt && document.pdf ? (
+          {document.sentAt && document.pdf ? (
+            <Col xl={24}>
               <Form.Item label={t('pdf')}>
                 <div
                   style={{
@@ -614,8 +586,16 @@ function EditDefaultDocument(props) {
                   />
                 </div>
               </Form.Item>
-            ) : (
-              <>
+            </Col>
+          ) : (
+            <>
+              <Col lg={6}>
+                {!document.sentAt && (
+                  <FormItems form={props.form} model={document} fields={mainFields} />
+                )}
+              </Col>
+              <Col lg={18}>
+                <FormItems form={props.form} model={document} fields={entitledFields} />
                 <Form.Item label={t('designations')} required>
                   <Card bodyStyle={{padding: 0}}>
                     <EditableTable
@@ -629,9 +609,9 @@ function EditDefaultDocument(props) {
                   </Card>
                 </Form.Item>
                 <FormItems form={props.form} model={document} fields={conditionFields} />
-              </>
-            )}
-          </Col>
+              </Col>
+            </>
+          )}
         </Row>
       </Form>
 

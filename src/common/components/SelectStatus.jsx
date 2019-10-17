@@ -1,15 +1,14 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {DateTime} from 'luxon'
 import moment from 'moment'
-import Button from 'antd/es/button'
-import Col from 'antd/es/col'
-import Form from 'antd/es/form'
-// import Icon from 'antd/es/icon'
-import Modal from 'antd/es/modal'
-import Row from 'antd/es/row'
-import Select from 'antd/es/select'
-import Tooltip from 'antd/es/tooltip'
+import Button from 'antd/lib/button'
+import Col from 'antd/lib/col'
+import Dropdown from 'antd/lib/dropdown'
+import Form from 'antd/lib/form'
+import Icon from 'antd/lib/icon'
+import Menu from 'antd/lib/menu'
+import Modal from 'antd/lib/modal'
+import Row from 'antd/lib/row'
 import kebabCase from 'lodash/fp/kebabCase'
 
 import AutoCompleteNature from './AutoCompleteNature'
@@ -29,12 +28,11 @@ function getStatusFromDocument(document) {
 function SelectStatus(props) {
   const {form, document, onChange: handleStatusChange, ...customProps} = props
   const {getFieldDecorator} = form
-  const defaultStatus = getStatusFromDocument(document)
-  const [status, setStatus] = useState(defaultStatus)
+  const prevStatus = getStatusFromDocument(document)
+  const [status, setStatus] = useState(prevStatus)
   const [confirmVisible, setConfirmVisible] = useState(false)
   const [loading, setLoading] = useState(false)
-  const {t, i18n} = useTranslation()
-  const date = props.date ? DateTime.fromISO(props.date, {locale: i18n.language}) : null
+  const {t} = useTranslation()
 
   async function submitConfirm(event) {
     if (event) event.preventDefault()
@@ -52,14 +50,14 @@ function SelectStatus(props) {
   }
 
   function closeConfirm() {
-    setStatus(defaultStatus)
+    setStatus(prevStatus)
     setConfirmVisible(false)
   }
 
-  function handleSelectChange(status) {
-    setStatus(status)
+  function handleChange(event) {
+    setStatus(event.key)
 
-    if (status !== 'draft') {
+    if (event.key !== 'draft') {
       setConfirmVisible(true)
       form.resetFields()
     }
@@ -82,38 +80,30 @@ function SelectStatus(props) {
     </Button.Group>
   )
 
-  const help = date ? (
-    <Tooltip title={date.toFormat(t('date-format-short'))} placement="bottomLeft">
-      <em className="ant-form-explain" style={{cursor: 'default'}}>
-        {date.toRelative()}
-      </em>
-    </Tooltip>
-  ) : null
+  const menu = (
+    <Menu onClick={handleChange}>
+      {prevStatus === 'draft' && <Menu.Item key="sent">{t('sent')}</Menu.Item>}
+      {prevStatus === 'sent' && document.type === 'quotation' && (
+        <Menu.Item key="signed">{t('signed')}</Menu.Item>
+      )}
+      {prevStatus === 'sent' && document.type === 'invoice' && (
+        <Menu.Item key="paid">{t('paid')}</Menu.Item>
+      )}
+      {prevStatus === 'sent' && document.type === 'credit' && (
+        <Menu.Item key="refunded">{t('refunded')}</Menu.Item>
+      )}
+      {prevStatus !== 'draft' && <Menu.Item key="cancelled">{t('cancelled')}</Menu.Item>}
+    </Menu>
+  )
 
   return (
     <>
-      <Form.Item label={t('status')} help={help} {...customProps}>
-        <Select size="large" value={defaultStatus} onChange={handleSelectChange}>
-          {['draft'].includes(defaultStatus) && (
-            <Select.Option value="draft">{t('draft')}</Select.Option>
-          )}
-          {['draft', 'sent'].includes(defaultStatus) && (
-            <Select.Option value="sent">{t('sent')}</Select.Option>
-          )}
-          {['sent', 'signed'].includes(defaultStatus) && document.type === 'quotation' && (
-            <Select.Option value="signed">{t('signed')}</Select.Option>
-          )}
-          {['sent', 'paid'].includes(defaultStatus) && document.type === 'invoice' && (
-            <Select.Option value="paid">{t('paid')}</Select.Option>
-          )}
-          {['sent', 'refunded'].includes(defaultStatus) && document.type === 'credit' && (
-            <Select.Option value="refunded">{t('refunded')}</Select.Option>
-          )}
-          {defaultStatus !== 'draft' && (
-            <Select.Option value="cancelled">{t('cancelled')}</Select.Option>
-          )}
-        </Select>
-      </Form.Item>
+      <Dropdown overlay={menu} {...customProps}>
+        <Button>
+          <Icon type="tag" />
+          {t('mark-as')}
+        </Button>
+      </Dropdown>
 
       {confirmVisible && (
         <Modal
