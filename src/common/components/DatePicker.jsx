@@ -1,6 +1,6 @@
 import React, {forwardRef} from 'react'
 import {useTranslation} from 'react-i18next'
-import DatePicker from 'antd/es/date-picker'
+import DatePicker from 'antd/lib/date-picker'
 
 const formats = {
   fr: 'DD/MM/YYYY',

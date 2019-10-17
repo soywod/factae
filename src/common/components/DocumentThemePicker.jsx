@@ -1,7 +1,7 @@
 import React, {forwardRef} from 'react'
 import {useTranslation} from 'react-i18next'
-import Icon from 'antd/es/icon'
-import Select from 'antd/es/select'
+import Icon from 'antd/lib/icon'
+import Select from 'antd/lib/select'
 
 import Link from './Link'
 import {useThemes, getThemeUrl} from '../../utils/themes'

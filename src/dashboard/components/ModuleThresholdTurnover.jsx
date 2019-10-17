@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
-import Card from 'antd/es/card'
+import Card from 'antd/lib/card'
 import compact from 'lodash/fp/compact'
 import defaultTo from 'lodash/fp/defaultTo'
 import filter from 'lodash/fp/filter'

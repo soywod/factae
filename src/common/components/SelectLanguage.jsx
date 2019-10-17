@@ -1,9 +1,9 @@
 import React from 'react'
 import {useTranslation} from 'react-i18next'
-import Button from 'antd/es/button'
-import Dropdown from 'antd/es/dropdown'
-import Icon from 'antd/es/icon'
-import Menu from 'antd/es/menu'
+import Button from 'antd/lib/button'
+import Dropdown from 'antd/lib/dropdown'
+import Icon from 'antd/lib/icon'
+import Menu from 'antd/lib/menu'
 
 const styles = {
   button: {

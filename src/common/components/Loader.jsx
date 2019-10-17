@@ -1,5 +1,5 @@
 import React from 'react'
-import Spin from 'antd/es/spin'
+import Spin from 'antd/lib/spin'
 
 const styles = {
   container: {

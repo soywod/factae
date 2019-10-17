@@ -1,9 +1,9 @@
 import React from 'react'
 import {useTranslation} from 'react-i18next'
-import Button from 'antd/es/button'
-import Icon from 'antd/es/icon'
-import Spin from 'antd/es/spin'
-import Modal from 'antd/es/modal'
+import Button from 'antd/lib/button'
+import Icon from 'antd/lib/icon'
+import Spin from 'antd/lib/spin'
+import Modal from 'antd/lib/modal'
 
 function Preview({document, visible, loading, onClose: close}) {
   const {t} = useTranslation()

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import Modal from 'antd/es/modal'
+import Modal from 'antd/lib/modal'
 
 import {useProfile} from '../../profile/hooks'
 import $profile from '../../profile/service'

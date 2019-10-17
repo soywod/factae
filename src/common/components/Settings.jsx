@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import Button from 'antd/es/button'
-import Form from 'antd/es/form'
-import Icon from 'antd/es/icon'
-import Tabs from 'antd/es/tabs'
+import Button from 'antd/lib/button'
+import Form from 'antd/lib/form'
+import Icon from 'antd/lib/icon'
+import Tabs from 'antd/lib/tabs'
 
 import {useOnboarding} from '../../utils/onboarding'
 import EditAccount from '../../profile/components/EditAccount'

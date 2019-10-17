@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
-import Card from 'antd/es/card'
+import Card from 'antd/lib/card'
 import random from 'lodash/fp/random'
 
 import {useProfile} from '../../profile/hooks'

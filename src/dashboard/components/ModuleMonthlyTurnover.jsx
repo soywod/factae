@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
-import Card from 'antd/es/card'
-import Tooltip from 'antd/es/tooltip'
+import Card from 'antd/lib/card'
+import Tooltip from 'antd/lib/tooltip'
 import {DateTime} from 'luxon'
 import random from 'lodash/fp/random'
 

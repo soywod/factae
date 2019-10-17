@@ -1,5 +1,5 @@
 import React from 'react'
-import Button from 'antd/es/button'
+import Button from 'antd/lib/button'
 import {Link as RouterLink} from 'react-router-dom'
 import noop from 'lodash/fp/noop'
 

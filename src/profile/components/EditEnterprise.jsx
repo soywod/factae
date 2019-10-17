@@ -1,8 +1,8 @@
 import React from 'react'
 import {useTranslation} from 'react-i18next'
-import InputNumber from 'antd/es/input-number'
-import Select from 'antd/es/select'
-import Typography from 'antd/es/typography'
+import InputNumber from 'antd/lib/input-number'
+import Select from 'antd/lib/select'
+import Typography from 'antd/lib/typography'
 
 import DatePicker from '../../common/components/DatePicker'
 import FormItems from '../../common/components/FormItems'

@@ -1,5 +1,5 @@
 import {useTranslation} from 'react-i18next'
-import notification from 'antd/es/notification'
+import notification from 'antd/lib/notification'
 import isString from 'lodash/fp/isString'
 import noop from 'lodash/fp/noop'
 

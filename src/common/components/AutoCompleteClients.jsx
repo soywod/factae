@@ -1,5 +1,5 @@
 import React, {forwardRef, useMemo} from 'react'
-import AutoComplete from 'antd/es/auto-complete'
+import AutoComplete from 'antd/lib/auto-complete'
 import map from 'lodash/fp/map'
 import pipe from 'lodash/fp/pipe'
 import sortBy from 'lodash/fp/sortBy'

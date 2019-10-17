@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import Button from 'antd/es/button'
-import Form from 'antd/es/form'
-import Icon from 'antd/es/icon'
-import Table from 'antd/es/table'
+import Button from 'antd/lib/button'
+import Form from 'antd/lib/form'
+import Icon from 'antd/lib/icon'
+import Table from 'antd/lib/table'
 import omit from 'lodash/fp/omit'
 
 import Title from '../../common/components/Title'
