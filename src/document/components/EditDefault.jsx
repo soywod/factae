@@ -2,7 +2,6 @@ import React, {forwardRef, useState} from 'react'
 import {withRouter} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
 import {DateTime} from 'luxon'
-import Alert from 'antd/lib/alert'
 import Button from 'antd/lib/button'
 import Card from 'antd/lib/card'
 import Col from 'antd/lib/col'
@@ -23,15 +22,17 @@ import FormItems from '../../common/components/FormItems'
 import EditableTable from '../../common/components/EditableTable'
 import DatePicker from '../../common/components/DatePicker'
 import AutoCompleteReference from '../../common/components/AutoCompleteReference'
-import SelectStatus from '../../common/components/SelectStatus'
+import ChangeStatus from '../../common/components/ChangeStatus'
 import {toEuro} from '../../utils/currency'
 import {useNotification} from '../../utils/notification'
 import {useProfile} from '../../profile/hooks'
 import {useClients} from '../../client/hooks'
 import {useDocuments} from '../hooks'
+import {getCurrStatus, getNextStatus} from '../utils'
 import $document from '../service'
 import ModalPreview from './ModalPreview'
 import ModalSender from './ModalSender'
+import AlertDraft from './AlertDraft'
 
 function EditDefaultDocument(props) {
   const profile = useProfile()
@@ -48,10 +49,30 @@ function EditDefaultDocument(props) {
   const {t} = useTranslation()
   const requiredRules = {rules: [{required: true, message: t('field-required')}]}
 
-  function postPreview(showSender) {
+  async function postPreview(event = {}) {
     setPreviewVisible(false)
-    setLoading(false)
-    if (showSender) setSenderVisible(true)
+
+    switch (event.source) {
+      case 'send':
+        setSenderVisible(true)
+        break
+
+      case 'mark-as-sent':
+        setLoading(true)
+
+        await tryAndNotify(async () => {
+          const nextDocument = {...document, ...event.data}
+          setDocument(nextDocument)
+          await $document.set(nextDocument)
+          return t('/documents.updated-successfully')
+        })
+
+        setLoading(false)
+        break
+
+      default:
+        break
+    }
   }
 
   async function saveType(type) {
@@ -106,14 +127,14 @@ function EditDefaultDocument(props) {
     return $document.generatePdf(profile, nextClient, nextDocument)
   }
 
-  async function handleChangeStatus(nextFields) {
+  async function handleStatusChange(data) {
     setLoading(true)
 
     await tryAndNotify(async () => {
-      let nextDocument = await buildNextDocument(nextFields)
+      let nextDocument = await buildNextDocument(data)
       const nextClient = find({id: document.client}, clients)
 
-      if (nextFields.sentAt) {
+      if (data.sentAt) {
         nextDocument = await $document.generatePdf(profile, nextClient, nextDocument)
       }
 
@@ -144,9 +165,9 @@ function EditDefaultDocument(props) {
 
   async function previewDocument() {
     setLoading(true)
-    setPreviewVisible(true)
     await tryAndNotify(async () => setDocument(await buildNextDocumentWithPdf()))
     setLoading(false)
+    setPreviewVisible(true)
   }
 
   async function sendDocument(data) {
@@ -314,6 +335,9 @@ function EditDefaultDocument(props) {
     )
   }
 
+  const currDocumentStatus = getCurrStatus(document)
+  const nextDocumentStatus = getNextStatus(document)
+
   const columns = [
     {
       title: <strong style={{marginLeft: readOnly ? 0 : 16}}>{t('description')}</strong>,
@@ -393,7 +417,7 @@ function EditDefaultDocument(props) {
     {
       name: 'client',
       Component: (
-        <Select size="large" disabled={readOnly}>
+        <Select autoFocus={document.number} size="large">
           {clients.map(client => (
             <Select.Option key={client.id} value={client.id}>
               {client.name}
@@ -459,8 +483,22 @@ function EditDefaultDocument(props) {
     ),
   })
 
+  if (!document.number) {
+    mainFields.unshift({
+      name: 'type',
+      Component: (
+        <Select autoFocus value={document.type} onChange={saveType} size="large">
+          <Select.Option value="quotation">{t('quotation')}</Select.Option>
+          <Select.Option value="invoice">{t('invoice')}</Select.Option>
+          <Select.Option value="credit">{t('credit')}</Select.Option>
+        </Select>
+      ),
+      ...requiredRules,
+    })
+  }
+
   const conditionFields = [
-    {name: 'conditions', fluid: true, Component: <Input.TextArea disabled={readOnly} rows={6} />},
+    {name: 'conditions', fluid: true, Component: <Input.TextArea rows={6} />},
   ]
 
   const entitledFields = [
@@ -470,38 +508,18 @@ function EditDefaultDocument(props) {
     },
   ]
 
-  const selectType = (
-    <Select autoFocus value={document.type} onChange={saveType} disabled={readOnly}>
-      <Select.Option value="quotation">{t('quotation')}</Select.Option>
-      <Select.Option value="invoice">{t('invoice')}</Select.Option>
-      <Select.Option value="credit">{t('credit')}</Select.Option>
-    </Select>
-  )
-
   return (
     <>
       <Form noValidate layout="vertical" onSubmit={saveDocument}>
         <Title
+          loading={loading}
           label={
             <>
-              {document.number || selectType} {document.number && <StatusTag document={document} />}
+              {document.number || t(document.type)} <StatusTag document={document} />
             </>
           }
         >
           <Button.Group>
-            <Button type="link" disabled={loading} onClick={cloneDocument} style={{marginLeft: 4}}>
-              {t('clone')}
-            </Button>
-            {!document.sentAt && document.number && (
-              <Button
-                type="link"
-                disabled={loading}
-                onClick={previewDocument}
-                style={{marginLeft: 4}}
-              >
-                {t('preview')}
-              </Button>
-            )}
             {!document.number && (
               <Popconfirm
                 title={t('/documents.confirm-deletion')}
@@ -511,81 +529,94 @@ function EditDefaultDocument(props) {
                 visible={deleteVisible && !loading}
                 onVisibleChange={visible => setDeleteVisible(loading ? false : visible)}
               >
-                <Button type="danger" disabled={loading}>
+                <Button type="danger">
                   <Icon type="delete" />
                   {t('delete')}
                 </Button>
               </Popconfirm>
             )}
-            {document.number && (
-              <SelectStatus
+            {!['draft', 'cancelled'].includes(currDocumentStatus) && (
+              <ChangeStatus
                 document={document}
-                disabled={loading}
-                onChange={handleChangeStatus}
+                onConfirm={handleStatusChange}
                 style={{marginLeft: 4}}
-              />
+              >
+                {showConfirm => (
+                  <Button type="danger" onClick={showConfirm('cancelled')} style={{marginLeft: 4}}>
+                    <Icon type="close" />
+                    {t('cancel')}
+                  </Button>
+                )}
+              </ChangeStatus>
             )}
-            {!document.sentAt && (
-              <Button type="primary" htmlType="submit" disabled={loading} style={{marginLeft: 4}}>
-                <Icon type={loading ? 'loading' : 'save'} />
-                {t('save')}
-              </Button>
+            <Button type="dashed" onClick={cloneDocument} style={{marginLeft: 4}}>
+              <Icon type="copy" />
+              {t('clone')}
+            </Button>
+            {currDocumentStatus === 'draft' && (
+              <>
+                {document.number && (
+                  <Button onClick={previewDocument} style={{marginLeft: 4}}>
+                    <Icon type="file-sync" />
+                    {t('generate')}
+                  </Button>
+                )}
+                <Button type="primary" htmlType="submit" style={{marginLeft: 4}}>
+                  <Icon type="save" />
+                  {t('save')}
+                </Button>
+              </>
+            )}
+            {currDocumentStatus === 'sent' && (
+              <ChangeStatus
+                document={document}
+                onConfirm={handleStatusChange}
+                style={{marginLeft: 4}}
+              >
+                {showConfirm => (
+                  <Button
+                    type="primary"
+                    onClick={showConfirm(nextDocumentStatus)}
+                    style={{marginLeft: 4}}
+                  >
+                    <Icon type="check" />
+                    {t('mark-as-' + nextDocumentStatus)}
+                  </Button>
+                )}
+              </ChangeStatus>
             )}
           </Button.Group>
         </Title>
 
-        {!document.number && (
-          <Alert
-            message={t('warning')}
-            description={
-              <div style={{display: 'flex', alignItems: 'flex-end'}}>
-                <span style={{display: 'flex', flexDirection: 'column', flex: 1}}>
-                  <span>{t('/documents.warning-draft-1')}</span>
-                  <span>{t('/documents.warning-draft-2')}</span>
-                </span>
-                <span>
-                  <Button type="dashed" onClick={confirmDocument} disabled={loading}>
-                    <Icon type="lock" />
-                    {t('confirm')}
-                  </Button>
-                </span>
-              </div>
-            }
-            type="warning"
-            showIcon
-            style={{marginBottom: 24}}
-          />
-        )}
+        <AlertDraft document={document} onConfirm={confirmDocument} />
 
         <Row gutter={24}>
           {document.sentAt && document.pdf ? (
             <Col xl={24}>
-              <Form.Item label={t('pdf')}>
-                <div
+              <div
+                style={{
+                  position: 'relative',
+                  paddingTop: 'calc(100vh - 192px)',
+                  overflow: 'hidden',
+                }}
+              >
+                <iframe
+                  title={document.number}
+                  src={document.pdf}
+                  width="100%"
+                  height={600}
+                  scrolling="no"
+                  allowFullScreen
                   style={{
-                    position: 'relative',
-                    paddingTop: 'calc(100vh - 192px)',
-                    overflow: 'hidden',
+                    border: 'none',
+                    height: '100%',
+                    left: 0,
+                    position: 'absolute',
+                    top: 0,
+                    width: '100%',
                   }}
-                >
-                  <iframe
-                    title={document.number}
-                    src={document.pdf}
-                    width="100%"
-                    height={600}
-                    scrolling="no"
-                    allowFullScreen
-                    style={{
-                      border: 'none',
-                      height: '100%',
-                      left: 0,
-                      position: 'absolute',
-                      top: 0,
-                      width: '100%',
-                    }}
-                  />
-                </div>
-              </Form.Item>
+                />
+              </div>
             </Col>
           ) : (
             <>
