@@ -1,26 +1,26 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useState} from "react";
 
-import {useAuth} from '../auth/hooks'
-import {onDocumentsChanged, documents$} from './service'
+import {useAuth} from "../auth/context";
+import {onDocumentsChanged, documents$} from "./service";
 
 export function useDocuments() {
-  const [documents, setDocuments] = useState(documents$.value)
+  const [documents, setDocuments] = useState(documents$.value);
 
   useEffect(() => {
-    const subscription = documents$.subscribe(setDocuments)
-    return () => subscription.unsubscribe()
-  }, [])
+    const subscription = documents$.subscribe(setDocuments);
+    return () => subscription.unsubscribe();
+  }, []);
 
-  return documents
+  return documents;
 }
 
 export function useDocumentService() {
-  const user = useAuth()
+  const user = useAuth();
 
   useEffect(() => {
     if (user) {
-      const unsubscribe = onDocumentsChanged()
-      return () => unsubscribe()
+      const unsubscribe = onDocumentsChanged();
+      return () => unsubscribe();
     }
-  }, [user])
+  }, [user]);
 }

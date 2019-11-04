@@ -16,9 +16,11 @@ import Support from "./common/components/Support";
 import Sider from "./common/components/Sider";
 import Logo from "./common/components/Logo";
 import Link from "./common/components/Link";
-import {useAuthService} from "./auth/hooks";
-import Auth from "./auth/components/Auth";
-import PrivateRoute from "./auth/components/PrivateRoute";
+import {useAuth} from "./auth/service";
+import AuthForm from "./auth/Form";
+import Demo from "./auth/Demo";
+import Logout from "./auth/Logout";
+import PrivateRoute from "./auth/PrivateRoute";
 import {useProfileService} from "./profile/hooks";
 import {useClientService} from "./client/hooks";
 import ClientList from "./client/components/List";
@@ -35,7 +37,7 @@ function App() {
   const locales = {fr};
   const {i18n} = useTranslation();
 
-  useAuthService();
+  useAuth();
   useProfileService();
   useClientService();
   useDocumentService();
@@ -49,9 +51,9 @@ function App() {
     <AntdProvider locale={locales[i18n.language]}>
       <Router>
         <Switch>
-          <Route path="/auth" component={Auth} />
-          <Route path="/demo" component={Auth.Demo} />
-          <PrivateRoute path="/logout" component={Auth.Logout} />
+          <Route path="/auth" component={AuthForm} />
+          <Route path="/demo" component={Demo} />
+          <PrivateRoute path="/logout" component={Logout} />
           <PrivateRoute path="/support" component={withLayout(Support)} />
           <PrivateRoute path="/clients/:id" component={withLayout(ClientEdit)} />
           <PrivateRoute path="/clients" component={withLayout(ClientList)} />

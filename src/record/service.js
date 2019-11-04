@@ -1,33 +1,33 @@
-import {BehaviorSubject} from 'rxjs'
+import {BehaviorSubject} from "rxjs";
 
-import {db} from '../utils/firebase'
-import {user$} from '../auth/service'
+import {db} from "../utils/firebase";
+import {user$} from "../auth/context";
 
-export const records$ = new BehaviorSubject(null)
+export const records$ = new BehaviorSubject(null);
 
 export function onRecordsChanged() {
   return db(`users/${user$.value.uid}/records`).onSnapshot((query, error) => {
-    const records = []
+    const records = [];
 
     if (!error) {
-      query.forEach(ref => records.push({id: ref.id, ...ref.data()}))
+      query.forEach(ref => records.push({id: ref.id, ...ref.data()}));
     }
 
-    records$.next(records)
-  })
+    records$.next(records);
+  });
 }
 
 export function generateId() {
-  return db(`users/${user$.value.uid}/records`).doc().id
+  return db(`users/${user$.value.uid}/records`).doc().id;
 }
 
 export async function set(record) {
-  await db(`users/${user$.value.uid}/records`, record.id).set(record, {merge: true})
+  await db(`users/${user$.value.uid}/records`, record.id).set(record, {merge: true});
 }
 
-export {_delete as delete}
+export {_delete as delete};
 async function _delete(record) {
-  await db(`users/${user$.value.uid}/records`, record.id).delete()
+  await db(`users/${user$.value.uid}/records`, record.id).delete();
 }
 
-export default {generateId, set, delete: _delete}
+export default {generateId, set, delete: _delete};
