@@ -68,6 +68,7 @@ export function getPendingInvoicesTurnover(documents) {
     if (document.type !== "invoice") return false
     if (!document.sentAt) return false
     if (document.paidAt) return false
+    if (document.cancelledAt) return false
     return true
   }
 
