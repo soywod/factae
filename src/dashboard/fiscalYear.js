@@ -1,23 +1,23 @@
-import {DateTime} from 'luxon'
-import defaults from 'lodash/fp/defaults'
-import fill from 'lodash/fp/fill'
-import filter from 'lodash/fp/filter'
-import groupBy from 'lodash/fp/groupBy'
-import isEmpty from 'lodash/fp/isEmpty'
-import isNil from 'lodash/fp/isNil'
-import last from 'lodash/fp/last'
-import mapBase from 'lodash/fp/map'
-import mapValues from 'lodash/fp/mapValues'
-import mean from 'lodash/fp/mean'
-import multiply from 'lodash/fp/multiply'
-import overSome from 'lodash/fp/overSome'
-import pipe from 'lodash/fp/pipe'
-import range from 'lodash/fp/range'
-import reject from 'lodash/fp/reject'
-import sortBy from 'lodash/fp/sortBy'
-import sumBy from 'lodash/fp/sumBy'
-import values from 'lodash/fp/values'
-import zipObject from 'lodash/fp/zipObject'
+import {DateTime} from "luxon"
+import defaults from "lodash/fp/defaults"
+import fill from "lodash/fp/fill"
+import filter from "lodash/fp/filter"
+import groupBy from "lodash/fp/groupBy"
+import isEmpty from "lodash/fp/isEmpty"
+import isNil from "lodash/fp/isNil"
+import last from "lodash/fp/last"
+import mapBase from "lodash/fp/map"
+import mapValues from "lodash/fp/mapValues"
+import mean from "lodash/fp/mean"
+import multiply from "lodash/fp/multiply"
+import overSome from "lodash/fp/overSome"
+import pipe from "lodash/fp/pipe"
+import range from "lodash/fp/range"
+import reject from "lodash/fp/reject"
+import sortBy from "lodash/fp/sortBy"
+import sumBy from "lodash/fp/sumBy"
+import values from "lodash/fp/values"
+import zipObject from "lodash/fp/zipObject"
 
 const map = mapBase.convert({cap: false})
 const isNilOrEmpty = overSome([isNil, isEmpty])
@@ -53,7 +53,7 @@ export function getTurnover(invoices, now) {
   }
 
   const mapByMonth = invoice => ({
-    month: DateTime.fromISO(invoice.paidAt || invoice.refundedAt).month,
+    month: DateTime.fromISO(invoice.sentAt).month,
     total: invoice.totalHT,
   })
 
@@ -67,8 +67,8 @@ export function getTurnover(invoices, now) {
   return pipe([
     filter(filterByDate),
     map(mapByMonth),
-    groupBy('month'),
-    mapValues(sumBy('total')),
+    groupBy("month"),
+    mapValues(sumBy("total")),
     defaults(defaultData),
     values,
     map(mapByActiveMonth),

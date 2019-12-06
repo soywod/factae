@@ -1,25 +1,25 @@
-import {DateTime} from 'luxon'
-import multiply from 'lodash/fp/multiply'
-import range from 'lodash/fp/range'
+import {DateTime} from "luxon"
+import multiply from "lodash/fp/multiply"
+import range from "lodash/fp/range"
 
-import {getTurnover, getCumulativeTurnover, getTheoricCumulativeTurnover} from '../fiscalYear'
+import {getTurnover, getCumulativeTurnover, getTheoricCumulativeTurnover} from "../fiscalYear"
 
-describe('getTurnover', () => {
-  const date = DateTime.fromISO('2018-05-01')
+describe("getTurnover", () => {
+  const date = DateTime.fromISO("2018-05-01")
 
-  it('should return null if null or empty', () => {
+  it("should return null if null or empty", () => {
     expect(getTurnover(null, date)).toEqual(null)
     expect(getTurnover(undefined, date)).toEqual(null)
     expect(getTurnover([], date)).toEqual(null)
   })
 
-  it('should get turnover', () => {
-    const invoicesA = [{type: 'invoice', paidAt: '2018-04-01', totalHT: 2000}]
+  it("should get turnover", () => {
+    const invoicesA = [{type: "invoice", sentAt: "2018-04-01", paidAt: "2018-04-01", totalHT: 2000}]
     const invoicesB = [
-      {type: 'invoice', paidAt: '2018-04-01', totalHT: 3000},
-      {type: 'invoice', paidAt: '2018-03-01', totalHT: 1500},
+      {type: "invoice", sentAt: "2018-04-01", paidAt: "2018-04-01", totalHT: 3000},
+      {type: "invoice", sentAt: "2018-03-01", paidAt: "2018-03-01", totalHT: 1500},
     ]
-    const invoicesC = [{type: 'invoice', paidAt: '2018-01-01', totalHT: 200}]
+    const invoicesC = [{type: "invoice", sentAt: "2018-01-01", paidAt: "2018-01-01", totalHT: 200}]
 
     const cases = [
       [
@@ -50,27 +50,27 @@ describe('getTurnover', () => {
   })
 })
 
-describe('getCumulativeTurnover', () => {
-  it('should return null if null or empty', () => {
+describe("getCumulativeTurnover", () => {
+  it("should return null if null or empty", () => {
     expect(getCumulativeTurnover(null, null)).toEqual(null)
     expect(getCumulativeTurnover(undefined, undefined)).toEqual(null)
     expect(getCumulativeTurnover([], [])).toEqual(null)
   })
 
-  it('should get cumulative turnover', () => {
+  it("should get cumulative turnover", () => {
     const cases = [
       [
-        [{paidAt: '2018-04-01'}],
+        [{paidAt: "2018-04-01"}],
         [0, 0, 0, 2000, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
         [0, 0, 0, 2000, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
       ],
       [
-        [{paidAt: '2018-04-01'}],
+        [{paidAt: "2018-04-01"}],
         [0, 1000, 0, 2000, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
         [0, 1000, 1000, 3000, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
       ],
       [
-        [{paidAt: '2018-06-01'}],
+        [{paidAt: "2018-06-01"}],
         [0, 1000, 0, 2000, 4000, undefined, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
         [0, 1000, 1000, 3000, 7000, 7000, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
       ],
@@ -82,14 +82,14 @@ describe('getCumulativeTurnover', () => {
   })
 })
 
-describe('getTheoricCumulativeTurnover', () => {
-  it('should return null if null or empty', () => {
+describe("getTheoricCumulativeTurnover", () => {
+  it("should return null if null or empty", () => {
     expect(getTheoricCumulativeTurnover(null, null)).toEqual(null)
     expect(getTheoricCumulativeTurnover(undefined, undefined)).toEqual(null)
     expect(getTheoricCumulativeTurnover([], [])).toEqual(null)
   })
 
-  it('should get theoric cumulative turnover', () => {
+  it("should get theoric cumulative turnover", () => {
     const cases = [
       [
         [0, 0, 0, 2000, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined], // prettier-ignore
