@@ -27,16 +27,17 @@ export function getTurnover(documents, now, monthShift) {
     .minus({month: monthShift})
     .set({day: 1, hour: 0, minute: 0, second: 0, millisecond: 0})
 
-  function filterByStatusAndDate(document) {
-    if (!["invoice", "credit"].includes(document.type)) return false
-    if (document.type === "invoice" && !document.paidAt) return false
-    if (document.type === "credit" && !document.refundedAt) return false
-    if (DateTime.fromISO(document.paidAt) < firstDay) return false
+  function filterByStatusAndDate(doc) {
+    if (!["invoice", "credit"].includes(doc.type)) return false
+    if (doc.cancelledAt) return false
+    if (doc.type === "invoice" && !doc.paidAt) return false
+    if (doc.type === "credit" && !doc.refundedAt) return false
+    if (DateTime.fromISO(doc.paidAt || doc.refundedAt) < firstDay) return false
     return true
   }
 
-  function sumByTotalHT(documents) {
-    const totals = documents.map(d => d.totalHT * getSignByDocumentType(d.type))
+  function sumByTotalHT(docs) {
+    const totals = docs.map(doc => doc.totalHT * getSignByDocumentType(doc.type))
     return sum(totals)
   }
 
@@ -54,9 +55,9 @@ export function getQuarterlyTurnover(documents, now = DateTime.local()) {
 export function getPendingQuotationsTurnover(documents) {
   function filterByTypeAndStatus(document) {
     if (document.type !== "quotation") return false
+    if (document.cancelledAt) return false
     if (!document.sentAt) return false
     if (document.signedAt) return false
-    if (document.cancelledAt) return false
     return true
   }
 
@@ -66,9 +67,9 @@ export function getPendingQuotationsTurnover(documents) {
 export function getPendingInvoicesTurnover(documents) {
   function filterByTypeAndStatus(document) {
     if (document.type !== "invoice") return false
+    if (document.cancelledAt) return false
     if (!document.sentAt) return false
     if (document.paidAt) return false
-    if (document.cancelledAt) return false
     return true
   }
 

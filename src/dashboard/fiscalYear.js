@@ -23,9 +23,9 @@ const map = mapBase.convert({cap: false})
 const isNilOrEmpty = overSome([isNil, isEmpty])
 
 function getMostRecentMonth(invoices) {
-  const sortByDate = invoices => sortBy(i => i.paidAt || i.refundedAt, invoices)
+  const sortByDate = invoices => sortBy(doc => doc.sentAt, invoices)
   const lastInvoice = pipe([sortByDate, last])(invoices)
-  return DateTime.fromISO(lastInvoice.paidAt).month - 1
+  return DateTime.fromISO(lastInvoice.sentAt).month - 1
 }
 
 export function getTurnover(invoices, now) {
@@ -46,15 +46,16 @@ export function getTurnover(invoices, now) {
     .minus({day: 1})
     .set({hour: 23, minute: 59, second: 59, millisecond: 999})
 
-  function filterByDate(invoice) {
-    if (DateTime.fromISO(invoice.paidAt || invoice.refundedAt) < firstDayOfYear) return false
-    if (DateTime.fromISO(invoice.paidAt || invoice.refundedAt) > lastDayOfYear) return false
+  function filterByDate(doc) {
+    const paidAt = DateTime.fromISO(doc.paidAt || doc.refundedAt)
+    if (paidAt < firstDayOfYear) return false
+    if (paidAt > lastDayOfYear) return false
     return true
   }
 
-  const mapByMonth = invoice => ({
-    month: DateTime.fromISO(invoice.sentAt).month,
-    total: invoice.totalHT,
+  const mapByMonth = doc => ({
+    month: DateTime.fromISO(doc.paidAt || doc.refundedAt).month,
+    total: doc.totalHT,
   })
 
   // Set default turnover for each month
