@@ -1,4 +1,6 @@
-# [factAE](https://app.factae.fr)
+⚠️ *Project archived, due to lack of interest.*
+
+# factAE
 
 A simple billing tool for micro-enterprises.
 
@@ -37,16 +39,6 @@ Start the web server (http://localhost:3000):
 ```bash
 yarn start
 ```
-
-## TODO
-
-- [ ] Improve tables (pagination, sort, filter...)
-- [ ] Improve PDF (pagination, font size...)
-- [ ] Improve form validation
-- [ ] Send form to new client (so they fill their own data) (google form?)
-- [ ] Send documents to clients by in-app mail
-- [ ] Set up prorata for new freelancers
-- [ ] Set up online sign system (eg: Blockusign)
 
 ## Credits
 
